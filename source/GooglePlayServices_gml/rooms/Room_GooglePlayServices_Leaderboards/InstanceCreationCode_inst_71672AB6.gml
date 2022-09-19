@@ -1,0 +1,1 @@
+text = "Leaderboard 1";
