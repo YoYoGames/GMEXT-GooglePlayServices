@@ -1,6 +1,6 @@
 /// @description Initialize variables
 
-sprite = undefined
+sprite = noone
 UriToPath_request = noone
 
 displayRank = ""
