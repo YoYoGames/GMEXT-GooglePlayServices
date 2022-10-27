@@ -38,6 +38,7 @@
     {"id":{"name":"Obj_GooglePlayServices_SavedGames_Delete","path":"objects/Obj_GooglePlayServices_SavedGames_Delete/Obj_GooglePlayServices_SavedGames_Delete.yy",},"order":6,},
     {"id":{"name":"Obj_GooglePlayServices_SavedGames_Discard","path":"objects/Obj_GooglePlayServices_SavedGames_Discard/Obj_GooglePlayServices_SavedGames_Discard.yy",},"order":7,},
     {"id":{"name":"Obj_GooglePlayServices_SavedGames_DataObj","path":"objects/Obj_GooglePlayServices_SavedGames_DataObj/Obj_GooglePlayServices_SavedGames_DataObj.yy",},"order":8,},
+    {"id":{"name":"Obj_GooglePlayServices_PlayerStats","path":"objects/Obj_GooglePlayServices_PlayerStats/Obj_GooglePlayServices_PlayerStats.yy",},"order":11,},
     {"id":{"name":"Obj_GooglePlayServices_SavedGames_Icon","path":"objects/Obj_GooglePlayServices_SavedGames_Icon/Obj_GooglePlayServices_SavedGames_Icon.yy",},"order":9,},
     {"id":{"name":"Obj_GooglePlayServices_GotoAchievementsAdvanced","path":"objects/Obj_GooglePlayServices_GotoAchievementsAdvanced/Obj_GooglePlayServices_GotoAchievementsAdvanced.yy",},"order":9,},
     {"id":{"name":"Obj_GooglePlayServices_Achievements_Reveal","path":"objects/Obj_GooglePlayServices_Achievements_Reveal/Obj_GooglePlayServices_Achievements_Reveal.yy",},"order":4,},

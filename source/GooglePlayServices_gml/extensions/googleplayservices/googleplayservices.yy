@@ -107,6 +107,9 @@
             1,
             2,
           ],},
+        {"resourceType":"GMExtensionFunction","resourceVersion":"1.0","name":"GooglePlayServices_PlayerStats_LoadPlayerStats","externalName":"GooglePlayServices_PlayerStats_LoadPlayerStats","kind":4,"help":"GooglePlayServices_PlayerStats_LoadPlayerStats(forcedLoad)","hidden":false,"returnType":2,"argCount":0,"args":[
+            2,
+          ],},
       ],"constants":[
         {"resourceType":"GMExtensionConstant","resourceVersion":"1.0","name":"Achievement_STATE_HIDDEN","value":"2","hidden":false,},
         {"resourceType":"GMExtensionConstant","resourceVersion":"1.0","name":"Achievement_STATE_REVEALED","value":"1","hidden":false,},

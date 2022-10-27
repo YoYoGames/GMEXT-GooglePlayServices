@@ -2,23 +2,14 @@
 
 switch(async_load[?"type"])
 {	
-	// @triggered by GooglePlayServices_StartSignInIntent()
-	case "GooglePlayServices_SignIn":
-		// At this point we are now signed in to the google play account.
-		setSignedInMode(true);
-		break;
-	
 	case "GooglePlayServices_isAuthenticated":
-			if(async_load[?"success"])
-			if(async_load[?"isAuthenticated"])
-				setSignedInMode(true);
-		break
+		
+		if(async_load[?"success"])
+		if(async_load[?"isAuthenticated"])
+		{
+			setSignedInMode(true)
+			instance_create_depth(30,100,0,Obj_GooglePlayServices_PlayerStats)
+		}
 	
-	// @triggered by GooglePlayServices_RevokeAccess()
-	case "GooglePlayServices_RevokeAccess":
-	// @triggered by GooglePlayServices_SignOut()
-	case "GooglePlayServices_SignOut":
-		// At this point we are now signed out of the google play account.
-		setSignedInMode(false);
-		break;	
+	break
 }

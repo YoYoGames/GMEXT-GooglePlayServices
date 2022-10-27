@@ -54,6 +54,8 @@ import com.google.android.gms.games.Player;
 import com.google.android.gms.games.PlayerBuffer;
 import com.google.android.gms.games.PlayersClient;
 
+import com.google.android.gms.games.stats.PlayerStats;
+
 import com.google.android.gms.games.achievement.Achievement;
 import com.google.android.gms.games.achievement.AchievementBuffer;
 
@@ -1264,6 +1266,42 @@ public class YYGooglePlayServices extends RunnerSocial
 		JSONObject obj = new JSONObject(map);
 		
 		return obj.toString();
+	}
+	
+	////////////////////////////////Player Stats
+	public void GooglePlayServices_PlayerStats_LoadPlayerStats(double forcedLoad)
+	{
+		PlayGames.getPlayerStatsClient(activity).loadPlayerStats(forcedLoad>=0.5).addOnCompleteListener(new OnCompleteListener<AnnotatedData<PlayerStats>>() 
+		{
+			@Override
+			public void onComplete(@NonNull Task<AnnotatedData<PlayerStats>> task)
+			{
+				int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
+				RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_PlayerStats_LoadPlayerStats" );
+				
+				if (task.isSuccessful()) 
+				{
+					AnnotatedData mAnnotatedData = task.getResult();
+					PlayerStats mPlayerStats = (PlayerStats) mAnnotatedData.get();
+					
+					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 1 );
+					
+					RunnerJNILib.DsMapAddDouble( dsMapIndex, "AverageSessionLength", mPlayerStats.getAverageSessionLength());
+					RunnerJNILib.DsMapAddDouble( dsMapIndex, "DaysSinceLastPlayed", mPlayerStats.getDaysSinceLastPlayed());
+					RunnerJNILib.DsMapAddDouble( dsMapIndex, "NumberOfPurchases", mPlayerStats.getNumberOfPurchases());
+					RunnerJNILib.DsMapAddDouble( dsMapIndex, "NumberOfSessions", mPlayerStats.getNumberOfSessions());
+					RunnerJNILib.DsMapAddDouble( dsMapIndex, "SessionPercentile", mPlayerStats.getSessionPercentile());
+					RunnerJNILib.DsMapAddDouble( dsMapIndex, "SpendPercentile", mPlayerStats.getSpendPercentile());
+				}
+				else
+				{
+					Exception exception = task.getException();
+					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 0 );					
+				}
+				
+				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);	
+			}
+		});
 	}
 }
 
