@@ -51,5 +51,3 @@ var description = async_load[? "result"];
 // This function triggers a Social Async callback (check: "GooglePlayServices_SavedGames_CommitNew")
 GooglePlayServices_SavedGames_CommitNew(name, description, jsonData, path);
 
-// This function ca be used to display a google play message overlay on the application. 
-GooglePlayServices_UserMessage("New Slot");

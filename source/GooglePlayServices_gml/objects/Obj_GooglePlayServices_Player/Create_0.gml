@@ -17,12 +17,10 @@ function playerInfoReset()
 	if (sprite_exists(sprite))
 	{
 		sprite_delete(sprite);
-		sprite = undefined;
+		sprite = noone;
 	}
 }
 
-// We check to see if we are signed in and if so we proceed to getting player info.
-if (GooglePlayServices_IsSignedIn())
 {
 	// This is a method that triggers a Social Async event callback
 	// returning the player information (check social async event).

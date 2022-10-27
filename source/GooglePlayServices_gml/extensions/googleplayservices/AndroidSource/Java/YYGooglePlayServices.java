@@ -37,18 +37,14 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 	
+import com.google.android.gms.games.PlayGamesSdk;
+import com.google.android.gms.games.PlayGames;
+import com.google.android.gms.games.AuthenticationResult;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-
-import com.google.android.gms.auth.api.Auth;
-
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import com.google.android.gms.games.Game;
 import com.google.android.gms.games.Games;
@@ -93,82 +89,96 @@ import com.google.android.gms.common.ConnectionResult;
 public class YYGooglePlayServices extends RunnerSocial
 {
 	private static final int EVENT_OTHER_SOCIAL = 70;
-	private GoogleSignInClient mGoogleSignInClient = null;
-	private GoogleSignInAccount signedInAccount = null;
-	private Player mPlayer = null;
-	private SnapshotsClient mSnapshotsClient;
+	
 	private HashMap<String, Snapshot> mapSnapshot;
 	
-	private static Activity activity;
-	private static final int RC_SIGN_IN  = 328;
-	
+	private static Activity activity = RunnerActivity.CurrentActivity;
 	
 	int Ind;
 	
 	public YYGooglePlayServices()
 	{
+		PlayGamesSdk.initialize(activity);
+		
 		Ind = 1;
-		activity = RunnerActivity.CurrentActivity;
 		mapSnapshot = new HashMap<String, Snapshot>();
-		
-		int ms = 500;
-		if(Build.VERSION.SDK_INT <= 8)
-			ms = 3000;// 3 seconds
-		
-		if(GooglePlayServices_IsSignedIn() < 0.5)//if not signedin
-		{
-			new java.util.Timer().schedule( new java.util.TimerTask()
-			{
-				@Override
-				public void run() 
-				{
-					GooglePlayServices_signInSilently();
-				}
-			},ms);
-		}
-	}
-	
-	@Override
-	public void onResume()
-	{
-		int ms = 500;
-		if(Build.VERSION.SDK_INT <= 8)
-			ms = 3000;// 3 seconds
-		
-		if(GooglePlayServices_IsSignedIn() < 0.5)//if not signedin
-		{
-			new java.util.Timer().schedule( new java.util.TimerTask()
-			{
-				@Override
-				public void run() 
-				{
-					GooglePlayServices_signInSilently();
-				}
-			},ms);
-		}
 	}
 	
 	public double GooglePlayServices_IsAvailable()
 	{
-		return (double) GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(activity) == ConnectionResult.SUCCESS ?1.0:0.0;
+		return (double) GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(activity) == ConnectionResult.SUCCESS ? 1.0 : 0.0;
 	}
 	
-	private void signin_success(GoogleSignInAccount GoogleSignInAccount_)
+	public void GooglePlayServices_SignIn()
 	{
-		try
+		PlayGames.getGamesSignInClient(activity).signIn().addOnCompleteListener(new OnCompleteListener<AuthenticationResult>() 
 		{
-			signedInAccount = GoogleSignInAccount_;
-			
-			if(GooglePlayServices_IsSignedIn() > 0.5)
+			@Override
+			public void onComplete(@NonNull Task<AuthenticationResult> isAuthenticatedTask) 
 			{
-				GooglePlayServices_setViewForPopups();
-				mSnapshotsClient = Games.getSnapshotsClient(activity,signedInAccount);
+				int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
+				RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_SignIn");
+				if(isAuthenticatedTask.isSuccessful())
+				{
+					RunnerJNILib.DsMapAddDouble(dsMapIndex,"isAuthenticated",isAuthenticatedTask.getResult().isAuthenticated()?1.0:0.0);
+					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",1);
+				} 
+				else 
+				{
+					Exception exception = isAuthenticatedTask.getException();
+					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+				}
+				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
 			}
-		}
-		catch(Exception e)
+		});
+	}
+	
+	public void GooglePlayServices_isAuthenticated()
+	{
+		PlayGames.getGamesSignInClient(activity).isAuthenticated().addOnCompleteListener(new OnCompleteListener<AuthenticationResult>() 
 		{
-			Log.e("yoyo", e.getMessage(), e);
-		}
+			@Override
+			public void onComplete(@NonNull Task<AuthenticationResult> isAuthenticatedTask) 
+			{
+				int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
+				RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_isAuthenticated");
+				if(isAuthenticatedTask.isSuccessful())
+				{
+					RunnerJNILib.DsMapAddDouble(dsMapIndex,"isAuthenticated",isAuthenticatedTask.getResult().isAuthenticated()?1.0:0.0);
+					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",1);
+				} 
+				else 
+				{
+					Exception exception = isAuthenticatedTask.getException();
+					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+				}
+				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
+			}
+		});
+	}
+	
+	public void GooglePlayServices_RequestServerSideAccess(String serverClientId, double forceRefreshToken)
+	{
+		PlayGames.getGamesSignInClient(activity).requestServerSideAccess(serverClientId,forceRefreshToken>=0.5).addOnCompleteListener(new OnCompleteListener<String>() 
+		{
+			@Override
+			public void onComplete(@NonNull Task<String> task) 
+			{
+				int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
+				RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_RequestServerSideAccess");
+				if (task.isSuccessful()) 
+				{
+					RunnerJNILib.DsMapAddString(dsMapIndex,"accessToken",task.getResult());
+					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",1);
+				} 
+				else 
+				{
+					Exception exception = task.getException();
+					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+				}
+				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
+			}
+		});
 	}
 	
 	@Override
@@ -181,35 +191,6 @@ public class YYGooglePlayServices extends RunnerSocial
 
 		switch(requestCode)
 		{
-		
-			case RC_SIGN_IN:
-			
-				dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-				RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_SignIn" );
-				
-				GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-				
-				boolean ok = false;
-				if(result != null)
-				if(result.isSuccess()) 
-					ok = true;
-				
-				if(ok)
-				{
-					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 1 );
-					signin_success(result.getSignInAccount());
-				} 
-				else 
-				{
-					RunnerJNILib.DsMapAddString(dsMapIndex, "errorMessage:",result.getStatus().getStatusMessage());
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "errorCode:",(double) resultCode);
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 0 );
-				}
-				
-				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-			
-			
-			break;
 			
 			case RC_SAVED_GAMES:
 			
@@ -254,150 +235,11 @@ public class YYGooglePlayServices extends RunnerSocial
 			*/
 		}
 	}
-
-	////////////////////////////////////////////////////////////////Sign In
-	
-	public double GooglePlayServices_IsSignedIn()
-	{
-		if(GoogleSignIn.getLastSignedInAccount(activity) != null && signedInAccount != null)
-			return 1.0;
-		else
-			return 0.0;
-	}
-	
-	
-	public void GooglePlayServices_signInSilently() 
-	{
-		GoogleSignInClient signInClient = GooglePlayServices_signInClient();
-		signInClient.silentSignIn().addOnCompleteListener(activity,new OnCompleteListener<GoogleSignInAccount>() 
-		{
-			@Override
-			public void onComplete(@NonNull Task<GoogleSignInAccount> task) 
-			{
-				int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-				RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_SignIn" );
-				
-				if (task.isSuccessful())
-				{
-					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 1 );
-					signin_success(task.getResult());
-				} 
-				else 
-				{
-					Exception exception = task.getException();
-					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 0 );
-				}
-				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-			}
-		});
-	}
-	
-	
-	public void GooglePlayServices_StartSignInIntent() 
-	{
-		Log.i("yoyo","GooglePlayServices_StartSignInIntent");
-		GoogleSignInClient signInClient = GooglePlayServices_signInClient();
-		Intent intent = signInClient.getSignInIntent();
-		activity.startActivityForResult(intent, RC_SIGN_IN);
-	}
-	
-	
-	public void GooglePlayServices_SignOut() 
-	{
-		GoogleSignInClient signInClient = GooglePlayServices_signInClient();
-		signInClient.signOut().addOnCompleteListener(activity,new OnCompleteListener<Void>() 
-		{
-			@Override
-			public void onComplete(@NonNull Task<Void> task) 
-			{
-				// at this point, the user is signed out.
-				
-				int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-				RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_SignOut" );
-				
-				if (task.isSuccessful()) 
-				{
-					// Task completed successfully
-					task.getResult();
-					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 1 );
-				} 
-				else 
-				{
-					// Task failed with an exception
-					Exception exception = task.getException();
-					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 0 );
-				}
-				
-				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-			}
-		});
-	}
-
-	public void GooglePlayServices_RevokeAccess()
-	{
-		GoogleSignInClient signInClient = GooglePlayServices_signInClient();
-		signInClient.revokeAccess().addOnCompleteListener(activity,new OnCompleteListener<Void>() 
-		{
-			@Override
-			public void onComplete(@NonNull Task<Void> task) 
-			{
-				// at this point, the user is signed out.
-				
-				int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-				RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_RevokeAccess" );
-				
-				if (task.isSuccessful()) 
-				{
-					// Task completed successfully
-					task.getResult();
-					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 1 );
-				} 
-				else 
-				{
-					// Task failed with an exception
-					Exception exception = task.getException();
-					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 0 );
-				}
-				
-				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-				
-			}
-		});
-	}	
-	//////////////////////////////////////////////////////////// Account Info
-	
-	public String GooglePlayServices_GetAccount()
-	{
-		// https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignInAccount
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		
-		if(signedInAccount.getDisplayName()!=null)
-			map.put("displayName",signedInAccount.getDisplayName());
-		if(signedInAccount.getEmail()!=null)
-			map.put("email",signedInAccount.getEmail());
-		if(signedInAccount.getFamilyName()!=null)
-			map.put("familyName",signedInAccount.getFamilyName());
-		if(signedInAccount.getGivenName()!=null)
-			map.put("givenName",signedInAccount.getGivenName());
-		if(signedInAccount.getIdToken()!=null)
-			map.put("IdToken",signedInAccount.getIdToken());
-		if(signedInAccount.getPhotoUrl()!=null)
-			map.put("photoUrl",signedInAccount.getPhotoUrl().toString());
-		if(signedInAccount.getServerAuthCode()!=null)
-			map.put("serverAuthCode",signedInAccount.getServerAuthCode());
-		
-		JSONObject obj = new JSONObject(map);
-		
-		return obj.toString();
-	}
 	
 	//////////////////////////////////////////////////////////////////Player Info
-	
-	//https://developers.google.com/android/reference/com/google/android/gms/games/PlayersClient
 	public void GooglePlayServices_Player_Current()
 	{
-		PlayersClient playersClient = Games.getPlayersClient(activity, signedInAccount);
-		playersClient.getCurrentPlayer().addOnCompleteListener(new OnCompleteListener<Player>() 
+		PlayGames.getPlayersClient(activity).getCurrentPlayer().addOnCompleteListener(new OnCompleteListener<Player>() 
 		{
 			@Override
 			public void onComplete(@NonNull Task<Player> task) 
@@ -407,7 +249,6 @@ public class YYGooglePlayServices extends RunnerSocial
 				
 				if (task.isSuccessful()) 
 				{
-					// Task completed successfully
 					Player mPlayer = task.getResult();
 					
 					RunnerJNILib.DsMapAddString( dsMapIndex, "player", PlayerJSON(mPlayer) );
@@ -415,7 +256,6 @@ public class YYGooglePlayServices extends RunnerSocial
 				} 
 				else 
 				{
-					// Task failed with an exception
 					Exception exception = task.getException();
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 0 );
 				}
@@ -428,8 +268,7 @@ public class YYGooglePlayServices extends RunnerSocial
 	
 	public void GooglePlayServices_Player_CurrentID()
 	{
-		PlayersClient playersClient = Games.getPlayersClient(activity, signedInAccount);
-		playersClient.getCurrentPlayerId().addOnCompleteListener(new OnCompleteListener<String>() 
+		PlayGames.getPlayersClient(activity).getCurrentPlayerId().addOnCompleteListener(new OnCompleteListener<String>() 
 		{
 			@Override
 			public void onComplete(@NonNull Task<String> task) 
@@ -459,8 +298,8 @@ public class YYGooglePlayServices extends RunnerSocial
 	private static final int RC_ACHIEVEMENT_UI = 9003;
 	public void GooglePlayServices_Achievements_Show() 
 	{
-	
-		Games.getAchievementsClient(activity, signedInAccount).getAchievementsIntent().addOnSuccessListener(new OnSuccessListener<Intent>() 
+	Log.i("yoyo","GooglePlayServices_Achievements_Show HERE");
+		PlayGames.getAchievementsClient(activity).getAchievementsIntent().addOnSuccessListener(new OnSuccessListener<Intent>() 
 		{
 			@Override
 			public void onSuccess(Intent intent) 
@@ -473,7 +312,7 @@ public class YYGooglePlayServices extends RunnerSocial
 
 	public void GooglePlayServices_Achievements_Increment(final String arch_id,double steps) 
 	{
-		Games.getAchievementsClient(activity, signedInAccount).incrementImmediate(arch_id, (int)steps).addOnCompleteListener(new OnCompleteListener<Boolean>() 
+		PlayGames.getAchievementsClient(activity).incrementImmediate(arch_id, (int)steps).addOnCompleteListener(new OnCompleteListener<Boolean>() 
 		{
 			@Override
 			public void onComplete(@NonNull Task<Boolean> task) 
@@ -500,7 +339,7 @@ public class YYGooglePlayServices extends RunnerSocial
 	
 	public void GooglePlayServices_Achievements_Reveal(final String arch_id) 
 	{
-		Games.getAchievementsClient(activity, signedInAccount).revealImmediate(arch_id).addOnCompleteListener(new OnCompleteListener<Void>() 
+		PlayGames.getAchievementsClient(activity).revealImmediate(arch_id).addOnCompleteListener(new OnCompleteListener<Void>() 
 		{
 			@Override
 			public void onComplete(@NonNull Task<Void> task) 
@@ -527,7 +366,7 @@ public class YYGooglePlayServices extends RunnerSocial
 	
 	public void GooglePlayServices_Achievements_SetSteps(final String arch_id,double steps) 
 	{
-		Games.getAchievementsClient(activity, signedInAccount).setStepsImmediate(arch_id, (int)steps).addOnCompleteListener(new OnCompleteListener<Boolean>() 
+		PlayGames.getAchievementsClient(activity).setStepsImmediate(arch_id, (int)steps).addOnCompleteListener(new OnCompleteListener<Boolean>() 
 		{
 			@Override
 			public void onComplete(@NonNull Task<Boolean> task) 
@@ -554,7 +393,7 @@ public class YYGooglePlayServices extends RunnerSocial
 	
 	public void GooglePlayServices_Achievements_Unlock(final String arch_id) 
 	{
-		Games.getAchievementsClient(activity, signedInAccount).unlockImmediate(arch_id).addOnCompleteListener(new OnCompleteListener<Void>() 
+		PlayGames.getAchievementsClient(activity).unlockImmediate(arch_id).addOnCompleteListener(new OnCompleteListener<Void>() 
 		{
 			@Override
 			public void onComplete(@NonNull Task<Void> task) 
@@ -581,7 +420,7 @@ public class YYGooglePlayServices extends RunnerSocial
 	
 	public void GooglePlayServices_Achievements_GetStatus(double force_reload)
 	{
-		Games.getAchievementsClient(activity, signedInAccount).load(force_reload >= 0.5).addOnCompleteListener(new OnCompleteListener<AnnotatedData<AchievementBuffer>>() 
+		PlayGames.getAchievementsClient(activity).load(force_reload >= 0.5).addOnCompleteListener(new OnCompleteListener<AnnotatedData<AchievementBuffer>>() 
 		{
 			@Override
 			public void onComplete(@NonNull Task<AnnotatedData<AchievementBuffer>> task) 
@@ -643,7 +482,7 @@ public class YYGooglePlayServices extends RunnerSocial
 	
 	public void GooglePlayServices_Leaderboard_ShowAll()
 	{
-		Games.getLeaderboardsClient(activity,signedInAccount).getAllLeaderboardsIntent().addOnSuccessListener(new OnSuccessListener<Intent>() 
+		PlayGames.getLeaderboardsClient(activity).getAllLeaderboardsIntent().addOnSuccessListener(new OnSuccessListener<Intent>() 
 		{
 			@Override
 			public void onSuccess(Intent intent) 
@@ -655,7 +494,7 @@ public class YYGooglePlayServices extends RunnerSocial
 	
 	public void GooglePlayServices_Leaderboard_Show(String leader_id) 
 	{
-		Games.getLeaderboardsClient(activity,signedInAccount).getLeaderboardIntent(leader_id).addOnSuccessListener(new OnSuccessListener<Intent>() 
+		PlayGames.getLeaderboardsClient(activity).getLeaderboardIntent(leader_id).addOnSuccessListener(new OnSuccessListener<Intent>() 
 		{
 			@Override
 			public void onSuccess(Intent intent) 
@@ -725,7 +564,7 @@ public class YYGooglePlayServices extends RunnerSocial
 	
 	public void GooglePlayServices_Leaderboard_SubmitScore(final String leader_id,final double score,final String scoreTag) 
 	{
-		Games.getLeaderboardsClient(activity,signedInAccount).submitScoreImmediate(leader_id,(long) score, scoreTag).addOnCompleteListener(new OnCompleteListener<ScoreSubmissionData>() 
+		PlayGames.getLeaderboardsClient(activity).submitScoreImmediate(leader_id,(long) score, scoreTag).addOnCompleteListener(new OnCompleteListener<ScoreSubmissionData>() 
 		{
 			@Override
 			public void onComplete(@NonNull Task<ScoreSubmissionData> task) 
@@ -789,21 +628,6 @@ public class YYGooglePlayServices extends RunnerSocial
 		});
 	}
 	
-	String mClientID = "";
-	public void GooglePlayServices_SetClientID(String clientID)
-	{
-		mClientID = clientID;
-	}
-	
-	
-	public String GooglePlayServices_GetServerAuthCode()
-	{
-		if(signedInAccount.getServerAuthCode() == null)
-				return "NULL";
-			
-		return signedInAccount.getServerAuthCode();
-	}
-	
 	static JSONObject LeaderboardScoreJSON(LeaderboardScore mLeaderboardScore) throws Exception
 	{
 		//https://developers.google.com/android/reference/com/google/android/gms/games/leaderboard/LeaderboardScore
@@ -850,7 +674,7 @@ public class YYGooglePlayServices extends RunnerSocial
 	
 	public void GooglePlayServices_Leaderboard_LoadPlayerCenteredScores(String leaderboardId, double span, double leaderboardCollection, double maxResults, double forceReload)
 	{
-		Games.getLeaderboardsClient(activity,signedInAccount)
+		PlayGames.getLeaderboardsClient(activity)
 		.loadPlayerCenteredScores(leaderboardId, (int) span, (int) leaderboardCollection, (int) maxResults, forceReload >= 0.5)
 		.addOnCompleteListener(new OnCompleteListener<AnnotatedData<LeaderboardsClient.LeaderboardScores>>() 
 		{
@@ -898,7 +722,7 @@ public class YYGooglePlayServices extends RunnerSocial
 	
 	public void GooglePlayServices_Leaderboard_LoadTopScores(String leaderboardId, double span, double leaderboardCollection, double maxResults, double forceReload)
 	{
-		Games.getLeaderboardsClient(activity,signedInAccount)
+		PlayGames.getLeaderboardsClient(activity)
 		.loadTopScores(leaderboardId, (int) span, (int) leaderboardCollection, (int) maxResults, forceReload >= 0.5)
 		.addOnCompleteListener(new OnCompleteListener<AnnotatedData<LeaderboardsClient.LeaderboardScores>>() 
 		{
@@ -943,43 +767,7 @@ public class YYGooglePlayServices extends RunnerSocial
 			}
 		});
 		
-	}
-
-/////////////////////////////////////////////////////////////////// TOOLS
-
-	private GoogleSignInClient GooglePlayServices_signInClient()
-	{
-		GoogleSignInOptions.Builder optionsBuilder = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN);
-		optionsBuilder.requestScopes(Games.SCOPE_GAMES);
-		if(IniBundle.DoSetupIniFile(activity,"GooglePlayServices").getBoolean("SavedGames"))
-			optionsBuilder.requestScopes(Drive.SCOPE_APPFOLDER);
-			
-		// optionsBuilder.requestProfile();
-		// optionsBuilder.requestEmail();
-		// optionsBuilder.requestId();
-		
-		if(!mClientID.equals(""))
-			optionsBuilder.requestServerAuthCode(mClientID);
-		
-		//https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignInOptions.Builder
-		GoogleSignInOptions googleSignInOptions = optionsBuilder.build();
-		
-		Scope[] mScoreArray = googleSignInOptions.getScopeArray();
-		for(Scope mScope : mScoreArray)
-			Log.i("yoyo",mScope.toString());
-		
-		return(GoogleSignIn.getClient(activity, googleSignInOptions));
-	}
-
-	private void GooglePlayServices_setViewForPopups() 
-	{
-		View layout = (View)RunnerActivity.CurrentActivity.findViewById(R.layout.main);
-		ViewGroup vg = (ViewGroup)layout;
-
-		GamesClient gamesClient = Games.getGamesClient(activity,signedInAccount);
-		gamesClient.setViewForPopups(vg);
-	}
-	
+	}	
 	
 	public double GooglePlayServices_UriToPath(String uriString)
 	{
@@ -1062,7 +850,7 @@ public class YYGooglePlayServices extends RunnerSocial
 					}					
 					catch(Exception e)
 					{
-						Log.e("yoyo", "URI2PATH failed: " +e.getMessage());
+						Log.e("yoyo", "URI2PATH failed: " + e.getMessage());
 						int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 						RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_UriToPath" );
 						RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
@@ -1134,7 +922,7 @@ public class YYGooglePlayServices extends RunnerSocial
 			else
 				button_delete_ = false;
 
-			mSnapshotsClient.getSelectSnapshotIntent(title, button_add_, button_delete_, (int)max).addOnSuccessListener(new OnSuccessListener<Intent>()
+			PlayGames.getSnapshotsClient(activity).getSelectSnapshotIntent(title, button_add_, button_delete_, (int)max).addOnSuccessListener(new OnSuccessListener<Intent>()
 			{
 				@Override
 				public void onSuccess(Intent intent) 
@@ -1187,7 +975,7 @@ public class YYGooglePlayServices extends RunnerSocial
 			
 			SnapshotMetadataChange metadataChange = metadataChange_builder.build();
 
-			mSnapshotsClient.commitAndClose(snapshot, metadataChange).addOnCompleteListener(new OnCompleteListener<SnapshotMetadata>() 
+			PlayGames.getSnapshotsClient(activity).commitAndClose(snapshot, metadataChange).addOnCompleteListener(new OnCompleteListener<SnapshotMetadata>() 
 			{
 				@Override
 				public void onComplete(@NonNull Task<SnapshotMetadata> task) 
@@ -1220,7 +1008,7 @@ public class YYGooglePlayServices extends RunnerSocial
 		double conflictPolicy = 1;
 		
 		
-		mSnapshotsClient.open(name,createIfNotFound,(int)conflictPolicy).addOnCompleteListener(new OnCompleteListener <DataOrConflict<Snapshot>>()
+		PlayGames.getSnapshotsClient(activity).open(name,createIfNotFound,(int)conflictPolicy).addOnCompleteListener(new OnCompleteListener <DataOrConflict<Snapshot>>()
 		{
 			@Override
 			public void onComplete(@NonNull Task<DataOrConflict<Snapshot>> task) 
@@ -1263,7 +1051,7 @@ public class YYGooglePlayServices extends RunnerSocial
 					
 					SnapshotMetadataChange metadataChange = metadataChange_builder.build();
 
-					mSnapshotsClient.commitAndClose(snapshot, metadataChange).addOnCompleteListener(new OnCompleteListener<SnapshotMetadata>() 
+					PlayGames.getSnapshotsClient(activity).commitAndClose(snapshot, metadataChange).addOnCompleteListener(new OnCompleteListener<SnapshotMetadata>() 
 					{
 						@Override
 						public void onComplete(@NonNull Task<SnapshotMetadata> task) 
@@ -1304,7 +1092,7 @@ public class YYGooglePlayServices extends RunnerSocial
 	public void GooglePlayServices_SavedGames_Load(final double forceReload)
 	{
 		boolean forceReload_ = forceReload >= 0.5;
-		mSnapshotsClient.load(forceReload_).addOnCompleteListener(new OnCompleteListener<AnnotatedData<SnapshotMetadataBuffer>>()
+		PlayGames.getSnapshotsClient(activity).load(forceReload_).addOnCompleteListener(new OnCompleteListener<AnnotatedData<SnapshotMetadataBuffer>>()
 		{
 			@Override
 			public void onComplete(@NonNull Task<AnnotatedData<SnapshotMetadataBuffer>> task)
@@ -1347,7 +1135,7 @@ public class YYGooglePlayServices extends RunnerSocial
 		else
 			createIfNotFound_ = false;
 		
-		mSnapshotsClient.open(fileName,createIfNotFound_,(int) conflictPolicy).addOnCompleteListener(new OnCompleteListener<DataOrConflict<Snapshot>>() 
+		PlayGames.getSnapshotsClient(activity).open(fileName,createIfNotFound_,(int) conflictPolicy).addOnCompleteListener(new OnCompleteListener<DataOrConflict<Snapshot>>() 
 		{
 			@Override
 			public void onComplete(@NonNull Task<DataOrConflict<Snapshot>>task)
@@ -1390,7 +1178,7 @@ public class YYGooglePlayServices extends RunnerSocial
 		Snapshot mSnapshot = (Snapshot) mapSnapshot.get(fileName);
 		SnapshotMetadata mSnapshotMetadata = mSnapshot.getMetadata();
 		
-		mSnapshotsClient.delete(mSnapshotMetadata).addOnCompleteListener(new OnCompleteListener<String>() 
+		PlayGames.getSnapshotsClient(activity).delete(mSnapshotMetadata).addOnCompleteListener(new OnCompleteListener<String>() 
 		{
 			@Override
 			public void onComplete(@NonNull Task<String>task)
@@ -1420,7 +1208,7 @@ public class YYGooglePlayServices extends RunnerSocial
 	public void GooglePlayServices_SavedGames_DiscardAndClose(String fileName)
 	{
 		Snapshot mSnapshot = (Snapshot) mapSnapshot.get(fileName);
-		mSnapshotsClient.discardAndClose(mSnapshot).addOnCompleteListener(new OnCompleteListener<Void>()
+		PlayGames.getSnapshotsClient(activity).discardAndClose(mSnapshot).addOnCompleteListener(new OnCompleteListener<Void>()
 		{
 			@Override
 			public void onComplete(@NonNull Task<Void>task)
@@ -1476,22 +1264,6 @@ public class YYGooglePlayServices extends RunnerSocial
 		JSONObject obj = new JSONObject(map);
 		
 		return obj.toString();
-	}
-
-		
-	// Video Recorder
-	
-	private static final int RC_VIDEO_OVERLAY = 9011;
-	public void GooglePlayServices_VideoRecording_ShowVideoOverlay() 
-	{
-		Games.getVideosClient(activity, GoogleSignIn.getLastSignedInAccount(activity)).getCaptureOverlayIntent().addOnSuccessListener(new OnSuccessListener<Intent>() 
-		{
-			@Override
-			public void onSuccess(Intent intent) 
-			{
-				activity.startActivityForResult(intent, RC_VIDEO_OVERLAY);
-			}
-		});
 	}
 }
 

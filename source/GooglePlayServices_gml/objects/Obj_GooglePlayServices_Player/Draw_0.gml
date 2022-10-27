@@ -1,7 +1,7 @@
 /// @description Draw player info
 
 // Early exit if we are not signed in.
-if (!GooglePlayServices_IsSignedIn()) exit;
+
 
 // We check if the sprite variable has a valid sprite and draw it.
 if(sprite_exists(sprite))

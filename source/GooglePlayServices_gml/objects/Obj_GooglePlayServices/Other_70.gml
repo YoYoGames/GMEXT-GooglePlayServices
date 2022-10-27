@@ -8,6 +8,12 @@ switch(async_load[?"type"])
 		setSignedInMode(true);
 		break;
 	
+	case "GooglePlayServices_isAuthenticated":
+			if(async_load[?"success"])
+			if(async_load[?"isAuthenticated"])
+				setSignedInMode(true);
+		break
+	
 	// @triggered by GooglePlayServices_RevokeAccess()
 	case "GooglePlayServices_RevokeAccess":
 	// @triggered by GooglePlayServices_SignOut()
