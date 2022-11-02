@@ -10,6 +10,8 @@ switch(async_load[?"type"])
 			setSignedInMode(true)
 			instance_create_depth(30,100,0,Obj_GooglePlayServices_PlayerStats)
 		}
+		else
+			GooglePlayServices_SignIn()
 	
 	break
 }
