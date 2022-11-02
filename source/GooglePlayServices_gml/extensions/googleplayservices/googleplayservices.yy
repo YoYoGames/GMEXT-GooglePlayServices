@@ -5,7 +5,6 @@
   "optionsFile": "options.json",
   "options": [
     {"resourceType":"GMExtensionOption","resourceVersion":"1.0","name":"AppID","extensionId":null,"guid":"2333e839-6686-4c10-a29b-851041b2e067","displayName":"","listItems":[],"description":"","defaultValue":"","exportToINI":false,"hidden":false,"optType":2,},
-    {"resourceType":"GMExtensionOption","resourceVersion":"1.0","name":"SavedGames","extensionId":null,"guid":"9a1bc5e1-1f6a-4128-bb77-f352c42a5bad","displayName":"","listItems":[],"description":"","defaultValue":"True","exportToINI":true,"hidden":false,"optType":0,},
   ],
   "exportToGame": true,
   "supportedTargets": -1,
@@ -143,7 +142,6 @@
         {"name":"GooglePlayServices_SavedGames_CommitNew","path":"extensions/GooglePlayServices/GooglePlayServices.yy",},
         {"name":"GooglePlayServices_Player_Current","path":"extensions/GooglePlayServices/GooglePlayServices.yy",},
         {"name":"GooglePlayServices_Player_CurrentID","path":"extensions/GooglePlayServices/GooglePlayServices.yy",},
-        {"name":"GooglePlayServices_VideoRecording_ShowVideoOverlay","path":"extensions/GooglePlayServices/GooglePlayServices.yy",},
         {"name":"GooglePlayServices_UriToPath","path":"extensions/GooglePlayServices/GooglePlayServices.yy",},
         {"name":"GooglePlayServices_IsAvailable","path":"extensions/GooglePlayServices/GooglePlayServices.yy",},
       ],},
