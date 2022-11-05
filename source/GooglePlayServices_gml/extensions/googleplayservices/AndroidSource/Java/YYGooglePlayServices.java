@@ -443,10 +443,12 @@ public class YYGooglePlayServices extends RunnerSocial
 						map.put("description",achievement.getDescription());
 						map.put("lastUpdatedTimestamp",(double)achievement.getLastUpdatedTimestamp());
 						map.put("name",achievement.getName());
-						map.put("revealedImage",achievement.getRevealedImageUri().toString());
+						if(achievement.getRevealedImageUri() != null)
+							map.put("revealedImage",achievement.getRevealedImageUri().toString());
 						map.put("state",(double)achievement.getState());
 						map.put("typeAchievement",(double)achievement.getType());
-						map.put("unlockedImage",achievement.getUnlockedImageUri().toString());
+						if(achievement.getUnlockedImageUri() != null)
+							map.put("unlockedImage",achievement.getUnlockedImageUri().toString());
 						map.put("xpValue",(double)achievement.getXpValue());
 						
 						if(achievement.getType() == Achievement.TYPE_INCREMENTAL)
