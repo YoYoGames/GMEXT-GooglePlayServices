@@ -170,7 +170,7 @@ public class YYGooglePlayServices extends RunnerSocial
 				RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_RequestServerSideAccess");
 				if (task.isSuccessful()) 
 				{
-					RunnerJNILib.DsMapAddString(dsMapIndex,"accessToken",task.getResult());
+					RunnerJNILib.DsMapAddString(dsMapIndex,"authCode",task.getResult());
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",1);
 				} 
 				else 
