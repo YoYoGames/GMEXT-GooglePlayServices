@@ -525,8 +525,6 @@ public class YYGooglePlayServices extends RunnerSocial
 			map.put("hiResImageUri",mPlayer.getHiResImageUri().toString());
 		if(mPlayer.getIconImageUri() != null)
 			map.put("iconImageUri",mPlayer.getIconImageUri().toString());
-		//if(mPlayer.getLastPlayedWithTimestamp() != null)
-			map.put("lastPlayedWithTimestamp",(double)mPlayer.getLastPlayedWithTimestamp());
 		//if(mPlayer.getLevelInfo().getCurrentXpTotal() != null)
 			map.put("currentXpTotal",(double)mPlayer.getLevelInfo().getCurrentXpTotal());
 		//if(mPlayer.getLevelInfo().getLastLevelUpTimestamp() != null)
