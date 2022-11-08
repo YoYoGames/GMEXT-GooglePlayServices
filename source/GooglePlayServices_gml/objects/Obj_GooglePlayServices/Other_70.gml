@@ -2,7 +2,7 @@
 
 switch(async_load[?"type"])
 {	
-	case "GooglePlayServices_isAuthenticated":
+	case "GooglePlayServices_IsAuthenticated":
 		
 		if(async_load[?"success"])
 		if(async_load[?"isAuthenticated"])

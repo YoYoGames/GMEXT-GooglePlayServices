@@ -12,4 +12,4 @@ function setSignedInMode(enable)
 }
 
 setSignedInMode(false);
-GooglePlayServices_isAuthenticated()
+GooglePlayServices_IsAuthenticated()

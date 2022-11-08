@@ -135,7 +135,7 @@ public class YYGooglePlayServices extends RunnerSocial
 		});
 	}
 	
-	public void GooglePlayServices_isAuthenticated()
+	public void GooglePlayServices_IsAuthenticated()
 	{
 		PlayGames.getGamesSignInClient(activity).isAuthenticated().addOnCompleteListener(new OnCompleteListener<AuthenticationResult>() 
 		{
@@ -143,7 +143,7 @@ public class YYGooglePlayServices extends RunnerSocial
 			public void onComplete(@NonNull Task<AuthenticationResult> isAuthenticatedTask) 
 			{
 				int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-				RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_isAuthenticated");
+				RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_IsAuthenticated");
 				if(isAuthenticatedTask.isSuccessful())
 				{
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"isAuthenticated",isAuthenticatedTask.getResult().isAuthenticated()?1.0:0.0);
