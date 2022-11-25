@@ -4,6 +4,7 @@
   "name": "GooglePlayServices",
   "resources": [
     {"id":{"name":"Obj_GooglePlayServices_GotoLeaderboardsAdvanced","path":"objects/Obj_GooglePlayServices_GotoLeaderboardsAdvanced/Obj_GooglePlayServices_GotoLeaderboardsAdvanced.yy",},"order":10,},
+    {"id":{"name":"GooglePlayServices","path":"extensions/GooglePlayServices/GooglePlayServices.yy",},"order":0,},
     {"id":{"name":"Sprite_GooglePlayServices_SavedGames_dataObj","path":"sprites/Sprite_GooglePlayServices_SavedGames_dataObj/Sprite_GooglePlayServices_SavedGames_dataObj.yy",},"order":2,},
     {"id":{"name":"Spr_YoYo_Background","path":"sprites/Spr_YoYo_Background/Spr_YoYo_Background.yy",},"order":0,},
     {"id":{"name":"README","path":"notes/README/README.yy",},"order":5,},
@@ -52,7 +53,6 @@
     {"id":{"name":"Room_GooglePlayServices_Leaderboards","path":"rooms/Room_GooglePlayServices_Leaderboards/Room_GooglePlayServices_Leaderboards.yy",},"order":2,},
     {"id":{"name":"Obj_YoYo_text","path":"objects/Obj_YoYo_text/Obj_YoYo_text.yy",},"order":1,},
     {"id":{"name":"Font_YoYo_20","path":"fonts/Font_YoYo_20/Font_YoYo_20.yy",},"order":0,},
-    {"id":{"name":"GooglePlayServices","path":"extensions/GooglePlayServices/GooglePlayServices.yy",},"order":1,},
   ],
   "Options": [
     {"name":"HTML5","path":"options/html5/options_html5.yy",},
@@ -113,6 +113,6 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"Google Play Services Extension.html","CopyToMask":0,"filePath":"datafiles",},
   ],
   "MetaData": {
-    "IDEVersion": "2022.9.1.51",
+    "IDEVersion": "2022.900.0.39",
   },
 }
