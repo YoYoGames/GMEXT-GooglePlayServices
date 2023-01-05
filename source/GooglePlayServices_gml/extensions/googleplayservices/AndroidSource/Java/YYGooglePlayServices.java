@@ -197,11 +197,8 @@ public class YYGooglePlayServices extends RunnerSocial
 		return(ind);
 	}
 	
-	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) 
 	{
-		super.onActivityResult(requestCode, resultCode, data);
-		
 		int dsMapIndex;
 
 		switch(requestCode)
