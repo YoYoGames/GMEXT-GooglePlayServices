@@ -1,0 +1,5 @@
+
+
+v2.0.1			
+- Added new batch/bash script control system
+- Added a new field "ind" to all async event callbacks (this will have the unique async id)

@@ -1,4 +1,7 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "Obj_YoYo_textbox",
   "spriteId": {
     "name": "Spr_YoYo_textbox",
     "path": "sprites/Spr_YoYo_textbox/Spr_YoYo_textbox.yy",
@@ -25,7 +28,7 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":8,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":8,"collisionObjectId":null,},
   ],
   "properties": [],
   "overriddenProperties": [],
@@ -33,8 +36,4 @@
     "name": "Objects",
     "path": "folders/YoYo Extensions Assets/Objects.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "Obj_YoYo_textbox",
-  "tags": [],
-  "resourceType": "GMObject",
 }
