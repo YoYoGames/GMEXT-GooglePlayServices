@@ -323,7 +323,14 @@ public class YYGooglePlayServices extends RunnerSocial
 			@Override
 			public void onSuccess(Intent intent) 
 			{
-				activity.startActivityForResult(intent,RC_ACHIEVEMENT_UI);
+				try
+				{
+					activity.startActivityForResult(intent, RC_ACHIEVEMENT_UI);
+				}
+				catch(Exception e)
+				{
+					Log.e("yoyo", "ERROR GooglePlayServices_Achievements_Show: " + e.getMessage(), e);
+				}
 			}
 		});
 		
@@ -524,7 +531,14 @@ public class YYGooglePlayServices extends RunnerSocial
 			@Override
 			public void onSuccess(Intent intent) 
 			{
-				activity.startActivityForResult(intent, RC_LEADERBOARD_UI);
+				try
+				{
+					activity.startActivityForResult(intent, RC_LEADERBOARD_UI);
+				}
+				catch(Exception e)
+				{
+					Log.e("yoyo", "ERROR GooglePlayServices_Leaderboard_ShowAll: " + e.getMessage(), e);
+				}
 			}
 		});
 	}	
@@ -536,7 +550,14 @@ public class YYGooglePlayServices extends RunnerSocial
 			@Override
 			public void onSuccess(Intent intent) 
 			{
-				activity.startActivityForResult(intent, RC_LEADERBOARD_UI);
+				try
+				{
+					activity.startActivityForResult(intent, RC_LEADERBOARD_UI);
+				}
+				catch(Exception e)
+				{
+					Log.e("yoyo", "ERROR GooglePlayServices_Leaderboard_Show: " + e.getMessage(), e);
+				}
 			}
 		});
 	}
@@ -964,7 +985,14 @@ public class YYGooglePlayServices extends RunnerSocial
 				@Override
 				public void onSuccess(Intent intent) 
 				{
-					activity.startActivityForResult(intent, RC_SAVED_GAMES);
+					try
+					{
+						activity.startActivityForResult(intent, RC_SAVED_GAMES);
+					}
+					catch(Exception e)
+					{
+						Log.e("yoyo", "ERROR GooglePlayServices_SavedGames_ShowSavedGamesUI: " + e.getMessage(), e);
+					}
 				}
 			});
 		}
