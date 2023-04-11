@@ -1005,7 +1005,7 @@ public class YYGooglePlayServices extends RunnerSocial
 	}
 	
 	
-	public double GooglePlayServices_SavedGames_CommitAndClose(String name , final String desc, final String data,final String pathConverIamge) // Snapshot snapshot,byte[] data, Bitmap coverImage
+	public double GooglePlayServices_SavedGames_CommitAndClose(final String name , final String desc, final String data,final String pathConverIamge) // Snapshot snapshot,byte[] data, Bitmap coverImage
 	{
 		final double ind = getAsyncInd();
 		
@@ -1023,7 +1023,9 @@ public class YYGooglePlayServices extends RunnerSocial
 		}
 		
 		if (data_Ok)
+		if(mapSnapshot.containsKey(name))
 		{		
+			
 			Snapshot snapshot = mapSnapshot.get(name);
 			snapshot.getSnapshotContents().writeBytes(data_);
 			  
@@ -1057,6 +1059,8 @@ public class YYGooglePlayServices extends RunnerSocial
 						SnapshotMetadata snapshotMetadata = task.getResult();
 						RunnerJNILib.DsMapAddString( dsMapIndex, "snapshotMetadata", SnapshotMetadataJSON(snapshotMetadata));
 						RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 1 );
+						
+						mapSnapshot.remove(name);
 					} 
 					else 
 					{
