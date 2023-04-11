@@ -1,4 +1,12 @@
 
+v2.1.0
+- Updated to script control system version 2.0
+- Fixed small bugs (avoiding bug)
+	- GooglePlayServices_SavedGames_CommitAndClose (crashed when misused)
+	- GooglePlayServices_Achievements_Show
+	- GooglePlayServices_Leaderboard_ShowAll
+	- GooglePlayServices_Leaderboard_Show
+	- GooglePlayServices_SavedGames_ShowSavedGamesUI
 
 v2.0.1			
 - Added new batch/bash script control system

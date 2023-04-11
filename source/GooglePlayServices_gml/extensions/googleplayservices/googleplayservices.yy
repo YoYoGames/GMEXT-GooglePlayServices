@@ -16,7 +16,7 @@
   "date": "2019-02-24T11:17:00",
   "description": "",
   "exportToGame": true,
-  "extensionVersion": "2.0.1",
+  "extensionVersion": "2.1.0",
   "files": [
     {"resourceType":"GMExtensionFile","resourceVersion":"1.0","name":"","constants":[
         {"resourceType":"GMExtensionConstant","resourceVersion":"1.0","name":"Achievement_STATE_HIDDEN","hidden":false,"value":"2",},
@@ -164,7 +164,18 @@
   "maclinkerflags": "",
   "macsourcedir": "",
   "options": [
+    {"resourceType":"GMExtensionOption","resourceVersion":"1.0","name":"__extOptLabel","defaultValue":"APP OPTIONS:","description":"","displayName":"","exportToINI":false,"extensionId":null,"guid":"9d0b1496-d98c-4f0d-a615-f2afa4873468","hidden":false,"listItems":[],"optType":5,},
     {"resourceType":"GMExtensionOption","resourceVersion":"1.0","name":"AppID","defaultValue":"","description":"","displayName":"","exportToINI":false,"extensionId":null,"guid":"2333e839-6686-4c10-a29b-851041b2e067","hidden":false,"listItems":[],"optType":2,},
+    {"resourceType":"GMExtensionOption","resourceVersion":"1.0","name":"__extOptLabel1","defaultValue":"EXTRA OPTIONS:","description":"","displayName":"","exportToINI":false,"extensionId":null,"guid":"b8e7eb69-cec3-466b-b60e-9dfdea781aba","hidden":false,"listItems":[],"optType":5,},
+    {"resourceType":"GMExtensionOption","resourceVersion":"1.0","name":"logLevel","defaultValue":"1","description":"The log level to be used by the script file.\r\n0: Show only errors\r\n1: Show errors and warnings (recommended)\r\n2: Show everything (use before submitting a bug)","displayName":"Log Level","exportToINI":false,"extensionId":null,"guid":"99765f9a-ab54-45da-b2b3-e7119f9275a0","hidden":false,"listItems":[
+        "0",
+        "1",
+        "2",
+      ],"optType":6,},
+    {"resourceType":"GMExtensionOption","resourceVersion":"1.0","name":"versionStable","defaultValue":"2022.9.0.0","description":"","displayName":"","exportToINI":false,"extensionId":null,"guid":"e0d1568c-d7ea-4236-956d-fb4729253091","hidden":true,"listItems":[],"optType":2,},
+    {"resourceType":"GMExtensionOption","resourceVersion":"1.0","name":"versionBeta","defaultValue":"2022.900.0.0","description":"","displayName":"","exportToINI":false,"extensionId":null,"guid":"ba9b6890-9864-4fa1-aaec-d65ced643b86","hidden":true,"listItems":[],"optType":2,},
+    {"resourceType":"GMExtensionOption","resourceVersion":"1.0","name":"versionDev","defaultValue":"9.9.1.0","description":"","displayName":"","exportToINI":false,"extensionId":null,"guid":"6cd32340-3378-4234-bcac-ca9eb79d227a","hidden":true,"listItems":[],"optType":2,},
+    {"resourceType":"GMExtensionOption","resourceVersion":"1.0","name":"versionLTS","defaultValue":"2022.0.0.0","description":"","displayName":"","exportToINI":false,"extensionId":null,"guid":"3d566d80-4a40-4194-b092-6ec3f219c999","hidden":true,"listItems":[],"optType":2,},
   ],
   "optionsFile": "options.json",
   "packageId": "",
