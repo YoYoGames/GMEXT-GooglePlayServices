@@ -1,5 +1,7 @@
 * ### [Google Play Services](Home)
-* ### [Setup](setup)
+* ### [Guides](#)
+  * ### [Google Setup](google_setup)
+  * ### [Extensions Setup](extension_setup)
 * ### [Modules](#)
   * ### [General](General)
   * ### [Player](Player)
