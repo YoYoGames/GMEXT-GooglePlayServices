@@ -1,1 +1,1 @@
-YoYoGames 2022
+<p align="center">GameMaker ${time.year}</p>
