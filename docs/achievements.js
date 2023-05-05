@@ -36,7 +36,7 @@
  *         ins.name = struct.name
  *         ins.revealedImage = struct.revealedImage
  *         ins.state = struct.state
- *      ins.typeAchievement = struct.typeAchievement
+ *         ins.typeAchievement = struct.typeAchievement
  *         ins.unlockedImage = struct.unlockedImage
  *         ins.xpValue = struct.xpValue
  * 
