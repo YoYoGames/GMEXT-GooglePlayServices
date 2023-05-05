@@ -1,3 +1,5 @@
+@title Extension Setup
+
 <a id="top"></a>
 <!-- Page HTML do not touch -->
 <a /><p align="right">[Back To Top](#top)</p>
@@ -12,7 +14,7 @@
 <br>
 
 1. The extension setup will require the user to **double click** the extension asset in the asset browser and fill in the information regarding the GooglePlayServices account. <br>
-   ![](https://github.com/YoYoGames/GMEXT-GooglePlayServices/blob/main/docs/assets/gps_setup_ext_options.png)
+   ![](assets/gps_setup_ext_options.png)
 2. As the Google Developer Console layout might change in the future you can check their official guide on setting up leaderboards: [Adding Leaderboards](https://developers.google.com/games/services/common/concepts/leaderboards#creating_a_leaderboard).
 3. As the Google Developer Console layout might change in the future you can check their official guide on setting up achievements: [Adding Achievements](https://developers.google.com/games/services/common/concepts/achievements#creating_an_achievement).
 

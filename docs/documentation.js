@@ -6,7 +6,8 @@
  * 
  * @section Guides
  * @desc This section hosts the guides to get you up and running.
- * @reference page.setup
+ * @reference page.google_setup
+ * @reference page.extension_setup
  * @section_end
  * 
  * @section Modules
