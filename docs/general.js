@@ -137,7 +137,7 @@ function GooglePlayServices_SignIn() {}
  * @struct GameJSON
  * @desc This is the GameJSON is a json formatted string representing a game and its associated metadata.
  * @member {boolean} areSnapshotsEnabled Whether or not this game supports snapshots.
- * @member {number} achievementTotalCount The number of achievements registered for this game.
+ * @member {real} achievementTotalCount The number of achievements registered for this game.
  * @member {string} applicationId The application ID for this game.
  * @member {string} description The description of this game.
  * @member {string} developerName The name of the developer of this game.
@@ -145,7 +145,7 @@ function GooglePlayServices_SignIn() {}
  * @member {string} [featuredImageUri] An image URI that can be used to load the game's featured (banner) image from Google Play (see ${function.GooglePlayServices_UriToPath}). Not present if the game has no featured image.
  * @member {string} [hiResImageUri] An image URI that can be used to load the game's hi-res image (see ${function.GooglePlayServices_UriToPath}). Not present if the game has no high-res image.
  * @member {string} [iconImageUri] An image URI that can be used to load the game's icon (see ${function.GooglePlayServices_UriToPath}). Not present if the game has no icon image.
- * @member {number} leaderboardCount The number of leaderboards registered for this game.
+ * @member {real} leaderboardCount The number of leaderboards registered for this game.
  * @member {string} primaryCategory The primary category of the game.
  * @member {string} secondaryCategory The secondary category of the game.
  * @member {string} themeColor The theme color for this game.
@@ -171,4 +171,5 @@ function GooglePlayServices_SignIn() {}
  * @desc The following structures are provided as response for some GooglePlayServices API calls:
  * @reference GameJSON
  * @section_end
+ * @module_end
  */

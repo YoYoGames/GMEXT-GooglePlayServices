@@ -7,6 +7,7 @@
  * 
  * @event social
  * @member {string} type The string `"GooglePlayServices_Player_Current"`
+ * @member {real} ind The id of the request this callback refers to.
  * @member {boolean} success Whether or not the function request succeeded
  * @member {string} player The information of the player as a json formatted string of ${struct.PlayerJSON}. This string can be parsed into a struct with the function ${function.json_parse}.
  * @event_end
@@ -56,6 +57,7 @@ function GooglePlayServices_Player_Current() {}
  * 
  * @event social
  * @member {string} type The string `"GooglePlayServices_Player_CurrentID"`
+ * @member {real} ind The id of the request this callback refers to.
  * @member {boolean} success Whether or not the function request succeeded.
  * @member {string} playerID The unique identifier of the current player.
  * @event_end
@@ -86,6 +88,7 @@ function GooglePlayServices_Player_CurrentID() {}
  * 
  * @event social 
  * @member {string} type The string `"GooglePlayServices_PlayerStats_LoadPlayerStats"`.
+ * @member {real} ind The id of the request this callback refers to.
  * @member {boolean} success Whether or not the function request succeeded.
  * @member {real} AverageSessionLength The average session length of the player in minutes.
  * @member {real} DaysSinceLastPlayed The approximate number of days since the player last played.
@@ -156,5 +159,7 @@ function GooglePlayServices_PlayerStats_LoadPlayerStats() {}
  * @desc The following structures are used by the API to expose data to the developer:
  * @reference PlayerJSON
  * @section_end
+ * 
+ * @module_end
  */
 

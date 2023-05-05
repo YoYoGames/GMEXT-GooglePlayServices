@@ -10,6 +10,7 @@
  * 
  * @event social
  * @member {string} type The string `"GooglePlayServices_SavedGames_CommitAndClose"`
+ * @member {real} ind The id of the request this callback refers to.
  * @member {boolean} success Whether or not the function request succeeded.
  * @event_end
  * 
@@ -43,6 +44,7 @@ function GooglePlayServices_SavedGames_CommitAndClose() {}
  * 
  * @event social
  * @member {string} type The string `"GooglePlayServices_SavedGames_CommitAndClose"`
+ * @member {real} ind The id of the request this callback refers to.
  * @member {boolean} success Whether or not the function request succeeded.
  * @member {string} [snapshotMetadata] A json formatted string of ${struct.SnapshotMetadataJSON}. This string can be parsed into a struct with the function json_parse. Only available if the task succeeds.
  * @event_end
@@ -77,6 +79,7 @@ function GooglePlayServices_SavedGames_CommitNew() {}
  * 
  * @event social
  * @member {string} type The string "GooglePlayServices_SavedGames_Delete"
+ * @member {real} ind The id of the request this callback refers to.
  * @member {boolean} success Whether or not the function request succeeded.
  * @event_end
  * 
@@ -107,6 +110,7 @@ function GooglePlayServices_SavedGames_Delete() {}
  * 
  * @event social
  * @member {string} type The string `"GooglePlayServices_SavedGames_DiscardAndClose"`
+ * @member {real} ind The id of the request this callback refers to.
  * @member {boolean} success Whether or not the function request succeeded.
  * @event_end
  * 
@@ -137,6 +141,7 @@ function GooglePlayServices_SavedGames_DiscardAndClose() {}
  * 
  * @event social
  * @member {string} type The string `"GooglePlayServices_SavedGames_Load"`
+ * @member {real} ind The id of the request this callback refers to.
  * @member {boolean} success Whether or not the function request succeeded.
  * @member {string} [snapshots] A json formatted string of an array of ${struct.SnapshotMetadataJSON}. This string can be parsed into a struct with the function json_parse. Only available if the task succeeds.
  * @event_end
@@ -169,6 +174,7 @@ function GooglePlayServices_SavedGames_Load() {}
  * 
  * @event social
  * @member {string} type The string "GooglePlayServices_SavedGames_Open"
+ * @member {real} ind The id of the request this callback refers to.
  * @member {boolean} success Whether or not the function request succeeded.
  * @member {string} [data] The string previously saved to the Google Play Services. Only available if the task succeeds.
  * @event_end
@@ -208,17 +214,20 @@ function GooglePlayServices_SavedGames_Open() {}
  * @event social
  * @desc Triggered whenever an existing slot is selected
  * @member {string} type The string `"GooglePlayServices_SavedGames_ShowSavedGamesUI_OnOpen"`.
+ * @member {real} ind The id of the request this callback refers to.
  * @member {string} [snapshotMetadata] A json formatted string of ${struct.SnapshotMetadataJSON}. This string can be parsed into a struct with the function json_parse.
  * @event_end
  * 
  * @event social
  * @desc Triggered whenever a new slot is created.
  * @member {string} type The string `"GooglePlayServices_SavedGames_ShowSavedGamesUI_OnNew"`.
+ * @member {real} ind The id of the request this callback refers to.
  * @event_end
  * 
  * @event social
  * @desc Triggered when the dialog is closed.
  * @member {string} type The string `"GooglePlayServices_SavedGames_ShowSavedGamesUI_OnClose"`.
+ * @member {real} ind The id of the request this callback refers to.
  * @event_end
  * 
  * @example

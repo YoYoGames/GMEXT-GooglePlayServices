@@ -11,6 +11,7 @@
  * 
  * @event social
  * @member {string} type The string `"GooglePlayServices_Leaderboard_LoadPlayerCenteredScores"`
+ * @member {real} ind The id of the request this callback refers to.
  * @member {string} data A json formatted string of an array of ${struct.LeaderboardEntryJSON}. This string can be parsed into an array with the function ${function.json_parse}.
  * @event_end
  * 
@@ -60,6 +61,7 @@ function GooglePlayServices_Leaderboard_LoadPlayerCenteredScores() {}
  * 
  * @event social
  * @member {string} type The string `"GooglePlayServices_Leaderboard_LoadTopScores"`
+ * @member {real} ind The id of the request this callback refers to.
  * @member {string} data A json formatted string of an array of ${struct.LeaderboardEntryJSON}. This string can be parsed into an array with the function ${function.json_parse}.
  * @event_end
  * 
@@ -134,11 +136,12 @@ function GooglePlayServices_Leaderboard_ShowAll() {}
  * 
  * @event social
  * @member {string} type The string `"GooglePlayServices_Leaderboard_SubmitScore"`
+ * @member {real} ind The id of the request this callback refers to.
  * @member {boolean} success Whether or not the function request succeeded.
  * @member {string} leaderboardId The unique name of the leaderboard.
  * @member {real} score The submitted score.
  * @member {string} scoreTag The tag for the current submission.
- * @member {string} report A json formatted string of ${struct.LearderboardReportJSON}. This string can be parsed into a struct with the function ${function.json_parse}. Only available if the task succeeds.
+ * @member {string} report A json formatted string of ${struct.LeaderboardReportJSON}. This string can be parsed into a struct with the function ${function.json_parse}. Only available if the task succeeds.
  * @event_end
  * 
  * @example
@@ -193,16 +196,16 @@ function GooglePlayServices_Leaderboard_SubmitScore() {}
  */
 
 /**
- * @struct LearderboardReportJSON
+ * @struct LeaderboardReportJSON
  * @desc Represents a leaderboard report and its associated metadata.
- * @member {struct.LearderboardReportEntryJSON} allTime The all time result report.
- * @member {struct.LearderboardReportEntryJSON} weekly The weekly result report.
- * @member {struct.LearderboardReportEntryJSON} daily The daily result report
+ * @member {struct.LeaderboardReportEntryJSON} allTime The all time result report.
+ * @member {struct.LeaderboardReportEntryJSON} weekly The weekly result report.
+ * @member {struct.LeaderboardReportEntryJSON} daily The daily result report
  * @struct_end
  */
 
 /**
- * @struct LearderboardReportEntryJSON
+ * @struct LeaderboardReportEntryJSON
  * @desc Represents a leaderboard report entry.
  * @member {boolean} isNewBest Whether or not this score is a new best.
  * @member {real} score The score submitted to the server.

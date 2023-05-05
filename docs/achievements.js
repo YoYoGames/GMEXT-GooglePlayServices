@@ -8,6 +8,7 @@
  * 
  * @event social
  * @member {string} type The string `"GooglePlayServices_Achievements_GetStatus"`
+ * @member {real} ind The id of the request this callback refers to.
  * @member {string} data A json formatted string of an array of ${struct.AchievementStatusJSON}. This string can be parsed into a struct with the function ${function.json_parse}.
  * @event_end
  * 
@@ -63,6 +64,7 @@ function GooglePlayServices_Achievements_GetStatus() {}
  * 
  * @event social
  * @member {string} type The string `"GooglePlayServices_Achievements_Increment"`
+ * @member {real} ind The id of the request this callback refers to.
  * @member {boolean} success Whether or not the function request succeeded.
  * @member {string} achievement_id The unique name of the achievement
  * @event_end
@@ -92,6 +94,7 @@ function GooglePlayServices_Achievements_Increment() {}
  * 
  * @event social 
  * @member {string} type The string `"GooglePlayServices_Achievements_Reveal"`
+ * @member {real} ind The id of the request this callback refers to.
  * @member {boolean} success Whether or not the function request succeeded.
  * @member {string} achievement_id The unique name of the achievement
  * @event_end
@@ -120,6 +123,7 @@ function GooglePlayServices_Achievements_Reveal() {}
  * 
  * @event social 
  * @member {string} type The string `"GooglePlayServices_Achievements_SetSteps"`
+ * @member {real} ind The id of the request this callback refers to.
  * @member {boolean} success Whether or not the function request succeeded.
  * @member {string} achievement_id The unique name of the achievement
  * @event_end
@@ -162,6 +166,7 @@ function GooglePlayServices_Achievements_Show() {}
  * 
  * @event social 
  * @member {string} type The string `"GooglePlayServices_Achievements_Unlock"`
+ * @member {real} ind The id of the request this callback refers to.
  * @member {boolean} success Whether or not the function request succeeded.
  * @member {string} achievement_id The unique name of the achievement
  * @event_end
@@ -247,5 +252,6 @@ function GooglePlayServices_Achievements_Unlock() {}
  * @reference AchievementStatusJSON
  * @section_end
  * 
+ * @module_end
  */
 
