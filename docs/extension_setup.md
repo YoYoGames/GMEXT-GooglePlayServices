@@ -1,9 +1,5 @@
 @title Extension Setup
 
-<a id="top"></a>
-<!-- Page HTML do not touch -->
-<a /><p align="right">[Back To Top](#top)</p>
-
 # Setup
 
 The Google Play Services extension is to be used alongside your Google Developer account ([web page](https://developers.google.com/)). All the required personal leaderboard ids and achievement ids should be managed from there.
