@@ -76,7 +76,7 @@ function GooglePlayServices_Achievements_GetStatus() {}
  * The code sample above will increment the number of steps for the specified acheivement by 1. The result can be caught inside an ${event.social} as follows:
  * ```gml
  * if(async_load[?"type"] == "GooglePlayServices_Achievements_Increment")
- * if(async_load[?"success")
+ * if(async_load[?"success"])
  * {    
  *     //Done, let's continue
  * }
@@ -106,7 +106,7 @@ function GooglePlayServices_Achievements_Increment() {}
  * The code sample above will set the state of the specified acheivement to revealed. The result can be caught inside an ${event.social} as follows:
  * ```gml
  * if(async_load[?"type"] == "GooglePlayServices_Achievements_Reveal")
- * if(async_load[?"success")
+ * if(async_load[?"success"])
  * {    
  *     //Done, let's continue
  * }
@@ -135,7 +135,7 @@ function GooglePlayServices_Achievements_Reveal() {}
  * The code sample above will set the number of steps for the specified acheivement to 1. The result can be caught inside an ${event.social} as follows:
  * ```gml
  * if(async_load[?"type"] == "GooglePlayServices_Achievements_SetSteps")
- * if(async_load[?"success")
+ * if(async_load[?"success"])
  * {    
  *     //Done, let's continue
  * }
@@ -178,7 +178,7 @@ function GooglePlayServices_Achievements_Show() {}
  * The code sample above will set the state of the specified acheivement to unlocked. The result can be caught inside an ${event.social} as follows:
  * ```gml
  * if(async_load[?"type"] == "GooglePlayServices_Achievements_Unlock")
- * if(async_load[?"success")
+ * if(async_load[?"success"])
  * {    
  *     //Done, let's continue
  * }
