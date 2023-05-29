@@ -1,0 +1,14 @@
+[
+    {
+        "projectFile": "source/GooglePlayServices_gml/GooglePlayServices.yyp",
+        "extensionFile": "source/GooglePlayServices_gml/extensions/googleplayservices/GooglePlayServices.yy",
+        "packageId": "com.yoyogames.googleplayservices",
+        "packageName": "GooglePlayServices Ext",
+        "packageVersion": "2.1.2",
+        "includeFolders": "GooglePlayServices,GooglePlayServices Demo,YoYo Extensions Assets",
+        "includeResources": "Google Play Services Extension.html",
+        "excludeFolders": null,
+        "excludeResources": null,
+        "format": "LTS22"
+    }
+]
