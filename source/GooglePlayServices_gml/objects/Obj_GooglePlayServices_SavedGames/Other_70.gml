@@ -67,7 +67,8 @@ switch(async_load[? "type"])
 			var snapshot = snapshots[i];
 			
 			var ins = instance_create_depth(300, 250 + 85*i, depth, Obj_GooglePlayServices_SavedGames_Slot)
-			ins.coverImageUri = snapshot.coverImageUri;
+			if(variable_struct_exists(snapshot,"coverImageUri"))
+				ins.coverImageUri = snapshot.coverImageUri;
 			ins.uniqueName = snapshot.uniqueName;
 			ins.description = snapshot.description;
 			ins.text = snapshot.description;
