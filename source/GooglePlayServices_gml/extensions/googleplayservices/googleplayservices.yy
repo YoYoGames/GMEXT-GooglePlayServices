@@ -16,7 +16,7 @@
   "date": "2019-02-24T11:17:00",
   "description": "",
   "exportToGame": true,
-  "extensionVersion": "2.1.2",
+  "extensionVersion": "2.1.3",
   "files": [
     {"resourceType":"GMExtensionFile","resourceVersion":"1.0","name":"","constants":[
         {"resourceType":"GMExtensionConstant","resourceVersion":"1.0","name":"Achievement_STATE_HIDDEN","hidden":false,"value":"2",},
