@@ -1047,10 +1047,10 @@ public class YYGooglePlayServices extends RunnerSocial
 		Snapshot snapshot = mapSnapshot.get(name);
 		if (snapshot == null) {
 			int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-			RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_SavedGames_Delete");
+			RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_SavedGames_CommitAndClose");
 			RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
 			RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 0);
-			Log.i("yoyo", "GooglePlayServices_SavedGames_Delete : couldn't find snapshot with name '" + name + "'");
+			Log.i("yoyo", "GooglePlayServices_SavedGames_CommitAndClose : couldn't find snapshot with name '" + name + "'");
 	
 			RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 	
