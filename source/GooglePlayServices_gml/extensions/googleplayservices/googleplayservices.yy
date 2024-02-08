@@ -18,7 +18,7 @@
   "exportToGame": true,
   "extensionVersion": "2.1.3",
   "files": [
-    {"resourceType":"GMExtensionFile","resourceVersion":"1.0","name":"","constants":[
+    {"resourceType":"GMExtensionFile","resourceVersion":"1.0","name":"GooglePlayService.ext","constants":[
         {"resourceType":"GMExtensionConstant","resourceVersion":"1.0","name":"Achievement_STATE_HIDDEN","hidden":false,"value":"2",},
         {"resourceType":"GMExtensionConstant","resourceVersion":"1.0","name":"Achievement_STATE_REVEALED","hidden":false,"value":"1",},
         {"resourceType":"GMExtensionConstant","resourceVersion":"1.0","name":"Achievement_STATE_UNLOCKED","hidden":false,"value":"0",},
