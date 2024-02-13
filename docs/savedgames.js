@@ -226,7 +226,7 @@ function GooglePlayServices_SavedGames_Open() {}
  * 
  * @event social
  * @desc Triggered when the dialog is closed.
- * @member {string} type The string `"GooglePlayServices_SavedGames_ShowSavedGamesUI_OnClose"`.
+ * @member {string} type The string `"GooglePlayServices_SavedGames_ShowSavedGamesUI_OnExit"`.
  * @member {real} ind The id of the request this callback refers to.
  * @event_end
  * 
