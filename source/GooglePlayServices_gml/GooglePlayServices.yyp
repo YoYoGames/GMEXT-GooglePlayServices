@@ -1,43 +1,43 @@
 {
-  "resourceType": "GMProject",
-  "resourceVersion": "1.7",
-  "name": "GooglePlayServices",
-  "AudioGroups": [
-    {"resourceType":"GMAudioGroup","resourceVersion":"1.3","name":"audiogroup_default","targets":-1,},
+  "$GMProject":"",
+  "%Name":"GooglePlayServices",
+  "AudioGroups":[
+    {"$GMAudioGroup":"","%Name":"audiogroup_default","name":"audiogroup_default","resourceType":"GMAudioGroup","resourceVersion":"2.0","targets":-1,},
   ],
-  "configs": {
-    "children": [],
-    "name": "Default",
+  "configs":{
+    "children":[],
+    "name":"Default",
   },
-  "defaultScriptType": 1,
-  "Folders": [
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"GooglePlayServices Demo","folderPath":"folders/GooglePlayServices Demo.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Objects","folderPath":"folders/GooglePlayServices Demo/Objects.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Achievements","folderPath":"folders/GooglePlayServices Demo/Objects/Achievements.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Advanced","folderPath":"folders/GooglePlayServices Demo/Objects/Advanced.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Achievements","folderPath":"folders/GooglePlayServices Demo/Objects/Advanced/Achievements.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Leaderboards","folderPath":"folders/GooglePlayServices Demo/Objects/Advanced/Leaderboards.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Leaderboards","folderPath":"folders/GooglePlayServices Demo/Objects/Leaderboards.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Menu","folderPath":"folders/GooglePlayServices Demo/Objects/Menu.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"SavedGames","folderPath":"folders/GooglePlayServices Demo/Objects/SavedGames.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Rooms","folderPath":"folders/GooglePlayServices Demo/Rooms.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Scripts","folderPath":"folders/GooglePlayServices Demo/Scripts.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Sprites","folderPath":"folders/GooglePlayServices Demo/Sprites.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"GooglePlayServices","folderPath":"folders/GooglePlayServices.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"YoYo Extensions Assets","folderPath":"folders/YoYo Extensions Assets.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Font","folderPath":"folders/YoYo Extensions Assets/Font.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Objects","folderPath":"folders/YoYo Extensions Assets/Objects.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Sprites","folderPath":"folders/YoYo Extensions Assets/Sprites.yy",},
+  "defaultScriptType":1,
+  "Folders":[
+    {"$GMFolder":"","%Name":"GooglePlayServices Demo","folderPath":"folders/GooglePlayServices Demo.yy","name":"GooglePlayServices Demo","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Objects","folderPath":"folders/GooglePlayServices Demo/Objects.yy","name":"Objects","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Achievements","folderPath":"folders/GooglePlayServices Demo/Objects/Achievements.yy","name":"Achievements","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Advanced","folderPath":"folders/GooglePlayServices Demo/Objects/Advanced.yy","name":"Advanced","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Achievements","folderPath":"folders/GooglePlayServices Demo/Objects/Advanced/Achievements.yy","name":"Achievements","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Leaderboards","folderPath":"folders/GooglePlayServices Demo/Objects/Advanced/Leaderboards.yy","name":"Leaderboards","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Leaderboards","folderPath":"folders/GooglePlayServices Demo/Objects/Leaderboards.yy","name":"Leaderboards","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Menu","folderPath":"folders/GooglePlayServices Demo/Objects/Menu.yy","name":"Menu","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"SavedGames","folderPath":"folders/GooglePlayServices Demo/Objects/SavedGames.yy","name":"SavedGames","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Rooms","folderPath":"folders/GooglePlayServices Demo/Rooms.yy","name":"Rooms","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Scripts","folderPath":"folders/GooglePlayServices Demo/Scripts.yy","name":"Scripts","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Sprites","folderPath":"folders/GooglePlayServices Demo/Sprites.yy","name":"Sprites","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"GooglePlayServices","folderPath":"folders/GooglePlayServices.yy","name":"GooglePlayServices","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"YoYo Extensions Assets","folderPath":"folders/YoYo Extensions Assets.yy","name":"YoYo Extensions Assets","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Font","folderPath":"folders/YoYo Extensions Assets/Font.yy","name":"Font","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Objects","folderPath":"folders/YoYo Extensions Assets/Objects.yy","name":"Objects","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Sprites","folderPath":"folders/YoYo Extensions Assets/Sprites.yy","name":"Sprites","resourceType":"GMFolder","resourceVersion":"2.0",},
   ],
-  "IncludedFiles": [
-    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"Google Play Services Extension.html","CopyToMask":0,"filePath":"datafiles",},
+  "IncludedFiles":[
+    {"$GMIncludedFile":"","%Name":"Google Play Services Extension.html","CopyToMask":0,"filePath":"datafiles","name":"Google Play Services Extension.html","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
   ],
-  "isEcma": false,
-  "LibraryEmitters": [],
-  "MetaData": {
-    "IDEVersion": "2023.11.1.129",
+  "isEcma":false,
+  "LibraryEmitters":[],
+  "MetaData":{
+    "IDEVersion":"2024.2.0.132",
   },
-  "resources": [
+  "name":"GooglePlayServices",
+  "resources":[
     {"id":{"name":"Spr_YoYo_textbox","path":"sprites/Spr_YoYo_textbox/Spr_YoYo_textbox.yy",},},
     {"id":{"name":"Obj_GooglePlayServices_GotoLeaderboardsAdvanced","path":"objects/Obj_GooglePlayServices_GotoLeaderboardsAdvanced/Obj_GooglePlayServices_GotoLeaderboardsAdvanced.yy",},},
     {"id":{"name":"GooglePlayServices","path":"extensions/GooglePlayServices/GooglePlayServices.yy",},},
@@ -88,7 +88,9 @@
     {"id":{"name":"Room_GooglePlayServices_Achievements_Advanced","path":"rooms/Room_GooglePlayServices_Achievements_Advanced/Room_GooglePlayServices_Achievements_Advanced.yy",},},
     {"id":{"name":"Room_GooglePlayServices_Leaderboards","path":"rooms/Room_GooglePlayServices_Leaderboards/Room_GooglePlayServices_Leaderboards.yy",},},
   ],
-  "RoomOrderNodes": [
+  "resourceType":"GMProject",
+  "resourceVersion":"2.0",
+  "RoomOrderNodes":[
     {"roomId":{"name":"Room_GooglePlayServices","path":"rooms/Room_GooglePlayServices/Room_GooglePlayServices.yy",},},
     {"roomId":{"name":"Room_GooglePlayServices_SavedGames","path":"rooms/Room_GooglePlayServices_SavedGames/Room_GooglePlayServices_SavedGames.yy",},},
     {"roomId":{"name":"Room_GooglePlayServices_Achievements","path":"rooms/Room_GooglePlayServices_Achievements/Room_GooglePlayServices_Achievements.yy",},},
@@ -96,8 +98,8 @@
     {"roomId":{"name":"Room_GooglePlayServices_Achievements_Advanced","path":"rooms/Room_GooglePlayServices_Achievements_Advanced/Room_GooglePlayServices_Achievements_Advanced.yy",},},
     {"roomId":{"name":"Room_GooglePlayServices_Leaderboards_Advanced","path":"rooms/Room_GooglePlayServices_Leaderboards_Advanced/Room_GooglePlayServices_Leaderboards_Advanced.yy",},},
   ],
-  "templateType": null,
-  "TextureGroups": [
-    {"resourceType":"GMTextureGroup","resourceVersion":"1.3","name":"Default","autocrop":true,"border":2,"compressFormat":"bz2","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":0,"targets":-1,},
+  "templateType":null,
+  "TextureGroups":[
+    {"$GMTextureGroup":"","%Name":"Default","autocrop":true,"border":2,"compressFormat":"bz2","customOptions":"","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":0,"name":"Default","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
   ],
 }

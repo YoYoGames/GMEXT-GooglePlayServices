@@ -1,9 +1,11 @@
 {
-  "resourceType": "GMNotes",
-  "resourceVersion": "1.1",
-  "name": "changelog",
-  "parent": {
-    "name": "GooglePlayServices",
-    "path": "GooglePlayServices.yyp",
+  "$GMNotes":"",
+  "%Name":"changelog",
+  "name":"changelog",
+  "parent":{
+    "name":"GooglePlayServices",
+    "path":"GooglePlayServices.yyp",
   },
+  "resourceType":"GMNotes",
+  "resourceVersion":"2.0",
 }

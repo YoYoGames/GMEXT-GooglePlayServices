@@ -1,5 +1,5 @@
 {
-  "FolderOrderSettings": [
+  "FolderOrderSettings":[
     {"name":"GooglePlayServices Demo","order":2,"path":"folders/GooglePlayServices Demo.yy",},
     {"name":"Achievements","order":3,"path":"folders/GooglePlayServices Demo/Objects/Achievements.yy",},
     {"name":"Advanced","order":7,"path":"folders/GooglePlayServices Demo/Objects/Advanced.yy",},
@@ -17,7 +17,7 @@
     {"name":"Objects","order":2,"path":"folders/YoYo Extensions Assets/Objects.yy",},
     {"name":"Sprites","order":3,"path":"folders/YoYo Extensions Assets/Sprites.yy",},
   ],
-  "ResourceOrderSettings": [
+  "ResourceOrderSettings":[
     {"name":"Spr_YoYo_textbox","order":2,"path":"sprites/Spr_YoYo_textbox/Spr_YoYo_textbox.yy",},
     {"name":"Obj_GooglePlayServices_GotoLeaderboardsAdvanced","order":10,"path":"objects/Obj_GooglePlayServices_GotoLeaderboardsAdvanced/Obj_GooglePlayServices_GotoLeaderboardsAdvanced.yy",},
     {"name":"Sprite_GooglePlayServices_SavedGames_dataObj","order":2,"path":"sprites/Sprite_GooglePlayServices_SavedGames_dataObj/Sprite_GooglePlayServices_SavedGames_dataObj.yy",},
