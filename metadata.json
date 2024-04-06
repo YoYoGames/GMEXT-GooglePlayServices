@@ -1,18 +1,1 @@
-{
-    "gitHubUrl": "https://github.com/YoYoGames/GMEXT-GooglePlayServices",
-    "projectFile": "source/GooglePlayServices_gml/GooglePlayServices.yyp",
-    "projectVersion": "LTS22",
-    "releaseTemplate": "templates/release_body.md",
-    "extensionMetaData": [
-        {
-            "extensionFile": "source/GooglePlayServices_gml/extensions/googleplayservices/GooglePlayServices.yy",
-            "packageId": "com.yoyogames.googleplayservices",
-            "packageName": "GooglePlayServices Ext",
-            "packageVersion": "2.1.3",
-            "packageFormat": "LTS22",
-            "includeFolders": "GooglePlayServices,GooglePlayServices Demo,YoYo Extensions Assets",
-            "includeResources": "Google Play Services Extension.html",
-            "excludeResources": null
-        }
-    ]
-}
+{"gitHubUrl":"https://github.com/YoYoGames/GMEXT-GooglePlayServices","projectFile":"source/GooglePlayServices_gml/GooglePlayServices.yyp","projectVersion":"LTS22","releaseTemplate":"templates/release_body.md","extensionMetaData":[{"extensionFile":"source/GooglePlayServices_gml/extensions/googleplayservices/GooglePlayServices.yy","packageId":"com.yoyogames.googleplayservices","packageName":"GooglePlayServices Ext","packageVersion":"2.1.4","packageFormat":"LTS22","includeFolders":"GooglePlayServices,GooglePlayServices Demo,YoYo Extensions Assets","includeResources":"Google Play Services Extension.html","excludeFolders":null,"excludeResources":null}]}

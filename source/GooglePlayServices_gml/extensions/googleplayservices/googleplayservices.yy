@@ -14,7 +14,7 @@
   "copyToTargets":8,
   "description":"",
   "exportToGame":true,
-  "extensionVersion":"2.1.3",
+  "extensionVersion":"2.1.4",
   "files":[
     {"$GMExtensionFile":"","%Name":"GooglePlayService.ext","constants":[
         {"$GMExtensionConstant":"","%Name":"Achievement_STATE_HIDDEN","hidden":false,"name":"Achievement_STATE_HIDDEN","resourceType":"GMExtensionConstant","resourceVersion":"2.0","value":"2",},
