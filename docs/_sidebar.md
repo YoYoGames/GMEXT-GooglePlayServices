@@ -1,11 +1,15 @@
-* ### [Google Play Services](Home)
-* ### [Guides](#)
-  * ### [Google Setup](google_setup)
-  * ### [Extensions Setup](extension_setup)
-* ### [Modules](#)
-  * ### [General](General)
-  * ### [Player](Player)
-  * ### [Achievements](Achievements)
-  * ### [Leaderboards](Leaderboards)
-  * ### [SavedGames](SavedGames)
-  * ### [Utilities](utilities)
+## [Google Play Services](home)
+
+### Guides
+
+ * ${page.google_setup}
+ * ${page.extension_setup}
+
+### Modules
+
+ * ${module.general}
+ * ${module.player}
+ * ${module.achievements}
+ * ${module.leaderboards}
+ * ${module.savedgames}
+ * ${module.utilities}
