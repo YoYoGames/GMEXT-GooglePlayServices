@@ -127,10 +127,12 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{isAuthenticatedTask.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_SignIn: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_SignIn");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 					return;
 				}
@@ -146,7 +148,9 @@ public class YYGooglePlayServices extends RunnerSocial
 				else 
 				{
 					Exception exception = isAuthenticatedTask.getException();
+					//Log.e("yoyo", "ERROR GooglePlayServices_SignIn: " + exception.getMessage(), exception);
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",exception.getMessage());
 				}
 				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
 			}
@@ -167,10 +171,12 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{isAuthenticatedTask.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_IsAuthenticated: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_IsAuthenticated");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 					return;
 				}
@@ -186,7 +192,9 @@ public class YYGooglePlayServices extends RunnerSocial
 				else 
 				{
 					Exception exception = isAuthenticatedTask.getException();
+					//Log.e("yoyo", "ERROR GooglePlayServices_IsAuthenticated: " + exception.getMessage(), exception);
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",exception.getMessage());
 				}
 				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
 			}
@@ -206,10 +214,12 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{task.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_RequestServerSideAccess: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_RequestServerSideAccess");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 					return;
 				}
@@ -225,7 +235,9 @@ public class YYGooglePlayServices extends RunnerSocial
 				else 
 				{
 					Exception exception = task.getException();
+					//Log.e("yoyo", "ERROR GooglePlayServices_RequestServerSideAccess: " + exception.getMessage(), exception);
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",exception.getMessage());
 				}
 				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
 			}
@@ -304,10 +316,12 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{task.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_Player_Current: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_Player_Current");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 					return;
 				}
@@ -326,7 +340,9 @@ public class YYGooglePlayServices extends RunnerSocial
 				else 
 				{
 					Exception exception = task.getException();
+					//Log.e("yoyo", "ERROR GooglePlayServices_Player_Current: " + exception.getMessage(), exception);
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 0 );
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",exception.getMessage());
 				}
 				
 				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
@@ -348,9 +364,11 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{task.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_Player_CurrentID: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_Player_CurrentID");
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 					return;
 				}
@@ -367,7 +385,9 @@ public class YYGooglePlayServices extends RunnerSocial
 				else 
 				{
 					Exception exception = task.getException();
+					//Log.e("yoyo", "ERROR GooglePlayServices_Player_CurrentID: " + exception.getMessage(), exception);
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",exception.getMessage());
 				}
 				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
 			}
@@ -411,10 +431,12 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{task.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_Achievements_Increment: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_Achievements_Increment");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 					return;
 				}
@@ -431,6 +453,8 @@ public class YYGooglePlayServices extends RunnerSocial
 				else 
 				{
 					Exception exception = task.getException();
+					//Log.e("yoyo", "ERROR GooglePlayServices_Achievements_Increment: " + exception.getMessage(), exception);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",exception.getMessage());
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 0 );
 				}
 				
@@ -452,10 +476,12 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{task.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_Achievements_Reveal: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_Achievements_Reveal");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 					return;
 				}
@@ -473,7 +499,9 @@ public class YYGooglePlayServices extends RunnerSocial
 				else 
 				{
 					Exception exception = task.getException();
+					//Log.e("yoyo", "ERROR GooglePlayServices_Achievements_Reveal: " + exception.getMessage(), exception);
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 0 );
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",exception.getMessage());
 				}
 				
 				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
@@ -494,10 +522,12 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{task.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_Achievements_SetSteps: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_Achievements_SetSteps");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 					return;
 				}
@@ -515,7 +545,10 @@ public class YYGooglePlayServices extends RunnerSocial
 				else 
 				{
 					Exception exception = task.getException();
+					// Log the error
+					//Log.e("yoyo", "ERROR GooglePlayServices_Achievements_SetSteps: " + exception.getMessage(), exception);
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 0 );
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",exception.getMessage());
 				}
 				
 				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
@@ -537,10 +570,12 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{task.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_Achievements_Unlock: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_Achievements_Unlock");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 					return;
 				}
@@ -558,7 +593,9 @@ public class YYGooglePlayServices extends RunnerSocial
 				else 
 				{
 					Exception exception = task.getException();
+					//Log.e("yoyo", "ERROR GooglePlayServices_Achievements_Unlock: " + exception.getMessage(), exception);
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 0 );
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",exception.getMessage());
 				}
 				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 			}
@@ -579,10 +616,12 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{task.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_Achievements_GetStatus: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_Achievements_GetStatus");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 					return;
 				}
@@ -631,10 +670,12 @@ public class YYGooglePlayServices extends RunnerSocial
 				}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_Achievements_GetStatus: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_Achievements_GetStatus");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);					
 				}
 			}
@@ -755,10 +796,12 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{task.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_Leaderboard_SubmitScore: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_Leaderboard_SubmitScore");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 					return;
 				}
@@ -814,7 +857,9 @@ public class YYGooglePlayServices extends RunnerSocial
 				else 
 				{
 					Exception exception = task.getException();
+					//Log.e("yoyo", "ERROR GooglePlayServices_Leaderboard_SubmitScore: " + exception.getMessage(), exception);
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success", 0 );
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",exception.getMessage());
 				}
 				
 				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
@@ -882,10 +927,12 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{task.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_Leaderboard_LoadPlayerCenteredScores: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_Leaderboard_LoadPlayerCenteredScores");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 					return;
 				}
@@ -923,9 +970,11 @@ public class YYGooglePlayServices extends RunnerSocial
 				}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_Leaderboard_LoadPlayerCenteredScores: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_Leaderboard_LoadPlayerCenteredScores" );
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);					
 				}
 			}
@@ -948,10 +997,12 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{task.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_Leaderboard_LoadTopScores: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_Leaderboard_LoadTopScores");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
 					RunnerJNILib.DsMapAddDouble(dsMapIndex,"success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 					return;
 				}
@@ -987,9 +1038,11 @@ public class YYGooglePlayServices extends RunnerSocial
 				}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "ERROR GooglePlayServices_Leaderboard_LoadTopScores: " + e.getMessage(), e);
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_Leaderboard_LoadTopScores" );
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "success",0);
+					RunnerJNILib.DsMapAddString(dsMapIndex,"error",e.getMessage());
 					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);					
 				}
 			}
@@ -1065,7 +1118,7 @@ public class YYGooglePlayServices extends RunnerSocial
 								}
 								catch(Exception e)
 								{
-									Log.e("yoyo", "URI2PATH failed: " +e.getMessage());
+									//Log.e("yoyo", "URI2PATH failed: " +e.getMessage());
 									int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 									RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_UriToPath" );
 									RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
@@ -1077,7 +1130,7 @@ public class YYGooglePlayServices extends RunnerSocial
 					}					
 					catch(Exception e)
 					{
-						Log.e("yoyo", "URI2PATH failed: " + e.getMessage());
+						//Log.e("yoyo", "URI2PATH failed: " + e.getMessage());
 						int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 						RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_UriToPath" );
 						RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", ind );
@@ -1245,6 +1298,7 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{task.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "GooglePlayServices_SavedGames_CommitAndClose: failed to commit and close the saved game - " + e.getMessage());
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_SavedGames_CommitAndClose");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", asyncIndex );
@@ -1289,6 +1343,7 @@ public class YYGooglePlayServices extends RunnerSocial
 					try{task.getResult();}
 					catch(Exception e)
 					{
+						//Log.e("yoyo", "GooglePlayServices_SavedGames_CommitNew: failed to open the saved game - " + e.getMessage());
 						int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 						RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_SavedGames_CommitNew");
 						RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", asyncIndex );
@@ -1358,8 +1413,7 @@ public class YYGooglePlayServices extends RunnerSocial
 								});
 					} else {
 						Exception exception = task.getException();
-						Log.i("yoyo", "GooglePlayServices_SavedGames_CommitNew: task failed or conflict - "
-								+ exception.getMessage());
+						Log.i("yoyo", "GooglePlayServices_SavedGames_CommitNew: task failed or conflict - " + exception.getMessage());
 						RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
 					}
 				});
@@ -1378,6 +1432,7 @@ public class YYGooglePlayServices extends RunnerSocial
 			try{task.getResult();}
 			catch(Exception e)
 			{
+				//Log.e("yoyo", "GooglePlayServices_SavedGames_Load: failed to load saved games - " + e.getMessage());
 				int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 				RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_SavedGames_Load");
 				RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", asyncIndex );
@@ -1426,6 +1481,7 @@ public class YYGooglePlayServices extends RunnerSocial
 			try{task.getResult();}
 			catch(Exception e)
 			{
+				//Log.e("yoyo", "GooglePlayServices_SavedGames_Open: failed to open saved game - " + e.getMessage());
 				int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 				RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_SavedGames_Open");
 				RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", asyncIndex );
@@ -1491,6 +1547,7 @@ public class YYGooglePlayServices extends RunnerSocial
 				try{task.getResult();}
 				catch(Exception e)
 				{
+					//Log.e("yoyo", "GooglePlayServices_SavedGames_Delete : failed to delete saved game - " + e.getMessage());
 					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 					RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_SavedGames_Delete");
 					RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", asyncIndex );
@@ -1545,6 +1602,7 @@ public class YYGooglePlayServices extends RunnerSocial
 					try{task.getResult();}
 					catch(Exception e)
 					{
+						//Log.e("yoyo", "GooglePlayServices_SavedGames_DiscardAndClose : failed to discard and close the saved game - " + e.getMessage());
 						int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 						RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_SavedGames_DiscardAndClose");
 						RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", asyncIndex );
@@ -1587,6 +1645,7 @@ public class YYGooglePlayServices extends RunnerSocial
 			try{task.getResult();}
 			catch(Exception e)
 			{
+				//Log.e("yoyo", "GooglePlayServices_PlayerStats_LoadPlayerStats : failed to query player stats - " + e.getMessage());
 				int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
 				RunnerJNILib.DsMapAddString( dsMapIndex, "type", "GooglePlayServices_PlayerStats_LoadPlayerStats");
 				RunnerJNILib.DsMapAddDouble( dsMapIndex, "ind", asyncIndex );
