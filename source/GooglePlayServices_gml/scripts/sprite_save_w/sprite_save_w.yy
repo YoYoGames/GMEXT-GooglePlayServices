@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"sprite_save_w",
   "isCompatibility":false,
   "isDnD":false,
