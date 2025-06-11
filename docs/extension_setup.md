@@ -2,14 +2,13 @@
 
 # Setup
 
-The Google Play Services extension is to be used alongside your Google Developer account ([web page](https://developers.google.com/)). All the required personal leaderboard ids and achievement ids should be managed from there.
+The Google Play Services extension is to be used alongside your Google Developer account ([web page](https://developers.google.com/)). All the required personal leaderboard IDs and achievement IDs should be managed from there.
 
 > **:warning: IMPORTANT**
 >
->  Before using this extension make sure to correctly set up your Android application following the steps on [this article](https://help.yoyogames.com/hc/en-us/articles/360004274212-Google-Play-Services-How-To-Use-This-In-Your-Games). It's also important to note that the demo provided with extension is a reference demo meaning it cannot be played as is, as it would need our `.keystore` and our Google Services ID which cannot be included with the package.
-<br>
+>  Before using this extension make sure to correctly set up your Android application following the steps listed on the ${page.google_setup} page. It's also important to note that the demo provided with the extension is a reference demo meaning it cannot be played as is, as it would need our `.keystore` and our Google Services ID which cannot be included with the package.
 
-1. The extension setup will require the user to **double click** the extension asset in the asset browser and fill in the information regarding the GooglePlayServices account. <br>
+1. To set up the extension double-click the extension asset in the Asset Browser and fill in the application ID (see [this section of the developer documentation](https://developer.android.com/games/pgs/console/setup#avoid_common_issues) for where to find this): <br>
 
    ![](assets/gps_setup_ext_options.png)
 
