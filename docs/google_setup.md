@@ -19,7 +19,7 @@ The first steps involve creating and setting up an app on Google Play, setting i
 
 [[Note: For your own dev testing we recommend you set up an internal test, as the review times are very quick (typically your app is ready for download via the Play Store app within an hour or two) and the process of getting builds to your testers is more straightforward than the other tracks.]]
 
-[[Note: If you are sharing app bundles or APKs with testers directly through internal app sharing, testers need to have this enabled. See **How authorized testers turn on internal app sharing** on the page [Share app bundles and APKs internally](https://support.google.com/googleplay/android-developer/answer/9844679).
+[[Note: If you are sharing app bundles or APKs with testers directly through internal app sharing, testers need to have this enabled. See **How authorized testers turn on internal app sharing** on the page [Share app bundles and APKs internally](https://support.google.com/googleplay/android-developer/answer/9844679).]]
 
 [[Note: If, during upload, you get an error message saying the release is not compliant with the Google Play 64-bit requirement you should check the `Build for ARM64` game option under [Android Game Options](https://manual.gamemaker.io/monthly/en/Settings/Game_Options/Android.htm) (`Game Options` > `Android` > `Architecture` > `Build for ARM64`). This needs to be checked.]]
 
