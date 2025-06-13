@@ -6,6 +6,7 @@ import com.yoyogames.runner.RunnerJNILib;
 
 import android.os.Bundle;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.app.Activity;
 import android.util.Log;
 import android.content.Intent;
@@ -93,15 +94,15 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	private HashMap<String, Snapshot> mapSnapshot;
 
-	private static WeakReference<Activity> activityRef =
-			new WeakReference<>(RunnerActivity.CurrentActivity);
+	private static WeakReference<Activity> activityRef = new WeakReference<>(RunnerActivity.CurrentActivity);
 
-	private static Activity GetActivity() {            // helper – always call this
+	private static Activity GetActivity() { // helper – always call this
 		return activityRef.get();
 	}
 
 	// update the reference when the Activity is recreated
-	@Override public void onResume() {
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
 		super.onResume();
 		activityRef.clear();
 		activityRef.enqueue();
@@ -263,26 +264,27 @@ public class YYGooglePlayServices extends RunnerSocial {
 	public double GooglePlayServices_Player_Current() {
 		final double ind = getAsyncInd();
 
-		PlayGames.getPlayersClient(GetActivity()).getCurrentPlayer().addOnCompleteListener(new OnCompleteListener<Player>() {
-			@Override
-			public void onComplete(@NonNull Task<Player> task) {
-				int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-				RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_Player_Current");
-				RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", ind);
+		PlayGames.getPlayersClient(GetActivity()).getCurrentPlayer()
+				.addOnCompleteListener(new OnCompleteListener<Player>() {
+					@Override
+					public void onComplete(@NonNull Task<Player> task) {
+						int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
+						RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_Player_Current");
+						RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", ind);
 
-				if (task.isSuccessful()) {
-					Player mPlayer = task.getResult();
-					RunnerJNILib.DsMapAddString(dsMapIndex, "player", PlayerToJSON(mPlayer).toString());
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
-				} else {
-					Exception exception = task.getException();
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 0);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "error", exception.getMessage());
-				}
+						if (task.isSuccessful()) {
+							Player mPlayer = task.getResult();
+							RunnerJNILib.DsMapAddString(dsMapIndex, "player", PlayerToJSON(mPlayer).toString());
+							RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
+						} else {
+							Exception exception = task.getException();
+							RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 0);
+							RunnerJNILib.DsMapAddString(dsMapIndex, "error", exception.getMessage());
+						}
 
-				RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-			}
-		});
+						RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
+					}
+				});
 
 		return (ind);
 	}
@@ -844,7 +846,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 										if (isRequestedDrawable) {
 											Bitmap mBitmap = ((BitmapDrawable) drawable).getBitmap();
 
-											ContextWrapper cw = new ContextWrapper(GetActivity().getApplicationContext());
+											ContextWrapper cw = new ContextWrapper(
+													GetActivity().getApplicationContext());
 											File directory = cw.getDir("profile", Context.MODE_PRIVATE);
 
 											if (!directory.exists())
