@@ -68,39 +68,19 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.ConnectionResult;
 
 public class YYGooglePlayServices extends RunnerSocial {
-	private static final int EVENT_OTHER_SOCIAL = 70;
-
-	private final HashMap<String, Snapshot> snapshotHashMap;
 
 	// Activity handler
-
 	private static Activity GetActivity() {
 		return RunnerActivity.CurrentActivity;
 	}
 
-	// Threading & lifecycle
-
-	private static final ExecutorService executorService = Executors.newCachedThreadPool();
-
-	private static void runBackground(Runnable r) {
-		executorService.execute(r);
-	}
-
-	private static void runMain(Runnable r) {
-		Activity a = GetActivity();
-		if (a != null)
-			a.runOnUiThread(r);
-	}
-
-	private final AtomicInteger asyncInd = new AtomicInteger();
+	// ====================================
+	// Base
+	// ====================================
 
 	public YYGooglePlayServices() {
 		PlayGamesSdk.initialize(GetActivity());
 		snapshotHashMap = new HashMap<>();
-	}
-
-	private int getAsyncInd() {
-		return asyncInd.incrementAndGet();
 	}
 
 	public double GooglePlayServices_IsAvailable() {
@@ -112,19 +92,14 @@ public class YYGooglePlayServices extends RunnerSocial {
 		final double asyncIndex = getAsyncInd();
 		PlayGames.getGamesSignInClient(GetActivity()).signIn()
 				.addOnCompleteListener((Task<AuthenticationResult> task) -> {
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_SignIn");
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
+					GMEventData map = GMEventData.create("GooglePlayServices_SignIn", asyncIndex);
 					if (task.isSuccessful()) {
 						AuthenticationResult result = task.getResult();
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "isAuthenticated",
-								result.isAuthenticated() ? 1 : 0);
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
+						map.put("isAuthenticated", result.isAuthenticated()).success();
 					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
+						map.failure(task.getException());
 					}
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
+					map.send();
 				});
 
 		return asyncIndex;
@@ -134,20 +109,14 @@ public class YYGooglePlayServices extends RunnerSocial {
 		final double asyncIndex = getAsyncInd();
 		PlayGames.getGamesSignInClient(GetActivity()).isAuthenticated()
 				.addOnCompleteListener((Task<AuthenticationResult> task) -> {
-
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_IsAuthenticated");
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
+					GMEventData map = GMEventData.create("GooglePlayServices_IsAuthenticated", asyncIndex);
 					if (task.isSuccessful()) {
 						AuthenticationResult result = task.getResult();
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "isAuthenticated",
-								result.isAuthenticated() ? 1 : 0);
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
+						map.put("isAuthenticated", result.isAuthenticated()).success();
 					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
+						map.failure(task.getException());
 					}
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
+					map.send();
 				});
 		return asyncIndex;
 	}
@@ -156,18 +125,13 @@ public class YYGooglePlayServices extends RunnerSocial {
 		final double asyncIndex = getAsyncInd();
 		PlayGames.getGamesSignInClient(GetActivity()).requestServerSideAccess(serverClientId, forceRefreshToken >= 0.5)
 				.addOnCompleteListener((Task<String> task) -> {
-
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_RequestServerSideAccess");
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
+					GMEventData map = GMEventData.create("GooglePlayServices_RequestServerSideAccess", asyncIndex);
 					if (task.isSuccessful()) {
-						RunnerJNILib.DsMapAddString(dsMapIndex, "authCode", task.getResult());
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
+						map.put("authCode", task.getResult()).success();
 					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
+						map.failure(task.getException());
 					}
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
+					map.send();
 				});
 		return asyncIndex;
 	}
@@ -180,34 +144,25 @@ public class YYGooglePlayServices extends RunnerSocial {
 			case RC_SAVED_GAMES:
 
 				if (data == null) {
-					dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type",
-							"GooglePlayServices_SavedGames_ShowSavedGamesUI_OnExit");
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", uiAsyncId);
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-				} else {
-					if (data.hasExtra(SnapshotsClient.EXTRA_SNAPSHOT_METADATA)) {
-						SnapshotMetadata snapshotMetadata = data
-								.getParcelableExtra(SnapshotsClient.EXTRA_SNAPSHOT_METADATA);
+					GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_ShowSavedGamesUI_OnExit",
+							uiAsyncId);
+					map.send();
+				} else if (data.hasExtra(SnapshotsClient.EXTRA_SNAPSHOT_METADATA)) {
+					SnapshotMetadata snapshotMetadata = data
+							.getParcelableExtra(SnapshotsClient.EXTRA_SNAPSHOT_METADATA);
 
-						if (snapshotMetadata != null) {
-							dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-							RunnerJNILib.DsMapAddString(dsMapIndex, "type",
-									"GooglePlayServices_SavedGames_ShowSavedGamesUI_OnOpen");
-							RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", uiAsyncId);
-							RunnerJNILib.DsMapAddString(dsMapIndex, "snapshotMetadata",
-									SnapshotMetadataToJSON(snapshotMetadata).toString());
-							RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
+					if (snapshotMetadata != null) {
+						GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_ShowSavedGamesUI_OnOpen",
+								uiAsyncId);
+						map.put("snapshotMetadata", snapshotMetadataToJSON(snapshotMetadata));
+						map.send();
 
-							GooglePlayServices_SavedGames_Open(snapshotMetadata.getUniqueName());
-						}
-					} else if (data.hasExtra(SnapshotsClient.EXTRA_SNAPSHOT_NEW)) {
-						dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-						RunnerJNILib.DsMapAddString(dsMapIndex, "type",
-								"GooglePlayServices_SavedGames_ShowSavedGamesUI_OnNew");
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", uiAsyncId);
-						RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
+						GooglePlayServices_SavedGames_Open(snapshotMetadata.getUniqueName());
 					}
+				} else if (data.hasExtra(SnapshotsClient.EXTRA_SNAPSHOT_NEW)) {
+					GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_ShowSavedGamesUI_OnNew",
+							uiAsyncId);
+					map.send();
 				}
 
 				break;
@@ -223,43 +178,34 @@ public class YYGooglePlayServices extends RunnerSocial {
 	// ====================================
 
 	public double GooglePlayServices_Player_Current() {
-
 		final double asyncIndex = getAsyncInd();
-
 		PlayGames.getPlayersClient(GetActivity()).getCurrentPlayer()
 				.addOnCompleteListener((Task<Player> task) -> {
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_Player_Current");
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
+					GMEventData map = GMEventData.create("GooglePlayServices_Player_Current", asyncIndex);
 					if (task.isSuccessful()) {
-						Player mPlayer = task.getResult();
-						RunnerJNILib.DsMapAddString(dsMapIndex, "player", PlayerToJSON(mPlayer).toString());
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
+						Player player = task.getResult();
+						map.put("player", playerToJSON(player)).success();
 					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
+						map.failure(task.getException());
 					}
-
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
+					map.send();
 				});
 
 		return asyncIndex;
 	}
 
 	public void GooglePlayServices_Player_CurrentID() {
+		final double asyncIndex = getAsyncInd();
 		PlayGames.getPlayersClient(GetActivity()).getCurrentPlayerId()
 				.addOnCompleteListener((Task<String> task) -> {
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_Player_CurrentID");
-
+					GMEventData map = GMEventData.create("GooglePlayServices_Player_CurrentID", asyncIndex);
 					if (task.isSuccessful()) {
-						String PlayerID = task.getResult();
-						RunnerJNILib.DsMapAddString(dsMapIndex, "playerID", PlayerID);
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
+						String playerID = task.getResult();
+						map.put("playerID", playerID).success();
 					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
+						map.failure(task.getException());
 					}
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
+					map.send();
 				});
 	}
 
@@ -281,149 +227,93 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	}
 
-	public double GooglePlayServices_Achievements_Increment(final String arch_id, double steps) {
+	public double GooglePlayServices_Achievements_Increment(final String achievementId, double steps) {
 		final double asyncIndex = getAsyncInd();
-		PlayGames.getAchievementsClient(GetActivity()).incrementImmediate(arch_id, (int) steps)
+		PlayGames.getAchievementsClient(GetActivity()).incrementImmediate(achievementId, (int) steps)
 				.addOnCompleteListener((Task<Boolean> task) -> {
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_Achievements_Increment");
-					RunnerJNILib.DsMapAddString(dsMapIndex, "achievement_id", arch_id);
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
+					GMEventData map = GMEventData.create("GooglePlayServices_Achievements_Increment", asyncIndex);
+					map.put("achievement_id", achievementId);
 					if (task.isSuccessful()) {
-						task.getResult();
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
+						map.success();
 					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
+						map.failure(task.getException());
 					}
-
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
+					map.send();
 				});
 		return asyncIndex;
 	}
 
-	public double GooglePlayServices_Achievements_Reveal(final String arch_id) {
+	public double GooglePlayServices_Achievements_Reveal(final String achievementId) {
 		final double asyncIndex = getAsyncInd();
-		PlayGames.getAchievementsClient(GetActivity()).revealImmediate(arch_id)
+		PlayGames.getAchievementsClient(GetActivity()).revealImmediate(achievementId)
 				.addOnCompleteListener((Task<Void> task) -> {
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_Achievements_Reveal");
-					RunnerJNILib.DsMapAddString(dsMapIndex, "achievement_id", arch_id);
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
+					GMEventData map = GMEventData.create("GooglePlayServices_Achievements_Reveal", asyncIndex);
+					map.put("achievement_id", achievementId);
 					if (task.isSuccessful()) {
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
+						map.success();
 					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
+						map.failure(task.getException());
 					}
-
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
+					map.send();
 				});
 		return asyncIndex;
 	}
 
-	public double GooglePlayServices_Achievements_SetSteps(final String arch_id, double steps) {
+	public double GooglePlayServices_Achievements_SetSteps(final String achievementId, double steps) {
 		final double asyncIndex = getAsyncInd();
-		PlayGames.getAchievementsClient(GetActivity()).setStepsImmediate(arch_id, (int) steps)
+		PlayGames.getAchievementsClient(GetActivity()).setStepsImmediate(achievementId, (int) steps)
 				.addOnCompleteListener((Task<Boolean> task) -> {
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_Achievements_SetSteps");
-					RunnerJNILib.DsMapAddString(dsMapIndex, "achievement_id", arch_id);
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
+					GMEventData map = GMEventData.create("GooglePlayServices_Achievements_SetSteps", asyncIndex);
+					map.put("achievement_id", achievementId);
 					if (task.isSuccessful()) {
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
+						map.success();
 					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
+						map.failure(task.getException());
 					}
-
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
+					map.send();
 				});
 		return asyncIndex;
 	}
 
-	public double GooglePlayServices_Achievements_Unlock(final String arch_id) {
+	public double GooglePlayServices_Achievements_Unlock(final String achievementId) {
 		final double asyncIndex = getAsyncInd();
-
-		PlayGames.getAchievementsClient(GetActivity()).unlockImmediate(arch_id)
+		PlayGames.getAchievementsClient(GetActivity()).unlockImmediate(achievementId)
 				.addOnCompleteListener((Task<Void> task) -> {
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_Achievements_Unlock");
-					RunnerJNILib.DsMapAddString(dsMapIndex, "achievement_id", arch_id);
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
+					GMEventData map = GMEventData.create("GooglePlayServices_Achievements_Unlock", asyncIndex);
+					map.put("achievement_id", achievementId);
 					if (task.isSuccessful()) {
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
+						map.success();
 					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
+						map.failure(task.getException());
 					}
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
+					map.send();
 				});
 		return asyncIndex;
 	}
 
-	public double GooglePlayServices_Achievements_GetStatus(double force_reload) {
+	public double GooglePlayServices_Achievements_GetStatus(double forceReload) {
 		final double asyncIndex = getAsyncInd();
-		PlayGames.getAchievementsClient(GetActivity()).load(force_reload >= 0.5)
+		PlayGames.getAchievementsClient(GetActivity()).load(forceReload >= 0.5)
 				.addOnCompleteListener((Task<AnnotatedData<AchievementBuffer>> task) -> {
-
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_Achievements_GetStatus");
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
+					GMEventData map = GMEventData.create("GooglePlayServices_Achievements_GetStatus", asyncIndex);
 					if (task.isSuccessful()) {
-
 						AnnotatedData<AchievementBuffer> annotatedData = task.getResult();
 						AchievementBuffer achievementBuffer = annotatedData.get();
-
 						JSONArray achievementJSON = new JSONArray();
 						if (achievementBuffer != null) {
 
 							for (Achievement achievement : achievementBuffer) {
-								achievementJSON.put(AchievementToJSON(achievement));
+								achievementJSON.put(achievementToJSON(achievement));
 							}
 							achievementBuffer.release();
 						}
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
-						RunnerJNILib.DsMapAddString(dsMapIndex, "data", achievementJSON.toString());
-
+						map.put("data", achievementJSON).success();
 					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
+						map.failure(task.getException());
 					}
-
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
+					map.send();
 				});
 		return asyncIndex;
-	}
-
-	static JSONObject AchievementToJSON(Achievement achievement) {
-
-		JSONObject achievementJSON = new JSONObject();
-
-		try {
-			achievementJSON.put("id", achievement.getAchievementId());
-			achievementJSON.put("description", achievement.getDescription());
-			achievementJSON.put("lastUpdatedTimestamp", (double) achievement.getLastUpdatedTimestamp());
-			achievementJSON.put("name", achievement.getName());
-			if (achievement.getRevealedImageUri() != null)
-				achievementJSON.put("revealedImage", achievement.getRevealedImageUri().toString());
-			achievementJSON.put("state", (double) achievement.getState());
-			achievementJSON.put("typeAchievement", (double) achievement.getType());
-			if (achievement.getUnlockedImageUri() != null)
-				achievementJSON.put("unlockedImage", achievement.getUnlockedImageUri().toString());
-			achievementJSON.put("xpValue", (double) achievement.getXpValue());
-
-			if (achievement.getType() == Achievement.TYPE_INCREMENTAL) {
-				achievementJSON.put("currentSteps", (double) achievement.getCurrentSteps());
-				achievementJSON.put("formattedCurrentSteps", achievement.getFormattedCurrentSteps());
-				achievementJSON.put("formattedTotalSteps", achievement.getFormattedTotalSteps());
-				achievementJSON.put("totalSteps", (double) achievement.getTotalSteps());
-			}
-		} catch (Exception e) {
-			Log.e("yoyo", "AchievementToJSON : failed to create Achievement json object - " + e.getMessage());
-		}
-
-		return achievementJSON;
 	}
 
 	// ====================================
@@ -454,7 +344,524 @@ public class YYGooglePlayServices extends RunnerSocial {
 				});
 	}
 
-	static JSONObject PlayerToJSON(Player player) {
+	public double GooglePlayServices_Leaderboard_SubmitScore(final String leaderboardId, final double score,
+			final String scoreTag) {
+
+		final double asyncIndex = getAsyncInd();
+		PlayGames.getLeaderboardsClient(GetActivity()).submitScoreImmediate(leaderboardId, (long) score, scoreTag)
+				.addOnCompleteListener((Task<ScoreSubmissionData> task) -> {
+					GMEventData map = GMEventData.create("GooglePlayServices_Leaderboard_SubmitScore", asyncIndex);
+					if (task.isSuccessful()) {
+						ScoreSubmissionData result = task.getResult();
+						JSONObject reportJSON = scoreReportToJSON(result);
+						map.put("leaderboardId", leaderboardId).put("score", score).put("scoreTag", scoreTag)
+								.put("report", reportJSON).success();
+					} else {
+						map.failure(task.getException());
+					}
+					map.send();
+				});
+		return asyncIndex;
+	}
+
+	public double GooglePlayServices_Leaderboard_LoadPlayerCenteredScores(String leaderboardId, double span,
+			double leaderboardCollection, double maxResults, double forceReload) {
+		final double asyncIndex = getAsyncInd();
+
+		PlayGames.getLeaderboardsClient(GetActivity())
+				.loadPlayerCenteredScores(leaderboardId, (int) span, (int) leaderboardCollection, (int) maxResults,
+						forceReload >= 0.5)
+				.addOnCompleteListener((Task<AnnotatedData<LeaderboardsClient.LeaderboardScores>> task) -> {
+					GMEventData map = GMEventData.create("GooglePlayServices_Leaderboard_LoadPlayerCenteredScores",
+							asyncIndex);
+					if (task.isSuccessful()) {
+						AnnotatedData<LeaderboardsClient.LeaderboardScores> annotatedData = task.getResult();
+						LeaderboardsClient.LeaderboardScores leaderboardScores = annotatedData.get();
+
+						if (leaderboardScores != null) {
+							LeaderboardScoreBuffer leaderboardScoreBuffer = leaderboardScores.getScores();
+							JSONArray scoresJSON = leaderboardScoreBufferToJSON(leaderboardScoreBuffer);
+							leaderboardScoreBuffer.release(); // avoid memory leaks
+
+							JSONObject leaderboardJSON = leaderboardToJSON(leaderboardScores.getLeaderboard());
+
+							map.put("leaderboard", leaderboardJSON).put("data", scoresJSON).success();
+						}
+					} else {
+						map.failure(task.getException());
+					}
+					map.send();
+				});
+
+		return asyncIndex;
+	}
+
+	public double GooglePlayServices_Leaderboard_LoadTopScores(String leaderboardId, double span,
+			double leaderboardCollection, double maxResults, double forceReload) {
+		final double asyncIndex = getAsyncInd();
+		PlayGames.getLeaderboardsClient(GetActivity())
+				.loadTopScores(leaderboardId, (int) span, (int) leaderboardCollection, (int) maxResults,
+						forceReload >= 0.5)
+				.addOnCompleteListener((Task<AnnotatedData<LeaderboardsClient.LeaderboardScores>> task) -> {
+					GMEventData map = GMEventData.create("GooglePlayServices_Leaderboard_LoadTopScores", asyncIndex);
+					if (task.isSuccessful()) {
+						AnnotatedData<LeaderboardsClient.LeaderboardScores> annotatedData = task.getResult();
+						LeaderboardsClient.LeaderboardScores leaderboardScores = annotatedData.get();
+
+						if (leaderboardScores != null) {
+							LeaderboardScoreBuffer leaderboardScoreBuffer = leaderboardScores.getScores();
+							JSONArray scoresJSON = leaderboardScoreBufferToJSON(leaderboardScoreBuffer);
+							leaderboardScoreBuffer.release(); // avoid memory leaks
+
+							JSONObject leaderboardJSON = leaderboardToJSON(leaderboardScores.getLeaderboard());
+
+							map.put("leaderboard", leaderboardJSON).put("data", scoresJSON).success();
+						}
+					} else {
+						map.failure(task.getException());
+					}
+					map.send();
+				});
+		return asyncIndex;
+	}
+
+	// ====================================
+	// Uri
+	// ====================================
+
+	public double GooglePlayServices_UriToPath(String uriString) {
+		final double asyncIndex = getAsyncInd();
+		GetActivity().runOnUiThread(() -> {
+			Uri uri = Uri.parse(uriString);
+			try {
+				ImageManager mgr = ImageManager.create(GetActivity());
+				mgr.loadImage((uri1, drawable, isRequestedDrawable) -> {
+
+					if (isRequestedDrawable) {
+						runBackground(() -> {
+							try {
+								ContextWrapper cw = new ContextWrapper(
+										Objects.requireNonNull(GetActivity()).getApplicationContext());
+								File dir = cw.getDir("profile", Context.MODE_PRIVATE);
+								if (!dir.exists())
+									// noinspection ResultOfMethodCallIgnored
+									dir.mkdir();
+
+								Bitmap bmp = ((BitmapDrawable) Objects.requireNonNull(drawable)).getBitmap();
+
+								File out = new File(dir, "thumbnail" + asyncIndex + ".png");
+								try (FileOutputStream fos = new FileOutputStream(out)) {
+									bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+								}
+
+								sendUriResult(asyncIndex, true, out.getPath());
+
+							} catch (Exception e) {
+								sendUriResult(asyncIndex, false, null);
+							}
+						});
+					} else {
+						sendUriResult(asyncIndex, false, null);
+					}
+				}, uri);
+			} catch (Exception exception) {
+				GMEventData.create("GooglePlayServices_UriToPath", asyncIndex).failure(exception).send();
+			}
+		});
+		return asyncIndex;
+	}
+
+	private static void sendUriResult(double asyncIndex, boolean ok, @Nullable String path) {
+		runMain(() -> {
+			GMEventData map = GMEventData.create("GooglePlayServices_UriToPath", asyncIndex);
+			if (ok && path != null) {
+				map.put("path", path).success().send();
+			} else {
+				map.failure(null);
+			}
+			map.send();
+		});
+	}
+
+	// ====================================
+	// SavedGames
+	// ====================================
+
+	private static final int RC_SAVED_GAMES = 9009;
+
+	private final HashMap<String, Snapshot> snapshotHashMap;
+	private int uiAsyncId;
+
+	public double GooglePlayServices_SavedGames_ShowSavedGamesUI(String title, double buttonAdd, double buttonDelete,
+			double max) {
+		uiAsyncId = getAsyncInd();
+
+		boolean showAddButton = buttonAdd > 0.5;
+		boolean showDeleteButton = buttonDelete > 0.5;
+		int maxToShow = (int) max;
+
+		SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(GetActivity());
+		snapshotsClient.getSelectSnapshotIntent(title, showAddButton, showDeleteButton, maxToShow)
+				.addOnSuccessListener((Intent intent) -> {
+					try {
+						GetActivity().startActivityForResult(intent, RC_SAVED_GAMES);
+					} catch (Exception e) {
+						Log.e("yoyo", "GooglePlayServices_SavedGames_ShowSavedGamesUI: failed to show save games UI - "
+								+ e.getMessage());
+					}
+				});
+
+		return uiAsyncId;
+	}
+
+	public double GooglePlayServices_SavedGames_CommitAndClose(final String name, final String desc, final String data,
+			final String coverImagePath) {
+
+		final Snapshot snapshot = snapshotHashMap.get(name);
+		if (snapshot == null)
+			return -1;
+
+		final double asyncIndex = getAsyncInd();
+		runBackground(() -> {
+			try {
+				snapshot.getSnapshotContents().writeBytes(data.getBytes(StandardCharsets.UTF_8));
+				SnapshotMetadataChange.Builder b = new SnapshotMetadataChange.Builder();
+				fillMetadata(b, desc, coverImagePath);
+
+				runMain(() -> commitSnapshot(snapshot, b.build(), "GooglePlayServices_SavedGames_CommitAndClose",
+						asyncIndex));
+
+			} catch (Exception ex) {
+				runMain(() -> {
+					GMEventData.create("GooglePlayServices_SavedGames_CommitAndClose", asyncIndex)
+							.failure(ex)
+							.send();
+				});
+			}
+		});
+
+		return asyncIndex;
+	}
+
+	public double GooglePlayServices_SavedGames_CommitNew(final String name, final String desc, final String data,
+			final String coverImagePath) {
+		final double asyncIndex = getAsyncInd();
+		Activity act = GetActivity();
+		PlayGames.getSnapshotsClient(act).open(name, /* create */ true, /* conflict policy */ 1)
+				.addOnCompleteListener(act,
+						(Task<DataOrConflict<Snapshot>> openTask) -> {
+							GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_CommitNew", asyncIndex);
+							if (!openTask.isSuccessful()) {
+								map.failure(openTask.getException()).send();
+								return;
+							}
+
+							DataOrConflict<Snapshot> dc = openTask.getResult();
+							if (dc.isConflict()) {
+								map.put("success", false).put("error", "Snapshot conflict").send();
+								return;
+							}
+
+							final Snapshot snapshot = dc.getData();
+							if (snapshot == null) { // should never happen, but be safe
+								map.failure(null).send();
+								return;
+							}
+
+							snapshotHashMap.put(snapshot.getMetadata().getUniqueName(), snapshot);
+
+							/* heavy write -> background */
+							runBackground(() -> {
+								try {
+									snapshot.getSnapshotContents().writeBytes(data.getBytes(StandardCharsets.UTF_8));
+
+									SnapshotMetadataChange.Builder b = new SnapshotMetadataChange.Builder();
+									fillMetadata(b, desc, coverImagePath);
+
+									runMain(() -> commitSnapshot(snapshot, b.build(),
+											"GooglePlayServices_SavedGames_CommitNew", asyncIndex));
+
+								} catch (Exception ex) {
+									map.failure(ex).send();
+								}
+							});
+						});
+
+		return asyncIndex;
+	}
+
+	public double GooglePlayServices_SavedGames_Load(final double forceReload) {
+		final double asyncIndex = getAsyncInd();
+		PlayGames.getSnapshotsClient(GetActivity()).load(forceReload >= 0.5)
+				.addOnCompleteListener((Task<AnnotatedData<SnapshotMetadataBuffer>> task) -> {
+					GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_Load", asyncIndex);
+					if (task.isSuccessful()) {
+						AnnotatedData<SnapshotMetadataBuffer> annotatedData = task.getResult();
+						SnapshotMetadataBuffer snapshotMetadataBuffer = annotatedData.get();
+						JSONArray snapshots = new JSONArray();
+						if (snapshotMetadataBuffer != null) {
+							for (SnapshotMetadata snapshotMetadata : snapshotMetadataBuffer) {
+								snapshots.put(snapshotMetadataToJSON(snapshotMetadata));
+							}
+							snapshotMetadataBuffer.release();
+						}
+						map.put("snapshots", snapshots).success();
+					} else {
+						map.failure(task.getException());
+					}
+					map.send();
+				});
+
+		return asyncIndex;
+	}
+
+	public double GooglePlayServices_SavedGames_Open(final String name) {
+		final double asyncIndex = getAsyncInd();
+		PlayGames.getSnapshotsClient(GetActivity()).open(name, /* create */ false, /* conflict policy */ 1)
+				.addOnCompleteListener((Task<DataOrConflict<Snapshot>> task) -> {
+					GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_Open", asyncIndex);
+					if (task.isSuccessful()) {
+						DataOrConflict<Snapshot> dataOrConflict = task.getResult();
+
+						if (!dataOrConflict.isConflict()) {
+							Snapshot snapshot = dataOrConflict.getData();
+
+							assert snapshot != null;
+							SnapshotMetadata snapshotMetadata = snapshot.getMetadata();
+							snapshotHashMap.put(snapshotMetadata.getUniqueName(), snapshot);
+							map.put("snapshotMetadata", snapshotMetadataToJSON(snapshotMetadata));
+
+							try {
+								SnapshotContents snapshotContents = snapshot.getSnapshotContents();
+								byte[] dataInBytes = snapshotContents.readFully();
+								String dataString = new String(dataInBytes, StandardCharsets.UTF_8);
+								map.put("data", dataString).success();
+
+							} catch (Exception exception) {
+								map.failure(exception);
+							}
+						} else {
+							map.put("success", false).put("error", "Found conflict while commiting data");
+						}
+					} else {
+						map.failure(task.getException());
+					}
+					map.send();
+				});
+
+		return asyncIndex;
+	}
+
+	public double GooglePlayServices_SavedGames_Delete(final String name) {
+		final Snapshot snapshot = snapshotHashMap.get(name);
+		if (snapshot == null)
+			return -1;
+
+		final double asyncIndex = getAsyncInd();
+		SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(GetActivity());
+		SnapshotMetadata snapshotMetadata = snapshot.getMetadata();
+		snapshotsClient.delete(snapshotMetadata).addOnCompleteListener((Task<String> task) -> {
+			GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_Delete", asyncIndex);
+			if (task.isSuccessful()) {
+				snapshotHashMap.remove(name);
+				map.put("snapshotID", snapshotMetadata.getSnapshotId()).success();
+			} else {
+				map.failure(task.getException());
+			}
+			map.send();
+		});
+
+		return asyncIndex;
+	}
+
+	public double GooglePlayServices_SavedGames_DiscardAndClose(String name) {
+		final Snapshot snapshot = snapshotHashMap.get(name);
+		if (snapshot == null)
+			return -1;
+
+		final double asyncIndex = getAsyncInd();
+		SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(GetActivity());
+		snapshotsClient.discardAndClose(snapshot).addOnCompleteListener((Task<Void> task) -> {
+			GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_DiscardAndClose", asyncIndex);
+			if (task.isSuccessful()) {
+				snapshotHashMap.remove(name);
+				map.success();
+			} else {
+				map.failure(task.getException());
+			}
+			map.send();
+		});
+
+		return asyncIndex;
+	}
+
+	private void fillMetadata(@NonNull SnapshotMetadataChange.Builder b, @NonNull String desc,
+			@NonNull String coverImagePath) {
+
+		if (!desc.isEmpty())
+			b.setDescription(desc);
+
+		if (!coverImagePath.isEmpty()) {
+			File imgFile = new File(GetActivity().getFilesDir(), coverImagePath);
+			if (imgFile.exists()) {
+				Bitmap bmp = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+				if (bmp != null)
+					b.setCoverImage(bmp);
+			}
+		}
+	}
+
+	private void commitSnapshot(@NonNull Snapshot snap, @NonNull SnapshotMetadataChange change,
+			@NonNull String eventType, double asyncIndex) {
+
+		// This might be called in the background so lets be safe
+		Activity act = GetActivity();
+		if (act == null)
+			return;
+
+		PlayGames.getSnapshotsClient(act)
+				.commitAndClose(snap, change)
+				.addOnCompleteListener(act, (Task<SnapshotMetadata> task) -> {
+					GMEventData map = GMEventData.create(eventType, asyncIndex);
+					if (task.isSuccessful()) {
+						snapshotHashMap.remove(snap.getMetadata().getUniqueName());
+						SnapshotMetadata snapshotMetadata = task.getResult();
+						map.put("snapshotMetadata", snapshotMetadataToJSON(snapshotMetadata)).success();
+					} else {
+						map.failure(null);
+					}
+					map.send();
+				});
+	}
+
+	// ====================================
+	// PlayerStats
+	// ====================================
+
+	public double GooglePlayServices_PlayerStats_LoadPlayerStats(double forceReload) {
+		final double asyncIndex = getAsyncInd();
+		boolean shouldForceReload = forceReload >= 0.5;
+
+		PlayGames.getPlayerStatsClient(GetActivity()).loadPlayerStats(shouldForceReload)
+				.addOnCompleteListener((Task<AnnotatedData<PlayerStats>> task) -> {
+					GMEventData map = GMEventData.create("GooglePlayServices_PlayerStats_LoadPlayerStats", asyncIndex);
+					if (task.isSuccessful()) {
+						AnnotatedData<PlayerStats> annotatedData = task.getResult();
+						PlayerStats playerStats = annotatedData.get();
+						if (playerStats != null) {
+							map.put("AverageSessionLength", playerStats.getAverageSessionLength())
+									.put("DaysSinceLastPlayed", playerStats.getDaysSinceLastPlayed())
+									.put("NumberOfPurchases", playerStats.getNumberOfPurchases())
+									.put("NumberOfSessions", playerStats.getNumberOfSessions())
+									.put("SessionPercentile", playerStats.getSessionPercentile())
+									.put("SpendPercentile", playerStats.getSpendPercentile())
+									.success();
+						}
+					} else {
+						map.failure(task.getException());
+					}
+					map.send();
+				});
+
+		return asyncIndex;
+	}
+
+	// ====================================
+	// EventData Builder
+	// ====================================
+
+	static final class GMEventData {
+
+		private static final int EVENT_OTHER_SOCIAL = 70; // same constant
+
+		private final int id;
+
+		private GMEventData(String type, double ind) {
+			id = RunnerJNILib.jCreateDsMap(null, null, null);
+			RunnerJNILib.DsMapAddString(id, "type", type);
+			RunnerJNILib.DsMapAddDouble(id, "ind", ind);
+		}
+
+		/* ---------- Static factory ---------- */
+
+		public static GMEventData create(String type, double ind) {
+			return new GMEventData(type, ind);
+		}
+
+		/* ---------- Fluent setters ---------- */
+
+		GMEventData put(String key, String value) {
+			RunnerJNILib.DsMapAddString(id, key, value);
+			return this;
+		}
+
+		GMEventData put(String key, double value) {
+			RunnerJNILib.DsMapAddDouble(id, key, value);
+			return this;
+		}
+
+		GMEventData put(String key, boolean value) {
+			RunnerJNILib.DsMapAddDouble(id, key, value ? 1 : 0);
+			return this;
+		}
+
+		GMEventData put(String key, JSONObject value) {
+			RunnerJNILib.DsMapAddString(id, key, value.toString());
+			return this;
+		}
+
+		GMEventData put(String key, JSONArray value) {
+			RunnerJNILib.DsMapAddString(id, key, value.toString());
+			return this;
+		}
+
+		GMEventData success() {
+			return put("success", 1);
+		}
+
+		GMEventData failure(@Nullable Exception ex) {
+			put("success", 0);
+			put("error", ex != null ? ex.getLocalizedMessage() : "unknown");
+			if (ex != null)
+				android.util.Log.e("YYGooglePlay", "Task failed", ex);
+			return this;
+		}
+
+		/* ---------- Final dispatch ---------- */
+
+		void send() {
+			RunnerJNILib.CreateAsynEventWithDSMap(id, EVENT_OTHER_SOCIAL);
+		}
+	}
+
+	// ====================================
+	// Async Helpers
+	// ====================================
+
+	private static final ExecutorService executorService = Executors.newCachedThreadPool();
+
+	private final AtomicInteger asyncInd = new AtomicInteger();
+
+	private int getAsyncInd() {
+		return asyncInd.incrementAndGet();
+	}
+
+	private static void runBackground(Runnable r) {
+		executorService.execute(r);
+	}
+
+	private static void runMain(Runnable r) {
+		Activity a = GetActivity();
+		if (a != null)
+			a.runOnUiThread(r);
+	}
+
+	// ====================================
+	// JSON Helpers
+	// ====================================
+
+	@NonNull
+	private static JSONObject playerToJSON(Player player) {
 
 		// https://developers.google.com/android/reference/com/google/android/gms/games/Player
 
@@ -497,279 +904,45 @@ public class YYGooglePlayServices extends RunnerSocial {
 			playJSON.put("hasIconImage", player.hasIconImage());
 
 		} catch (Exception e) {
-			Log.e("yoyo", "PlayerToJSON : failed to create Player json object - " + e.getMessage());
+			Log.e("yoyo", "playerToJSON : failed to create Player json object - " + e.getMessage());
 		}
 
 		return playJSON;
 	}
 
-	public double GooglePlayServices_Leaderboard_SubmitScore(final String leaderboardId, final double score,
-			final String scoreTag) {
+	@NonNull
+	private static JSONObject achievementToJSON(Achievement achievement) {
 
-		final double asyncIndex = getAsyncInd();
-		PlayGames.getLeaderboardsClient(GetActivity()).submitScoreImmediate(leaderboardId, (long) score, scoreTag)
-				.addOnCompleteListener((Task<ScoreSubmissionData> task) -> {
-
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_Leaderboard_SubmitScore");
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
-					if (task.isSuccessful()) {
-
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
-						RunnerJNILib.DsMapAddString(dsMapIndex, "leaderboardId", leaderboardId);
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "score", score);
-						RunnerJNILib.DsMapAddString(dsMapIndex, "scoreTag", scoreTag);
-
-						ScoreSubmissionData result = task.getResult();
-						JSONObject reportJSON = BuildScoreReport(result);
-
-						RunnerJNILib.DsMapAddString(dsMapIndex, "report", reportJSON.toString());
-					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
-					}
-
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-				});
-		return asyncIndex;
-	}
-
-	private static JSONObject BuildScoreReport(ScoreSubmissionData data) {
-		JSONObject reportJSON = new JSONObject();
+		JSONObject achievementJSON = new JSONObject();
 
 		try {
-			AddScoreReportPeriod(reportJSON, "daily", data.getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY));
-			AddScoreReportPeriod(reportJSON, "weekly", data.getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY));
-			AddScoreReportPeriod(reportJSON, "allTime", data.getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME));
-		} catch (Exception e) {
-			Log.e("yoyo", "BuildScoreReport: JSON error", e);
-		}
+			achievementJSON.put("id", achievement.getAchievementId());
+			achievementJSON.put("description", achievement.getDescription());
+			achievementJSON.put("lastUpdatedTimestamp", (double) achievement.getLastUpdatedTimestamp());
+			achievementJSON.put("name", achievement.getName());
+			if (achievement.getRevealedImageUri() != null)
+				achievementJSON.put("revealedImage", achievement.getRevealedImageUri().toString());
+			achievementJSON.put("state", (double) achievement.getState());
+			achievementJSON.put("typeAchievement", (double) achievement.getType());
+			if (achievement.getUnlockedImageUri() != null)
+				achievementJSON.put("unlockedImage", achievement.getUnlockedImageUri().toString());
+			achievementJSON.put("xpValue", (double) achievement.getXpValue());
 
-		return reportJSON;
-	}
-
-	private static void AddScoreReportPeriod(JSONObject root, String label, ScoreSubmissionData.Result r)
-			throws Exception {
-		if (r == null)
-			return;
-
-		JSONObject periodJSON = new JSONObject();
-		periodJSON.put("isNewBest", r.newBest ? 1 : 0);
-		periodJSON.put("score", (double) r.rawScore);
-		periodJSON.put("scoreTag", r.scoreTag);
-		root.put(label, periodJSON);
-	}
-
-	static JSONArray LeaderboardScoreBufferToJSON(LeaderboardScoreBuffer leaderboardScoreBuffer) {
-		// https://developers.google.com/android/reference/com/google/android/gms/games/leaderboard/LeaderboardScore
-		JSONArray scoresJSON = new JSONArray();
-
-		for (LeaderboardScore leaderboardScore : leaderboardScoreBuffer) {
-			scoresJSON.put(LeaderboardScoreToJSON(leaderboardScore));
-		}
-
-		return scoresJSON;
-	}
-
-	static JSONObject LeaderboardScoreToJSON(LeaderboardScore mLeaderboardScore) {
-		// https://developers.google.com/android/reference/com/google/android/gms/games/leaderboard/LeaderboardScore
-		JSONObject leaderboardScoreJSON = new JSONObject();
-
-		try {
-			leaderboardScoreJSON.put("displayRank", mLeaderboardScore.getDisplayRank());
-			leaderboardScoreJSON.put("displayScore", mLeaderboardScore.getDisplayScore());
-			leaderboardScoreJSON.put("rank", (double) mLeaderboardScore.getRank());
-			leaderboardScoreJSON.put("rawScore", (double) mLeaderboardScore.getRawScore());
-
-			Player scoreHolder = mLeaderboardScore.getScoreHolder();
-			if (scoreHolder != null) {
-				leaderboardScoreJSON.put("scoreHolder", PlayerToJSON(scoreHolder));
+			if (achievement.getType() == Achievement.TYPE_INCREMENTAL) {
+				achievementJSON.put("currentSteps", (double) achievement.getCurrentSteps());
+				achievementJSON.put("formattedCurrentSteps", achievement.getFormattedCurrentSteps());
+				achievementJSON.put("formattedTotalSteps", achievement.getFormattedTotalSteps());
+				achievementJSON.put("totalSteps", (double) achievement.getTotalSteps());
 			}
-
-			leaderboardScoreJSON.put("scoreHolderDisplayName", mLeaderboardScore.getScoreHolderDisplayName());
-			leaderboardScoreJSON.put("scoreHolderHiResImageUri",
-					mLeaderboardScore.getScoreHolderHiResImageUri().toString());
-
-			leaderboardScoreJSON.put("scoreHolderIconImageUri",
-					mLeaderboardScore.getScoreHolderIconImageUri().toString());
-
-			leaderboardScoreJSON.put("scoreTag", mLeaderboardScore.getScoreTag());
-			leaderboardScoreJSON.put("timestampMillis", (double) mLeaderboardScore.getTimestampMillis());
-
 		} catch (Exception e) {
-			Log.e("yoyo", "LeaderboardScoreToJSON : failed to create LeaderboardScore json object - " + e.getMessage());
-		}
-		return leaderboardScoreJSON;
-	}
-
-	static JSONObject LeaderboardToJSON(Leaderboard mLeaderboard) {
-		// https://developers.google.com/android/reference/com/google/android/gms/games/leaderboard/Leaderboard
-		JSONObject leaderboardJSON = new JSONObject();
-
-		try {
-			leaderboardJSON.put("displayName", mLeaderboard.getDisplayName());
-			leaderboardJSON.put("iconImageUri", mLeaderboard.getIconImageUri().toString());
-			leaderboardJSON.put("leaderboardId", mLeaderboard.getLeaderboardId());
-			leaderboardJSON.put("scoreOrder", mLeaderboard.getScoreOrder());
-
-		} catch (Exception e) {
-			Log.e("yoyo", "LeaderboardToJSON : failed to create Leaderboard json object - " + e.getMessage());
+			Log.e("yoyo", "achievementToJSON : failed to create Achievement json object - " + e.getMessage());
 		}
 
-		return leaderboardJSON;
+		return achievementJSON;
 	}
-
-	public double GooglePlayServices_Leaderboard_LoadPlayerCenteredScores(String leaderboardId, double span,
-			double leaderboardCollection, double maxResults, double forceReload) {
-		final double asyncIndex = getAsyncInd();
-
-		PlayGames.getLeaderboardsClient(GetActivity())
-				.loadPlayerCenteredScores(leaderboardId, (int) span, (int) leaderboardCollection, (int) maxResults,
-						forceReload >= 0.5)
-				.addOnCompleteListener((Task<AnnotatedData<LeaderboardsClient.LeaderboardScores>> task) -> {
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type",
-							"GooglePlayServices_Leaderboard_LoadPlayerCenteredScores");
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
-					if (task.isSuccessful()) {
-
-						AnnotatedData<LeaderboardsClient.LeaderboardScores> annotatedData = task.getResult();
-						LeaderboardsClient.LeaderboardScores leaderboardScores = annotatedData.get();
-
-						LeaderboardScoreBuffer leaderboardScoreBuffer = Objects.requireNonNull(leaderboardScores)
-								.getScores();
-						JSONArray scoresJSON = LeaderboardScoreBufferToJSON(leaderboardScoreBuffer);
-						leaderboardScoreBuffer.release(); // avoid memory leaks
-
-						JSONObject leaderboardJSON = LeaderboardToJSON(leaderboardScores.getLeaderboard());
-
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
-						RunnerJNILib.DsMapAddString(dsMapIndex, "leaderboard", leaderboardJSON.toString());
-						RunnerJNILib.DsMapAddString(dsMapIndex, "data", scoresJSON.toString());
-
-					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
-					}
-
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-				});
-
-		return asyncIndex;
-	}
-
-	public double GooglePlayServices_Leaderboard_LoadTopScores(String leaderboardId, double span,
-			double leaderboardCollection, double maxResults, double forceReload) {
-		final double asyncIndex = getAsyncInd();
-		PlayGames.getLeaderboardsClient(GetActivity())
-				.loadTopScores(leaderboardId, (int) span, (int) leaderboardCollection, (int) maxResults,
-						forceReload >= 0.5)
-				.addOnCompleteListener((Task<AnnotatedData<LeaderboardsClient.LeaderboardScores>> task) -> {
-
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type",
-							"GooglePlayServices_Leaderboard_LoadTopScores");
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
-					if (task.isSuccessful()) {
-
-						AnnotatedData<LeaderboardsClient.LeaderboardScores> annotatedData = task.getResult();
-						LeaderboardsClient.LeaderboardScores leaderboardScores = annotatedData.get();
-
-						if (leaderboardScores != null) {
-
-							LeaderboardScoreBuffer leaderboardScoreBuffer = leaderboardScores.getScores();
-							JSONArray scoresJSON = LeaderboardScoreBufferToJSON(leaderboardScoreBuffer);
-							leaderboardScoreBuffer.release();
-
-							JSONObject leaderboardJSON = LeaderboardToJSON(leaderboardScores.getLeaderboard());
-
-							RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
-							RunnerJNILib.DsMapAddString(dsMapIndex, "leaderboard", leaderboardJSON.toString());
-							RunnerJNILib.DsMapAddString(dsMapIndex, "data", scoresJSON.toString());
-						}
-
-					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
-					}
-
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-				});
-		return asyncIndex;
-	}
-
-	public double GooglePlayServices_UriToPath(String uriString) {
-		double asyncIndex = getAsyncInd();
-
-		(new Obj_UriToPath()).UriToPath(uriString, asyncIndex);
-
-		return asyncIndex;
-	}
-
-	private static class Obj_UriToPath {
-		public void UriToPath(final String uriString, final double asyncIndex) {
-			GetActivity().runOnUiThread(() -> {
-				Uri uri = Uri.parse(uriString);
-				try {
-					ImageManager mgr = ImageManager.create(GetActivity());
-					mgr.loadImage((uri1, drawable, isRequestedDrawable) -> {
-
-						if (isRequestedDrawable) {
-							runBackground(() -> {
-								try {
-									ContextWrapper cw = new ContextWrapper(
-											Objects.requireNonNull(GetActivity()).getApplicationContext());
-									File dir = cw.getDir("profile", Context.MODE_PRIVATE);
-									if (!dir.exists())
-                                        //noinspection ResultOfMethodCallIgnored
-                                        dir.mkdir();
-
-									Bitmap bmp = ((BitmapDrawable) Objects.requireNonNull(drawable)).getBitmap();
-
-									File out = new File(dir, "thumbnail" + asyncIndex + ".png");
-									try (FileOutputStream fos = new FileOutputStream(out)) {
-										bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
-									}
-
-									sendUriResult(asyncIndex, true, out.getPath());
-
-								} catch (Exception e) {
-									sendUriResult(asyncIndex, false, null);
-								}
-							});
-						} else {
-							sendUriResult(asyncIndex, false, null);
-						}
-					}, uri);
-				} catch (Exception e) {
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_UriToPath");
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 0);
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-				}
-			});
-		}
-	}
-
-	private static void sendUriResult(double asyncIndex, boolean ok, @Nullable String path) {
-		runMain(() -> {
-			int map = RunnerJNILib.jCreateDsMap(null, null, null);
-			RunnerJNILib.DsMapAddString(map, "type", "GooglePlayServices_UriToPath");
-			RunnerJNILib.DsMapAddDouble(map, "ind", asyncIndex);
-			RunnerJNILib.DsMapAddDouble(map, "success", ok ? 1 : 0);
-			if (ok && path != null)
-				RunnerJNILib.DsMapAddString(map, "path", path);
-			RunnerJNILib.CreateAsynEventWithDSMap(map, EVENT_OTHER_SOCIAL);
-		});
-	}
-
-	// ====================================
-	// SavedGames
-	// ====================================
 
 	@NonNull
-	static JSONObject SnapshotMetadataToJSON(SnapshotMetadata snapshotMetadata) {
+	private static JSONObject snapshotMetadataToJSON(SnapshotMetadata snapshotMetadata) {
 		JSONObject snapshotMetadataJSON = new JSONObject();
 
 		try {
@@ -786,10 +959,10 @@ public class YYGooglePlayServices extends RunnerSocial {
 				snapshotMetadataJSON.put("deviceName", deviceName);
 			}
 
-			snapshotMetadataJSON.put("game", GameToJSON(snapshotMetadata.getGame()));
+			snapshotMetadataJSON.put("game", gameToJSON(snapshotMetadata.getGame()));
 			snapshotMetadataJSON.put("hasChangePending", snapshotMetadata.hasChangePending() ? 1 : 0);
 			snapshotMetadataJSON.put("lastModifiedTimestamp", snapshotMetadata.getLastModifiedTimestamp());
-			snapshotMetadataJSON.put("owner", PlayerToJSON(snapshotMetadata.getOwner()));
+			snapshotMetadataJSON.put("owner", playerToJSON(snapshotMetadata.getOwner()));
 			snapshotMetadataJSON.put("playedTime", snapshotMetadata.getPlayedTime());
 			snapshotMetadataJSON.put("progressValue", snapshotMetadata.getProgressValue());
 
@@ -797,14 +970,14 @@ public class YYGooglePlayServices extends RunnerSocial {
 			snapshotMetadataJSON.put("uniqueName", uniqueName);
 
 		} catch (Exception e) {
-			Log.e("yoyo", "SnapshotMetadataToJSON : failed to create SnapshotMetadata json object - " + e.getMessage());
+			Log.e("yoyo", "snapshotMetadataToJSON : failed to create SnapshotMetadata json object - " + e.getMessage());
 		}
 
 		return snapshotMetadataJSON;
 	}
 
 	@NonNull
-	static JSONObject GameToJSON(Game game) {
+	private static JSONObject gameToJSON(Game game) {
 		JSONObject gameJSON = new JSONObject();
 
 		try {
@@ -832,391 +1005,94 @@ public class YYGooglePlayServices extends RunnerSocial {
 			gameJSON.put("themeColor", game.getThemeColor());
 
 		} catch (Exception e) {
-			Log.e("yoyo", "GameToJSON : failed to create Game json object - " + e.getMessage());
+			Log.e("yoyo", "gameToJSON : failed to create Game json object - " + e.getMessage());
 		}
 
 		return gameJSON;
 	}
 
-	private static final int RC_SAVED_GAMES = 9009;
-	private int uiAsyncId;
-
-	public double GooglePlayServices_SavedGames_ShowSavedGamesUI(String title, double buttonAdd, double buttonDelete,
-			double max) {
-		uiAsyncId = getAsyncInd();
-
-		boolean showAddButton = buttonAdd > 0.5;
-		boolean showDeleteButton = buttonDelete > 0.5;
-		int maxToShow = (int) max;
-
-		SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(GetActivity());
-		snapshotsClient.getSelectSnapshotIntent(title, showAddButton, showDeleteButton, maxToShow)
-				.addOnSuccessListener((Intent intent) -> {
-					try {
-						GetActivity().startActivityForResult(intent, RC_SAVED_GAMES);
-					} catch (Exception e) {
-						Log.e("yoyo", "GooglePlayServices_SavedGames_ShowSavedGamesUI: failed to show save games UI - "
-								+ e.getMessage());
-					}
-				});
-
-		return uiAsyncId;
-	}
-
-	/*
-	 * ===========================================================================
-	 * 🔧 Helpers used by both commit methods
-	 * ===========================================================================
-	 */
-
-	private void fillMetadata(@NonNull SnapshotMetadataChange.Builder b,
-			@NonNull String desc,
-			@NonNull String coverImagePath) {
-
-		if (!desc.isEmpty())
-			b.setDescription(desc);
-
-		if (!coverImagePath.isEmpty()) {
-			File imgFile = new File(GetActivity().getFilesDir(), coverImagePath);
-			if (imgFile.exists()) {
-				Bitmap bmp = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-				if (bmp != null)
-					b.setCoverImage(bmp);
-			}
+	@NonNull
+	private static JSONObject scoreReportToJSON(ScoreSubmissionData data) {
+		JSONObject reportJSON = new JSONObject();
+		try {
+			reportPeriodToJSON(reportJSON, "daily", data.getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY));
+			reportPeriodToJSON(reportJSON, "weekly", data.getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY));
+			reportPeriodToJSON(reportJSON, "allTime", data.getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME));
+		} catch (Exception e) {
+			Log.e("yoyo", "scoreReportToJSON: JSON error", e);
 		}
+		return reportJSON;
 	}
 
-	private void commitSnapshot(@NonNull Snapshot snap, @NonNull SnapshotMetadataChange change,
-			@NonNull String gmsEventType, double asyncIndex) {
-
-		// This might be called in the background so lets be safe
-		Activity act = GetActivity();
-		if (act == null)
+	private static void reportPeriodToJSON(JSONObject root, String label, ScoreSubmissionData.Result r)
+			throws Exception {
+		if (r == null)
 			return;
 
-		PlayGames.getSnapshotsClient(act)
-				.commitAndClose(snap, change)
-				.addOnCompleteListener(act, (Task<SnapshotMetadata> t) -> {
-
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", gmsEventType);
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
-					if (t.isSuccessful()) {
-						snapshotHashMap.remove(snap.getMetadata().getUniqueName());
-
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
-						RunnerJNILib.DsMapAddString(
-								dsMapIndex, "snapshotMetadata",
-								SnapshotMetadataToJSON(t.getResult()).toString());
-					} else {
-						addTaskFailureDetails(dsMapIndex, t.getException());
-					}
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-				});
+		JSONObject periodJSON = new JSONObject();
+		periodJSON.put("isNewBest", r.newBest ? 1 : 0);
+		periodJSON.put("score", (double) r.rawScore);
+		periodJSON.put("scoreTag", r.scoreTag);
+		root.put(label, periodJSON);
 	}
 
-	/*
-	 * ===========================================================================
-	 * ✨ 1. Commit *existing* snapshot and close
-	 * ===========================================================================
-	 */
-	public double GooglePlayServices_SavedGames_CommitAndClose(final String name, final String desc, final String data, final String coverImagePath) {
+	@NonNull
+	private static JSONArray leaderboardScoreBufferToJSON(LeaderboardScoreBuffer leaderboardScoreBuffer) {
+		// https://developers.google.com/android/reference/com/google/android/gms/games/leaderboard/LeaderboardScore
+		JSONArray scoresJSON = new JSONArray();
 
-		final Snapshot snapshot = snapshotHashMap.get(name);
-		if (snapshot == null)
-			return -1;
-
-		final double asyncIndex = getAsyncInd();
-
-		runBackground(() -> {
-			try {
-				snapshot.getSnapshotContents()
-						.writeBytes(data.getBytes(StandardCharsets.UTF_8));
-
-				SnapshotMetadataChange.Builder b = new SnapshotMetadataChange.Builder();
-				fillMetadata(b, desc, coverImagePath);
-
-				runMain(() -> commitSnapshot(
-						snapshot, b.build(),
-						"GooglePlayServices_SavedGames_CommitAndClose", asyncIndex));
-
-			} catch (Exception ex) {
-				runMain(() -> {
-					int map = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(map, "type", "GooglePlayServices_SavedGames_CommitAndClose");
-					RunnerJNILib.DsMapAddDouble(map, "ind", asyncIndex);
-					addTaskFailureDetails(map, ex);
-					RunnerJNILib.CreateAsynEventWithDSMap(map, EVENT_OTHER_SOCIAL);
-				});
-			}
-		});
-
-		return asyncIndex;
-	}
-
-	public double GooglePlayServices_SavedGames_CommitNew(final String name, final String desc, final String data,
-			final String coverImagePath) {
-
-		final double asyncIndex = getAsyncInd();
-
-		Activity act = GetActivity();
-		PlayGames.getSnapshotsClient(act)
-				.open(name, /* create */ true, /* conflict policy */ 1)
-				.addOnCompleteListener(act,
-						(Task<DataOrConflict<Snapshot>> openTask) -> {
-
-							int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-							RunnerJNILib.DsMapAddString(dsMapIndex, "type",
-									"GooglePlayServices_SavedGames_CommitNew");
-							RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
-							if (!openTask.isSuccessful()) {
-								addTaskFailureDetails(dsMapIndex, openTask.getException());
-								RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-								return;
-							}
-
-							DataOrConflict<Snapshot> dc = openTask.getResult();
-							if (dc.isConflict()) {
-								RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 0);
-								RunnerJNILib.DsMapAddString(dsMapIndex, "error", "Snapshot conflict");
-								RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-								return;
-							}
-
-							final Snapshot snapshot = dc.getData();
-							if (snapshot == null) { // should never happen, but be safe
-								addTaskFailureDetails(dsMapIndex, null);
-								RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-								return;
-							}
-
-							snapshotHashMap.put(snapshot.getMetadata().getUniqueName(), snapshot);
-
-							/* heavy write -> background */
-							runBackground(() -> {
-								try {
-									snapshot.getSnapshotContents()
-											.writeBytes(data.getBytes(StandardCharsets.UTF_8));
-
-									SnapshotMetadataChange.Builder b = new SnapshotMetadataChange.Builder();
-									fillMetadata(b, desc, coverImagePath);
-
-									runMain(() -> commitSnapshot(
-											snapshot, b.build(),
-											"GooglePlayServices_SavedGames_CommitNew", asyncIndex));
-
-								} catch (Exception ex) {
-									addTaskFailureDetails(dsMapIndex, ex);
-									RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-								}
-							});
-						});
-
-		return asyncIndex;
-	}
-
-	public double GooglePlayServices_SavedGames_Load(final double forceReload) {
-		final double asyncIndex = getAsyncInd();
-		boolean shouldForceReload = forceReload >= 0.5;
-		SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(GetActivity());
-
-		snapshotsClient.load(shouldForceReload)
-				.addOnCompleteListener((Task<AnnotatedData<SnapshotMetadataBuffer>> task) -> {
-
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_SavedGames_Load");
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
-					if (task.isSuccessful()) {
-						AnnotatedData<SnapshotMetadataBuffer> annotatedData = task.getResult();
-						SnapshotMetadataBuffer snapshotMetadataBuffer = annotatedData.get();
-
-						JSONArray snapshots = new JSONArray();
-						if (snapshotMetadataBuffer != null) {
-							for (SnapshotMetadata snapshotMetadata : snapshotMetadataBuffer) {
-								snapshots.put(SnapshotMetadataToJSON(snapshotMetadata));
-							}
-							snapshotMetadataBuffer.release();
-						}
-
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
-						RunnerJNILib.DsMapAddString(dsMapIndex, "snapshots", snapshots.toString());
-					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
-					}
-
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-				});
-
-		return asyncIndex;
-	}
-
-	public double GooglePlayServices_SavedGames_Open(final String name) {
-		final double asyncIndex = getAsyncInd();
-
-		boolean createIfNotFound = false;
-		int conflictPolicy = 1;
-
-		PlayGames.getSnapshotsClient(GetActivity()).open(name, createIfNotFound, conflictPolicy)
-				.addOnCompleteListener((Task<DataOrConflict<Snapshot>> task) -> {
-
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_SavedGames_Open");
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
-					if (task.isSuccessful()) {
-						DataOrConflict<Snapshot> dataOrConflict = task.getResult();
-
-						if (!dataOrConflict.isConflict()) {
-							Snapshot snapshot = dataOrConflict.getData();
-
-							assert snapshot != null;
-							SnapshotMetadata snapshotMetadata = snapshot.getMetadata();
-
-							snapshotHashMap.put(snapshotMetadata.getUniqueName(), snapshot);
-
-							RunnerJNILib.DsMapAddString(dsMapIndex, "snapshotMetadata",
-									SnapshotMetadataToJSON(snapshotMetadata).toString());
-
-							try {
-								SnapshotContents snapshotContents = snapshot.getSnapshotContents();
-								byte[] dataInBytes = snapshotContents.readFully();
-								String dataString = new String(dataInBytes, StandardCharsets.UTF_8);
-
-								RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
-								RunnerJNILib.DsMapAddString(dsMapIndex, "data", dataString);
-
-							} catch (Exception exception) {
-								RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 0);
-								RunnerJNILib.DsMapAddString(dsMapIndex, "error", exception.getMessage());
-							}
-						} else {
-							RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 0);
-							RunnerJNILib.DsMapAddString(dsMapIndex, "error", "Found conflict while commiting data");
-							RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-						}
-					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
-					}
-
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-				});
-
-		return asyncIndex;
-	}
-
-	public double GooglePlayServices_SavedGames_Delete(final String name) {
-
-		final Snapshot snapshot = snapshotHashMap.get(name);
-		if (snapshot == null) {
-			return -1;
+		for (LeaderboardScore leaderboardScore : leaderboardScoreBuffer) {
+			scoresJSON.put(leaderboardScoreToJSON(leaderboardScore));
 		}
 
-		final double asyncIndex = getAsyncInd();
-		SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(GetActivity());
-		SnapshotMetadata snapshotMetadata = snapshot.getMetadata();
-
-		snapshotsClient.delete(snapshotMetadata).addOnCompleteListener((Task<String> task) -> {
-
-			int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-			RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_SavedGames_Delete");
-			RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
-			if (task.isSuccessful()) {
-				snapshotHashMap.remove(name);
-
-				String snapshotID = task.getResult();
-				RunnerJNILib.DsMapAddString(dsMapIndex, "snapshotID", snapshotID);
-				RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
-			} else {
-				addTaskFailureDetails(dsMapIndex, task.getException());
-			}
-
-			RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-		});
-
-		return asyncIndex;
+		return scoresJSON;
 	}
 
-	public double GooglePlayServices_SavedGames_DiscardAndClose(String name) {
+	@NonNull
+	private static JSONObject leaderboardScoreToJSON(LeaderboardScore leaderboardScore) {
+		// https://developers.google.com/android/reference/com/google/android/gms/games/leaderboard/LeaderboardScore
+		JSONObject leaderboardScoreJSON = new JSONObject();
 
-		final Snapshot snapshot = snapshotHashMap.get(name);
-		if (snapshot == null) {
-			return -1;
+		try {
+			leaderboardScoreJSON.put("displayRank", leaderboardScore.getDisplayRank());
+			leaderboardScoreJSON.put("displayScore", leaderboardScore.getDisplayScore());
+			leaderboardScoreJSON.put("rank", (double) leaderboardScore.getRank());
+			leaderboardScoreJSON.put("rawScore", (double) leaderboardScore.getRawScore());
+
+			Player scoreHolder = leaderboardScore.getScoreHolder();
+			if (scoreHolder != null) {
+				leaderboardScoreJSON.put("scoreHolder", playerToJSON(scoreHolder));
+			}
+
+			leaderboardScoreJSON.put("scoreHolderDisplayName", leaderboardScore.getScoreHolderDisplayName());
+			leaderboardScoreJSON.put("scoreHolderHiResImageUri",
+					leaderboardScore.getScoreHolderHiResImageUri().toString());
+
+			leaderboardScoreJSON.put("scoreHolderIconImageUri",
+					leaderboardScore.getScoreHolderIconImageUri().toString());
+
+			leaderboardScoreJSON.put("scoreTag", leaderboardScore.getScoreTag());
+			leaderboardScoreJSON.put("timestampMillis", (double) leaderboardScore.getTimestampMillis());
+
+		} catch (Exception e) {
+			Log.e("yoyo", "leaderboardScoreToJSON : failed to create LeaderboardScore json object - " + e.getMessage());
 		}
-
-		final double asyncIndex = getAsyncInd();
-		SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(GetActivity());
-		snapshotsClient.discardAndClose(snapshot).addOnCompleteListener((Task<Void> task) -> {
-
-			int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-			RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_SavedGames_DiscardAndClose");
-			RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
-			if (task.isSuccessful()) {
-				snapshotHashMap.remove(name);
-
-				RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
-			} else {
-				addTaskFailureDetails(dsMapIndex, task.getException());
-			}
-
-			RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-		});
-
-		return asyncIndex;
+		return leaderboardScoreJSON;
 	}
 
-	// ====================================
-	// PlayerStats
-	// ====================================
+	@NonNull
+	private static JSONObject leaderboardToJSON(Leaderboard leaderboard) {
+		// https://developers.google.com/android/reference/com/google/android/gms/games/leaderboard/Leaderboard
+		JSONObject leaderboardJSON = new JSONObject();
+		try {
+			leaderboardJSON.put("displayName", leaderboard.getDisplayName());
+			leaderboardJSON.put("iconImageUri", leaderboard.getIconImageUri().toString());
+			leaderboardJSON.put("leaderboardId", leaderboard.getLeaderboardId());
+			leaderboardJSON.put("scoreOrder", leaderboard.getScoreOrder());
 
-	public double GooglePlayServices_PlayerStats_LoadPlayerStats(double forceReload) {
-		final double asyncIndex = getAsyncInd();
-		boolean shouldForceReload = forceReload >= 0.5;
-
-		PlayGames.getPlayerStatsClient(GetActivity()).loadPlayerStats(shouldForceReload)
-				.addOnCompleteListener((Task<AnnotatedData<PlayerStats>> task) -> {
-
-					int dsMapIndex = RunnerJNILib.jCreateDsMap(null, null, null);
-					RunnerJNILib.DsMapAddString(dsMapIndex, "type", "GooglePlayServices_PlayerStats_LoadPlayerStats");
-					RunnerJNILib.DsMapAddDouble(dsMapIndex, "ind", asyncIndex);
-
-					if (task.isSuccessful()) {
-						RunnerJNILib.DsMapAddDouble(dsMapIndex, "success", 1);
-
-						AnnotatedData<PlayerStats> annotatedData = task.getResult();
-						PlayerStats playerStats = annotatedData.get();
-						if (playerStats != null) {
-							RunnerJNILib.DsMapAddDouble(dsMapIndex, "AverageSessionLength",
-									playerStats.getAverageSessionLength());
-							RunnerJNILib.DsMapAddDouble(dsMapIndex, "DaysSinceLastPlayed",
-									playerStats.getDaysSinceLastPlayed());
-							RunnerJNILib.DsMapAddDouble(dsMapIndex, "NumberOfPurchases",
-									playerStats.getNumberOfPurchases());
-							RunnerJNILib.DsMapAddDouble(dsMapIndex, "NumberOfSessions",
-									playerStats.getNumberOfSessions());
-							RunnerJNILib.DsMapAddDouble(dsMapIndex, "SessionPercentile",
-									playerStats.getSessionPercentile());
-							RunnerJNILib.DsMapAddDouble(dsMapIndex, "SpendPercentile",
-									playerStats.getSpendPercentile());
-						}
-					} else {
-						addTaskFailureDetails(dsMapIndex, task.getException());
-					}
-
-					RunnerJNILib.CreateAsynEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-				});
-
-		return asyncIndex;
-	}
-
-	private static void addTaskFailureDetails(int map, @Nullable Exception ex) {
-		RunnerJNILib.DsMapAddDouble(map, "success", 0);
-		RunnerJNILib.DsMapAddString(map, "error", ex != null ? ex.getLocalizedMessage() : "unknown");
-		//if (ex != null)
-		//	Log.i("yoyo", "GooglePlayServices :: Task failed", ex);
+		} catch (Exception e) {
+			Log.e("yoyo", "leaderboardToJSON : failed to create Leaderboard json object - " + e.getMessage());
+		}
+		return leaderboardJSON;
 	}
 }
