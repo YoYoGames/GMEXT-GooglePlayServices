@@ -15,6 +15,7 @@ import android.content.ContextWrapper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import android.annotation.SuppressLint;
 
 import java.lang.Exception;
 import java.lang.Void;
@@ -31,6 +32,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -65,6 +67,9 @@ import com.google.android.gms.games.snapshot.Snapshot;
 import com.google.android.gms.games.snapshot.SnapshotContents;
 import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
 import com.google.android.gms.games.snapshot.SnapshotMetadataBuffer;
+
+import com.google.android.gms.games.event.Event;
+import com.google.android.gms.games.event.EventBuffer;
 
 import com.google.android.gms.common.images.ImageManager;
 
@@ -769,6 +774,97 @@ public class YYGooglePlayServices extends RunnerSocial {
 	}
 
 	// ====================================
+	// Events
+	// ====================================
+
+	public double gps_events_increment_event(String eventId, double incrementAmount) {
+		PlayGames.getEventsClient(GetActivity()).increment(eventId, (int) incrementAmount);
+		return 0;
+	}
+
+	public double gps_events_load_events(double forceReload) {
+		final double asyncIndex = getAsyncInd();
+		boolean shouldForceReload = forceReload >= 0.5;
+
+		PlayGames.getEventsClient(GetActivity()).load(shouldForceReload)
+				.addOnCompleteListener((Task<AnnotatedData<EventBuffer>> task) -> {
+					GMEventData map = GMEventData.create("gps_events_load_events", asyncIndex);
+
+					if (task.isSuccessful()) {
+						AnnotatedData<EventBuffer> annotatedData = task.getResult();
+						EventBuffer eventBuffer = annotatedData.get();
+
+						JSONArray events = new JSONArray();
+						if (eventBuffer != null) {
+							for (Event event : eventBuffer) {
+								events.put(eventToJSON(event));
+							}
+							eventBuffer.release();
+						}
+						map.put("events", events);
+
+					} else {
+						map.failure(task.getException());
+					}
+					map.send();
+				});
+		return asyncIndex;
+	}
+
+	public double gps_events_load_by_ids(double forceReload, String eventIds) {
+		final double asyncIndex = getAsyncInd();
+		boolean shouldForceReload = forceReload >= 0.5;
+
+		String[] args = toEventIdArray(eventIds);
+		PlayGames.getEventsClient(GetActivity()).loadByIds(shouldForceReload, args)
+				.addOnCompleteListener((Task<AnnotatedData<EventBuffer>> task) -> {
+					GMEventData map = GMEventData.create("gps_events_load_events", asyncIndex);
+
+					if (task.isSuccessful()) {
+						AnnotatedData<EventBuffer> annotatedData = task.getResult();
+						EventBuffer eventBuffer = annotatedData.get();
+
+						JSONArray events = new JSONArray();
+						if (eventBuffer != null) {
+							for (Event event : eventBuffer) {
+								events.put(eventToJSON(event));
+							}
+							eventBuffer.release();
+						}
+						map.put("events", events);
+
+					} else {
+						map.failure(task.getException());
+					}
+					map.send();
+				});
+
+		return asyncIndex;
+	}
+
+	private static @NonNull String[] toEventIdArray(@NonNull String raw) {
+		raw = raw.trim();
+
+		// Quick check: is it a JSON array?  Must start with '[' and end with ']'
+		if (raw.length() >= 2 && raw.charAt(0) == '[' && raw.charAt(raw.length() - 1) == ']') {
+			try {
+				JSONArray json = new JSONArray(raw);
+				String[] ids = new String[json.length()];
+				for (int i = 0; i < json.length(); i++) {
+					ids[i] = json.getString(i);
+				}
+				// Defensive: fall back to single-ID path if array was empty
+				if (ids.length > 0) return ids;
+			} catch (JSONException ignore) {
+				// fall through – we’ll treat it as a single ID
+			}
+		}
+
+		// Fallback: treat input as a single ID
+		return new String[]{ raw };
+	}
+	
+	// ====================================
 	// EventData Builder
 	// ====================================
 
@@ -1138,5 +1234,25 @@ public class YYGooglePlayServices extends RunnerSocial {
 			Log.e("yoyo", "leaderboardToJSON : failed to create Leaderboard json object - " + e.getMessage());
 		}
 		return leaderboardJSON;
+	}
+
+	@SuppressLint("VisibleForTests")
+    @NonNull
+	private static JSONObject eventToJSON(Event event) {
+		JSONObject eventJSON = new JSONObject();
+		try {
+			eventJSON.put("event_id", event.getEventId());
+			eventJSON.put("description", event.getDescription());
+			eventJSON.put("formatted_value", event.getFormattedValue());
+			eventJSON.put("icon_image_uri", event.getIconImageUri());
+			eventJSON.put("name", event.getName());
+			eventJSON.put("player", event.getPlayer());
+			eventJSON.put("value", event.getValue());
+			eventJSON.put("is_visible", event.isVisible());
+		} catch (Exception e) {
+			Log.e("yoyo", "eventToJSON : failed to create Event json object - " + e.getMessage());
+		}
+
+		return eventJSON;
 	}
 }
