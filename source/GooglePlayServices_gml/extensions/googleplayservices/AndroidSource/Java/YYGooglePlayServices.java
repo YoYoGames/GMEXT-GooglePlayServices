@@ -21,10 +21,14 @@ import java.lang.Void;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONObject;
@@ -475,7 +479,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 		runMain(() -> {
 			GMEventData map = GMEventData.create("GooglePlayServices_UriToPath", asyncIndex);
 			if (ok && path != null) {
-				map.put("path", path).success().send();
+				map.put("path", path).success();
 			} else {
 				map.failure(null);
 			}
@@ -532,11 +536,9 @@ public class YYGooglePlayServices extends RunnerSocial {
 						asyncIndex));
 
 			} catch (Exception ex) {
-				runMain(() -> {
-					GMEventData.create("GooglePlayServices_SavedGames_CommitAndClose", asyncIndex)
-							.failure(ex)
-							.send();
-				});
+				runMain(() -> GMEventData.create("GooglePlayServices_SavedGames_CommitAndClose", asyncIndex)
+						.failure(ex)
+						.send());
 			}
 		});
 
@@ -773,10 +775,21 @@ public class YYGooglePlayServices extends RunnerSocial {
 	static final class GMEventData {
 
 		private static final int EVENT_OTHER_SOCIAL = 70; // same constant
+		private static final String TAG = "yoyo";
 
 		private final int id;
 
+		/** Human-readable for debugging only. */
+		private final double requestId;
+		private final String requestType;
+
+		/** Guard that guarantees the map is sent exactly once. */
+		private final AtomicBoolean dispatched = new AtomicBoolean(false);
+
 		private GMEventData(String type, double ind) {
+			this.requestId = ind;
+			this.requestType = type;
+
 			id = RunnerJNILib.jCreateDsMap(null, null, null);
 			RunnerJNILib.DsMapAddString(id, "type", type);
 			RunnerJNILib.DsMapAddDouble(id, "ind", ind);
@@ -823,14 +836,19 @@ public class YYGooglePlayServices extends RunnerSocial {
 			put("success", 0);
 			put("error", ex != null ? ex.getLocalizedMessage() : "unknown");
 			if (ex != null)
-				android.util.Log.e("YYGooglePlay", "Task failed", ex);
+				Log.e(TAG, "Task failed", ex);
 			return this;
 		}
 
 		/* ---------- Final dispatch ---------- */
 
 		void send() {
-			RunnerJNILib.CreateAsynEventWithDSMap(id, EVENT_OTHER_SOCIAL);
+			if (dispatched.compareAndSet(false, true)) {
+				RunnerJNILib.CreateAsynEventWithDSMap(id, EVENT_OTHER_SOCIAL);
+			} else {
+				Log.w(TAG, "GMEventData for type='" + requestType + "', ind=" + requestId
+						+ " already dispatched--ignored");
+			}
 		}
 	}
 
@@ -976,6 +994,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 		return snapshotMetadataJSON;
 	}
 
+	/** @noinspection ConstantValue*/
 	@NonNull
 	private static JSONObject gameToJSON(Game game) {
 		JSONObject gameJSON = new JSONObject();
@@ -986,22 +1005,36 @@ public class YYGooglePlayServices extends RunnerSocial {
 			gameJSON.put("applicationId", game.getApplicationId());
 			gameJSON.put("description", game.getDescription());
 			gameJSON.put("developerName", game.getDeveloperName());
+			gameJSON.put("displayName", game.getDisplayName());
 
-			String displayName = game.getDisplayName();
-			gameJSON.put("displayName", displayName);
 			Uri featuredImageUri = game.getFeaturedImageUri();
-			gameJSON.put("featuredImageUri", featuredImageUri.toString());
+			if (featuredImageUri != null) {
+				gameJSON.put("featuredImageUri", featuredImageUri.toString());
+			}
 
 			gameJSON.put("gamepadSupport", game.hasGamepadSupport() ? 1 : 0);
 
 			Uri hiResImageUri = game.getHiResImageUri();
-			gameJSON.put("hiResImageUri", hiResImageUri.toString());
+			if (hiResImageUri != null) {
+				gameJSON.put("hiResImageUri", hiResImageUri.toString());
+			}
 			Uri iconImageUri = game.getIconImageUri();
-			gameJSON.put("iconImageUri", iconImageUri.toString());
+			if (iconImageUri != null) {
+				gameJSON.put("iconImageUri", iconImageUri.toString());
+			}
 
 			gameJSON.put("leaderboardCount", game.getLeaderboardCount());
-			gameJSON.put("primaryCategory", game.getPrimaryCategory());
-			gameJSON.put("secondaryCategory", game.getSecondaryCategory());
+
+			String primaryCategory = game.getPrimaryCategory();
+			if (primaryCategory != null) {
+				gameJSON.put("primaryCategory", primaryCategory);
+			}
+
+			String secondaryCategory = game.getSecondaryCategory();
+			if (secondaryCategory != null) {
+				gameJSON.put("secondaryCategory", secondaryCategory);
+			}
+
 			gameJSON.put("themeColor", game.getThemeColor());
 
 		} catch (Exception e) {
@@ -1011,29 +1044,40 @@ public class YYGooglePlayServices extends RunnerSocial {
 		return gameJSON;
 	}
 
-	@NonNull
-	private static JSONObject scoreReportToJSON(ScoreSubmissionData data) {
-		JSONObject reportJSON = new JSONObject();
-		try {
-			reportPeriodToJSON(reportJSON, "daily", data.getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY));
-			reportPeriodToJSON(reportJSON, "weekly", data.getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY));
-			reportPeriodToJSON(reportJSON, "allTime", data.getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME));
-		} catch (Exception e) {
-			Log.e("yoyo", "scoreReportToJSON: JSON error", e);
-		}
-		return reportJSON;
+	private static final Map<Integer, String> TIME_SPANS;
+	static {
+		Map<Integer, String> tmp = new LinkedHashMap<>(3); // keeps insertion order
+		tmp.put(LeaderboardVariant.TIME_SPAN_DAILY, "daily");
+		tmp.put(LeaderboardVariant.TIME_SPAN_WEEKLY, "weekly");
+		tmp.put(LeaderboardVariant.TIME_SPAN_ALL_TIME, "allTime");
+		TIME_SPANS = Collections.unmodifiableMap(tmp);
 	}
 
-	private static void reportPeriodToJSON(JSONObject root, String label, ScoreSubmissionData.Result r)
-			throws Exception {
+	@NonNull
+	private static JSONObject scoreReportToJSON(ScoreSubmissionData data) {
+		JSONObject report = new JSONObject();
+
+		// Iterate once instead of copy/paste-3-times
+		for (Map.Entry<Integer, String> e : TIME_SPANS.entrySet()) {
+			ScoreSubmissionData.Result spanResult = data.getScoreResult(e.getKey());
+			addPeriodJSON(report, e.getValue(), spanResult);
+		}
+		return report;
+	}
+
+	private static void addPeriodJSON(JSONObject root, String label, ScoreSubmissionData.Result r) {
 		if (r == null)
 			return;
 
-		JSONObject periodJSON = new JSONObject();
-		periodJSON.put("isNewBest", r.newBest ? 1 : 0);
-		periodJSON.put("score", (double) r.rawScore);
-		periodJSON.put("scoreTag", r.scoreTag);
-		root.put(label, periodJSON);
+		try {
+			JSONObject periodJSON = new JSONObject();
+			periodJSON.put("isNewBest", r.newBest ? 1 : 0);
+			periodJSON.put("score", (double) r.rawScore);
+			periodJSON.put("scoreTag", r.scoreTag);
+			root.put(label, periodJSON);
+		} catch (Exception e) {
+			Log.e("yoyo", "addPeriodJSON: JSON error", e);
+		}
 	}
 
 	@NonNull
