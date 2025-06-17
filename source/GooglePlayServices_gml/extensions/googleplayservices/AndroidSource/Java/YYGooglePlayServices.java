@@ -9,6 +9,7 @@ import android.util.Log;
 import android.content.Intent;
 import android.net.Uri;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.BitmapFactory;
 import android.content.ContextWrapper;
@@ -19,14 +20,18 @@ import android.annotation.SuppressLint;
 
 import java.lang.Exception;
 import java.lang.Void;
+import java.lang.ref.WeakReference;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -438,58 +443,65 @@ public class YYGooglePlayServices extends RunnerSocial {
 	// Uri
 	// ====================================
 
+	private static final class UriImageListener
+			implements ImageManager.OnImageLoadedListener {
+
+		private static final Map<Double, UriImageListener> liveListeners = new ConcurrentHashMap<>();
+
+		private final double asyncIndex;
+		private final WeakReference<Activity> activityRef; // avoid leaks
+
+		static void register(double ind, Activity act, Uri uri) {
+			UriImageListener l = new UriImageListener(ind, act);
+			liveListeners.put(ind, l); // keep reference
+			ImageManager.create(act).loadImage(l, uri);
+		}
+
+		private UriImageListener(double asyncIndex, Activity act) {
+			this.asyncIndex = asyncIndex;
+			this.activityRef = new WeakReference<>(act);
+		}
+
+		@Override
+		public void onImageLoaded(Uri uri, Drawable drawable, boolean isRequestedDrawable) {
+
+			runBackground(() -> {
+				GMEventData map = GMEventData.create("GooglePlayServices_UriToPath", asyncIndex);
+				if (isRequestedDrawable && drawable instanceof BitmapDrawable) {
+					try {
+						Activity act = Objects.requireNonNull(activityRef.get());
+						Bitmap bmp = ((BitmapDrawable) drawable).getBitmap();
+
+						File out = new File(act.getCacheDir(), "thumbnail" + asyncIndex + ".png");
+						try (FileOutputStream fos = new FileOutputStream(out)) {
+							bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+						}
+						map.put("path", out.getPath()).success();
+					} catch (Exception e) {
+						map.failure(e);
+					}
+				} else {
+					map.failure(null);
+				}
+
+				map.send();
+				liveListeners.remove(asyncIndex); // release reference
+			});
+		}
+	}
+
 	public double GooglePlayServices_UriToPath(String uriString) {
 		final double asyncIndex = getAsyncInd();
-		GetActivity().runOnUiThread(() -> {
-			Uri uri = Uri.parse(uriString);
+		runMain(() -> {
 			try {
-				ImageManager mgr = ImageManager.create(GetActivity());
-				mgr.loadImage((uri1, drawable, isRequestedDrawable) -> {
+				Uri uri = Uri.parse(uriString);
+				UriImageListener.register(asyncIndex, GetActivity(), uri);
 
-					if (isRequestedDrawable) {
-						runBackground(() -> {
-							try {
-								ContextWrapper cw = new ContextWrapper(
-										Objects.requireNonNull(GetActivity()).getApplicationContext());
-								File dir = cw.getDir("profile", Context.MODE_PRIVATE);
-								if (!dir.exists())
-									// noinspection ResultOfMethodCallIgnored
-									dir.mkdir();
-
-								Bitmap bmp = ((BitmapDrawable) Objects.requireNonNull(drawable)).getBitmap();
-
-								File out = new File(dir, "thumbnail" + asyncIndex + ".png");
-								try (FileOutputStream fos = new FileOutputStream(out)) {
-									bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
-								}
-
-								sendUriResult(asyncIndex, true, out.getPath());
-
-							} catch (Exception e) {
-								sendUriResult(asyncIndex, false, null);
-							}
-						});
-					} else {
-						sendUriResult(asyncIndex, false, null);
-					}
-				}, uri);
-			} catch (Exception exception) {
-				GMEventData.create("GooglePlayServices_UriToPath", asyncIndex).failure(exception).send();
+			} catch (Exception ex) {
+				GMEventData.create("GooglePlayServices_UriToPath", asyncIndex).failure(ex).send();
 			}
 		});
 		return asyncIndex;
-	}
-
-	private static void sendUriResult(double asyncIndex, boolean ok, @Nullable String path) {
-		runMain(() -> {
-			GMEventData map = GMEventData.create("GooglePlayServices_UriToPath", asyncIndex);
-			if (ok && path != null) {
-				map.put("path", path).success();
-			} else {
-				map.failure(null);
-			}
-			map.send();
-		});
 	}
 
 	// ====================================
@@ -774,15 +786,15 @@ public class YYGooglePlayServices extends RunnerSocial {
 	}
 
 	// ====================================
-	// Events
+	// Events (not yet connected to the GML side)
 	// ====================================
 
-	public double gps_events_increment_event(String eventId, double incrementAmount) {
+	public double google_play_events_increment_event(String eventId, double incrementAmount) {
 		PlayGames.getEventsClient(GetActivity()).increment(eventId, (int) incrementAmount);
 		return 0;
 	}
 
-	public double gps_events_load_events(double forceReload) {
+	public double google_play_events_load_events(double forceReload) {
 		final double asyncIndex = getAsyncInd();
 		boolean shouldForceReload = forceReload >= 0.5;
 
@@ -811,7 +823,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 		return asyncIndex;
 	}
 
-	public double gps_events_load_by_ids(double forceReload, String eventIds) {
+	public double google_play_events_load_by_ids(double forceReload, String eventIds) {
 		final double asyncIndex = getAsyncInd();
 		boolean shouldForceReload = forceReload >= 0.5;
 
@@ -845,7 +857,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 	private static @NonNull String[] toEventIdArray(@NonNull String raw) {
 		raw = raw.trim();
 
-		// Quick check: is it a JSON array?  Must start with '[' and end with ']'
+		// Quick check: is it a JSON array? Must start with '[' and end with ']'
 		if (raw.length() >= 2 && raw.charAt(0) == '[' && raw.charAt(raw.length() - 1) == ']') {
 			try {
 				JSONArray json = new JSONArray(raw);
@@ -854,16 +866,17 @@ public class YYGooglePlayServices extends RunnerSocial {
 					ids[i] = json.getString(i);
 				}
 				// Defensive: fall back to single-ID path if array was empty
-				if (ids.length > 0) return ids;
+				if (ids.length > 0)
+					return ids;
 			} catch (JSONException ignore) {
 				// fall through – we’ll treat it as a single ID
 			}
 		}
 
 		// Fallback: treat input as a single ID
-		return new String[]{ raw };
+		return new String[] { raw };
 	}
-	
+
 	// ====================================
 	// EventData Builder
 	// ====================================
@@ -1090,7 +1103,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 		return snapshotMetadataJSON;
 	}
 
-	/** @noinspection ConstantValue*/
+	/** @noinspection ConstantValue */
 	@NonNull
 	private static JSONObject gameToJSON(Game game) {
 		JSONObject gameJSON = new JSONObject();
@@ -1237,7 +1250,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 	}
 
 	@SuppressLint("VisibleForTests")
-    @NonNull
+	@NonNull
 	private static JSONObject eventToJSON(Event event) {
 		JSONObject eventJSON = new JSONObject();
 		try {

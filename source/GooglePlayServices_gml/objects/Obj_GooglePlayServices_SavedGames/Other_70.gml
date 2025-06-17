@@ -3,14 +3,14 @@
 switch(async_load[? "type"])
 {
 	// @triggered by the button (+) button on the ShowSavedGamesUI
-	case "GooglePlayServices_SavedGames_ShowSavedGamesUI_OnNew":
+	case GOOGLE_PLAY_EV_SAVEDGAMES_UI_NEW:
 		// At this point we want to create a new slot so we request the user for a new
 		// description name and handle slot creation under the Async Dialog event.
 		dialog_ind = get_string_async("Description: ","Slot #0");
 		break;
 	
 	// @triggered by the button (Select) button on the ShowSavedGamesUI
-	case "GooglePlayServices_SavedGames_ShowSavedGamesUI_OnOpen":
+	case GOOGLE_PLAY_EV_SAVEDGAMES_UI_OPEN:
 		
 		// At point we just requested a slot to be opened.
 		// The selected slot (snapshot) metadata is returned inside the 'snapshotMetadata' key
@@ -25,7 +25,7 @@ switch(async_load[? "type"])
 		break;
 	
 	// @triggered by closing the ShowSavedGamesUI
-	case "GooglePlayServices_SavedGames_ShowSavedGamesUI_OnExit":
+	case GOOGLE_PLAY_EV_SAVEDGAMES_UI_EXIT:
 		// At this point we just closed the ShowSavedGames google play UI.
 		// We use this event to reload all the saves slots to properly display them
 		// since we could have deleted a slot through the 'ShowSavedGamesUI'.
@@ -33,7 +33,7 @@ switch(async_load[? "type"])
 		break;
 	
 	// @triggered by GooglePlayServices_SavedGames_CommitNew()
-	case "GooglePlayServices_SavedGames_CommitNew":
+	case GOOGLE_PLAY_EV_SAVEDGAMES_COMMIT_NEW:
 		
 		// Early exit if the callback "success" flag is not true.
 		if (!async_load[? "success"]) exit;
@@ -45,7 +45,7 @@ switch(async_load[? "type"])
 		break;
 
 	// @triggered by GooglePlayServices_SavedGames_Load()
-	case "GooglePlayServices_SavedGames_Load":
+	case GOOGLE_PLAY_EV_SAVEDGAMES_LOAD:
 		
 		// Early exit if the callback "success" flag is not true.
 		if(!async_load[?"success"]) exit
@@ -81,7 +81,7 @@ switch(async_load[? "type"])
 		break;
 
 	// @triggered by GooglePlayServices_SavedGames_Open()
-	case "GooglePlayServices_SavedGames_Open":
+	case GOOGLE_PLAY_EV_SAVEDGAMES_OPEN:
 		
 		// Early exit if the callback "success" flag is not true.
 		if (!async_load[? "success"])
@@ -124,9 +124,9 @@ switch(async_load[? "type"])
 		break;
 	
 	// @triggered by GooglePlayServices_SavedGames_Delete()
-	case "GooglePlayServices_SavedGames_Delete":
+	case GOOGLE_PLAY_EV_SAVEDGAMES_DELETE:
 	// @triggered by GooglePlayServices_SavedGames_CommitAndClose()
-	case "GooglePlayServices_SavedGames_CommitAndClose":
+	case GOOGLE_PLAY_EV_SAVEDGAMES_COMMIT_CLOSE:
 
 		// Early exit if the callback "success" flag is not true.
 		if(!async_load[? "success"]) exit;
@@ -142,7 +142,7 @@ switch(async_load[? "type"])
 		break;
 	
 	// @triggered by GooglePlayServices_SavedGames_DiscardAndClose()
-	case "GooglePlayServices_SavedGames_DiscardAndClose":
+	case GOOGLE_PLAY_EV_SAVEDGAMES_DISCARD_CLOSE:
 	
 		// Early exit if the callback "success" flag is not true.
 		if (!async_load[? "success"]) exit;

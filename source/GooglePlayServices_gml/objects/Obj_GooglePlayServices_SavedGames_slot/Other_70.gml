@@ -2,7 +2,7 @@
 switch(async_load[?"type"])
 {
 	// @triggered by GooglePlayServices_UriToPath()
-	case "GooglePlayServices_UriToPath":
+	case GOOGLE_PLAY_EV_UTILS_URI_TO_PATH:
 
 		// At this point we received a callback from a UriToPath request.
 		// However we still need to check if the identification matches
