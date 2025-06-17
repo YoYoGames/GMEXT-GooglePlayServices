@@ -619,7 +619,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 							DataOrConflict<Snapshot> dc = openTask.getResult();
 							if (dc.isConflict()) {
-								map.put("success", false).failure("Found conflict while commiting data").send();
+								map.put("success", false).fail("Found conflict while commiting data").send();
 								return;
 							}
 
@@ -702,7 +702,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 								map.failure(exception);
 							}
 						} else {
-							map.put("success", false).failure("Found conflict while commiting data");
+							map.put("success", false).fail("Found conflict while commiting data");
 						}
 					} else {
 						map.failure(task.getException());
@@ -983,7 +983,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 			return put("success", 1);
 		}
 
-		GMEventData failure(@Nullable Exception ex) {
+		GMEventData failure(@Nullable Throwable ex) {
 			put("success", 0);
 			put("error", ex != null ? ex.getLocalizedMessage() : "unknown");
 			if (ex != null)
@@ -991,15 +991,12 @@ public class YYGooglePlayServices extends RunnerSocial {
 			return this;
 		}
 
-		GMEventData failure(String errorMessage) {
-			put("success", 0);
-			put("error", errorMessage);
-			return this;
+		GMEventData fail(String msg) {
+			return failure(new RuntimeException(msg));
 		}
 
-		GMEventData failure() {
-			put("success", 0);
-			return this;
+		GMEventData fail() {
+			return failure(null);
 		}
 
 		/* ---------- Final dispatch ---------- */
