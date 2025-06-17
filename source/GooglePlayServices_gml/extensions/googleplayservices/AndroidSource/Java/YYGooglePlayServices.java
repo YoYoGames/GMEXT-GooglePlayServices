@@ -619,7 +619,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 							DataOrConflict<Snapshot> dc = openTask.getResult();
 							if (dc.isConflict()) {
-								map.put("success", false).put("error", "Snapshot conflict").send();
+								map.put("success", false).failure("Found conflict while commiting data").send();
 								return;
 							}
 
@@ -702,7 +702,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 								map.failure(exception);
 							}
 						} else {
-							map.put("success", false).put("error", "Found conflict while commiting data");
+							map.put("success", false).failure("Found conflict while commiting data");
 						}
 					} else {
 						map.failure(task.getException());
@@ -988,6 +988,17 @@ public class YYGooglePlayServices extends RunnerSocial {
 			put("error", ex != null ? ex.getLocalizedMessage() : "unknown");
 			if (ex != null)
 				Log.e(TAG, "Task failed", ex);
+			return this;
+		}
+
+		GMEventData failure(String errorMessage) {
+			put("success", 0);
+			put("error", errorMessage);
+			return this;
+		}
+
+		GMEventData failure() {
+			put("success", 0);
 			return this;
 		}
 
