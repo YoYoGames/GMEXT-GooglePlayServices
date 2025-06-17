@@ -1,5 +1,5 @@
 
-if(async_load[?"type"] == "GooglePlayServices_Achievements_GetStatus")
+if(async_load[?"type"] == GOOGLE_PLAY_EV_ACHIEVEMENTS_GET_STATUS)
 {
 	var array = json_parse(async_load[?"data"])
 	

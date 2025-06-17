@@ -1,5 +1,5 @@
 
-if(async_load[?"type"] == "GooglePlayServices_PlayerStats_LoadPlayerStats")
+if(async_load[?"type"] == GOOGLE_PLAY_EV_PLAYERSTATS_LOAD)
 if(async_load[?"success"])
 {
 	ds_map_delete(async_load,"success")

@@ -1,8 +1,7 @@
 /// @description Update buttons
-
 switch(async_load[?"type"])
 {	
-	case "GooglePlayServices_IsAuthenticated":
+	case GOOGLE_PLAY_EV_SIGNIN_IS_AUTHENTICATED:
 		
 		if(async_load[?"success"])
 		if(async_load[?"isAuthenticated"])

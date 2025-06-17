@@ -1,5 +1,5 @@
 
-if(async_load[?"type"] == "GooglePlayServices_Leaderboard_LoadPlayerCenteredScores")
+if(async_load[?"type"] == GOOGLE_PLAY_EV_LEADERBOARDS_LOAD_CENTERED_SCORES)
 {
 	var array = json_parse(async_load[?"data"])
 	for(var a = 0 ; a < array_length(array) ; a ++)

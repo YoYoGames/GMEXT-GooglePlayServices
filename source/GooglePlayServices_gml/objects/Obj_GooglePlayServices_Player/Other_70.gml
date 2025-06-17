@@ -1,9 +1,9 @@
 /// @description Update account info
 
-switch(async_load[?"type"])
+switch (async_load[?"type"])
 {
 	// @triggered by GooglePlayServices_StartSignInIntent()
-	case "GooglePlayServices_SignIn":
+	case GOOGLE_PLAY_EV_SIGNIN:
 	
 		// If we succeeded to get the player info
 		if(async_load[?"success"])
@@ -13,7 +13,7 @@ switch(async_load[?"type"])
 		break;
 	
 	// @triggered by GooglePlayServices_Player_Current()
-	case "GooglePlayServices_Player_Current":
+	case GOOGLE_PLAY_EV_PLAYERS_CURRENT:
 	
 		// If we succeeded to get the player info
 		if(async_load[?"success"])
@@ -43,16 +43,8 @@ switch(async_load[?"type"])
 		}
 		break;
 	
-	// @triggered by GooglePlayServices_RevokeAccess()
-	case "GooglePlayServices_RevokeAccess":
-	// @triggered by GooglePlayServices_SignOut()
-	case "GooglePlayServices_SignOut":
-		// We proceed to reset any previously cached information.
-		playerInfoReset();
-		break;
-	
 	// @triggered by GooglePlayServices_UriToPath()
-	case "GooglePlayServices_UriToPath":
+	case GOOGLE_PLAY_EV_UTILS_URI_TO_PATH:
 		
 		// We need to check the id of the request to make sure it matches the current request
 		if(async_load[?"ind"] == UriToPath_request)
