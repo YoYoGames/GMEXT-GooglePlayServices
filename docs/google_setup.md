@@ -36,3 +36,7 @@ The next steps to set up Google Play Services involve setting up Google Play Gam
     - [Leaderboards](https://support.google.com/googleplay/android-developer/answer/2990418#zippy=%2Cleaderboards)
     - [Achievements](https://support.google.com/googleplay/android-developer/answer/2990418#zippy=%2Cachievements)
     - [Saved Games](https://support.google.com/googleplay/android-developer/answer/2990418#zippy=%2Csaved-games)
+
+## Extension Setup
+
+The next thing to do is the ${page.extension_setup}.
