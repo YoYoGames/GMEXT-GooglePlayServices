@@ -3,7 +3,6 @@ package ${YYAndroidPackageName};
 import ${YYAndroidPackageName}.R;
 import com.yoyogames.runner.RunnerJNILib;
 
-import android.content.Context;
 import android.app.Activity;
 import android.util.Log;
 import android.content.Intent;
@@ -12,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.BitmapFactory;
-import android.content.ContextWrapper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,8 +21,6 @@ import java.lang.Void;
 import java.lang.ref.WeakReference;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -453,7 +449,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 		static void register(double ind, Activity act, Uri uri) {
 			UriImageListener l = new UriImageListener(ind, act);
-			liveListeners.put(ind, l); // keep reference
+			liveListeners.put(Double.valueOf(ind), l); // keep reference
 			ImageManager.create(act).loadImage(l, uri);
 		}
 
@@ -463,10 +459,11 @@ public class YYGooglePlayServices extends RunnerSocial {
 		}
 
 		@Override
-		public void onImageLoaded(Uri uri, Drawable drawable, boolean isRequestedDrawable) {
+		public void onImageLoaded(@NonNull Uri uri, Drawable drawable, boolean isRequestedDrawable) {
 
 			runBackground(() -> {
 				GMEventData map = GMEventData.create("GooglePlayServices_UriToPath", asyncIndex);
+
 				if (isRequestedDrawable && drawable instanceof BitmapDrawable) {
 					try {
 						Activity act = Objects.requireNonNull(activityRef.get());
@@ -485,7 +482,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 				}
 
 				map.send();
-				liveListeners.remove(asyncIndex); // release reference
+				liveListeners.remove(Double.valueOf(asyncIndex)); // release reference
 			});
 		}
 	}
@@ -495,7 +492,11 @@ public class YYGooglePlayServices extends RunnerSocial {
 		runMain(() -> {
 			try {
 				Uri uri = Uri.parse(uriString);
-				UriImageListener.register(asyncIndex, GetActivity(), uri);
+				Activity act = GetActivity();
+				if (act == null)
+					throw new IllegalStateException("No Activity");
+
+				UriImageListener.register(asyncIndex, act, uri);
 
 			} catch (Exception ex) {
 				GMEventData.create("GooglePlayServices_UriToPath", asyncIndex).failure(ex).send();
@@ -503,6 +504,47 @@ public class YYGooglePlayServices extends RunnerSocial {
 		});
 		return asyncIndex;
 	}
+
+	/*
+	 * public double GooglePlayServices_UriToPath(String uriString) {
+	 * final double asyncIndex = getAsyncInd();
+	 * GetActivity().runOnUiThread(() -> {
+	 * Uri uri = Uri.parse(uriString);
+	 * try {
+	 * ImageManager mgr = ImageManager.create(GetActivity());
+	 * mgr.loadImage((uri1, drawable, isRequestedDrawable) -> {
+	 * runBackground(() -> {
+	 * GMEventData map = GMEventData.create("GooglePlayServices_UriToPath",
+	 * asyncIndex);
+	 * if (isRequestedDrawable) {
+	 * try {
+	 * Bitmap bmp = ((BitmapDrawable) Objects.requireNonNull(drawable)).getBitmap();
+	 * 
+	 * File out = new File(GetActivity().getCacheDir(), "thumbnail" + asyncIndex +
+	 * ".png");
+	 * try (FileOutputStream fos = new FileOutputStream(out)) {
+	 * bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+	 * }
+	 * map.put("path", out.getPath()).success();
+	 * 
+	 * } catch (Exception e) {
+	 * map.failure(e);
+	 * }
+	 * } else {
+	 * map.failure(null);
+	 * }
+	 * map.send();
+	 * });
+	 * 
+	 * }, uri);
+	 * } catch (Exception exception) {
+	 * GMEventData.create("GooglePlayServices_UriToPath",
+	 * asyncIndex).failure(exception).send();
+	 * }
+	 * });
+	 * return asyncIndex;
+	 * }
+	 */
 
 	// ====================================
 	// SavedGames
@@ -1156,9 +1198,9 @@ public class YYGooglePlayServices extends RunnerSocial {
 	private static final Map<Integer, String> TIME_SPANS;
 	static {
 		Map<Integer, String> tmp = new LinkedHashMap<>(3); // keeps insertion order
-		tmp.put(LeaderboardVariant.TIME_SPAN_DAILY, "daily");
-		tmp.put(LeaderboardVariant.TIME_SPAN_WEEKLY, "weekly");
-		tmp.put(LeaderboardVariant.TIME_SPAN_ALL_TIME, "allTime");
+		tmp.put(Integer.valueOf(LeaderboardVariant.TIME_SPAN_DAILY), "daily");
+		tmp.put(Integer.valueOf(LeaderboardVariant.TIME_SPAN_WEEKLY), "weekly");
+		tmp.put(Integer.valueOf(LeaderboardVariant.TIME_SPAN_ALL_TIME), "allTime");
 		TIME_SPANS = Collections.unmodifiableMap(tmp);
 	}
 
