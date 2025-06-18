@@ -505,47 +505,6 @@ public class YYGooglePlayServices extends RunnerSocial {
 		return asyncIndex;
 	}
 
-	/*
-	 * public double GooglePlayServices_UriToPath(String uriString) {
-	 * final double asyncIndex = getAsyncInd();
-	 * GetActivity().runOnUiThread(() -> {
-	 * Uri uri = Uri.parse(uriString);
-	 * try {
-	 * ImageManager mgr = ImageManager.create(GetActivity());
-	 * mgr.loadImage((uri1, drawable, isRequestedDrawable) -> {
-	 * runBackground(() -> {
-	 * GMEventData map = GMEventData.create("GooglePlayServices_UriToPath",
-	 * asyncIndex);
-	 * if (isRequestedDrawable) {
-	 * try {
-	 * Bitmap bmp = ((BitmapDrawable) Objects.requireNonNull(drawable)).getBitmap();
-	 * 
-	 * File out = new File(GetActivity().getCacheDir(), "thumbnail" + asyncIndex +
-	 * ".png");
-	 * try (FileOutputStream fos = new FileOutputStream(out)) {
-	 * bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
-	 * }
-	 * map.put("path", out.getPath()).success();
-	 * 
-	 * } catch (Exception e) {
-	 * map.failure(e);
-	 * }
-	 * } else {
-	 * map.failure(null);
-	 * }
-	 * map.send();
-	 * });
-	 * 
-	 * }, uri);
-	 * } catch (Exception exception) {
-	 * GMEventData.create("GooglePlayServices_UriToPath",
-	 * asyncIndex).failure(exception).send();
-	 * }
-	 * });
-	 * return asyncIndex;
-	 * }
-	 */
-
 	// ====================================
 	// SavedGames
 	// ====================================
