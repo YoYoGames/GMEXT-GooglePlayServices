@@ -516,8 +516,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 	private final HashMap<String, Snapshot> snapshotHashMap;
 	private int uiAsyncId;
 	
-	private final Snapshot snapshotConflictLocal;
-	private final Snapshot snapshotConflictRemote;
+	private Snapshot snapshotConflictLocal;
+	private Snapshot snapshotConflictRemote;
 
 	public double GooglePlayServices_SavedGames_ShowSavedGamesUI(String title, double buttonAdd, double buttonDelete,
 			double max) {
@@ -572,7 +572,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 			final String coverImagePath) {
 		final double asyncIndex = getAsyncInd();
 		Activity act = GetActivity();
-		PlayGames.getSnapshotsClient(act).open(name, /* create */ true, /* conflict policy */ 1)
+		PlayGames.getSnapshotsClient(act).open(name, /* create */ true, SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
 				.addOnCompleteListener(act,
 						(Task<DataOrConflict<Snapshot>> openTask) -> {
 							GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_CommitNew", asyncIndex);
@@ -582,35 +582,6 @@ public class YYGooglePlayServices extends RunnerSocial {
 							}
 
 							DataOrConflict<Snapshot> dataOrConflict = openTask.getResult();
-							if (dataOrConflict.isConflict()) {
-								map.put("isConflict", true);
-								map.put("conflictId", dataOrConflict.getConflict().getConflictId());
-								
-								Snapshot snapshotConflictLocal = dataOrConflict.getConflict().getConflictingSnapshot();
-								map.put("snapshotMetadataLocal", snapshotMetadataToJSON(snapshotConflictLocal.getMetadata()));
-								try {
-									SnapshotContents snapshotContents = snapshotConflictLocal.getSnapshotContents();
-									byte[] dataInBytes = snapshotContents.readFully();
-									String dataString = new String(dataInBytes, StandardCharsets.UTF_8);
-									map.put("dataLocal", dataString).success();
-								} catch (Exception exception) {
-									map.failure(exception);
-								}
-								
-								Snapshot snapshotConflictRemote = dataOrConflict.getConflict().getSnapshot();
-								map.put("snapshotMetadataRemote", snapshotMetadataToJSON(snapshotConflictRemote.getMetadata()));
-								try {
-									SnapshotContents snapshotContents = snapshotConflictRemote.getSnapshotContents();
-									byte[] dataInBytes = snapshotContents.readFully();
-									String dataString = new String(dataInBytes, StandardCharsets.UTF_8);
-									map.put("dataRemote", dataString).success();
-								} catch (Exception exception) {
-									map.failure(exception);
-								}
-															
-								map.put("success", false).fail("Found conflict while commiting data").send();
-								return;
-							}
 
 							final Snapshot snapshot = dataOrConflict.getData();
 							if (snapshot == null) { // should never happen, but be safe
@@ -667,9 +638,43 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	public double GooglePlayServices_SavedGames_Open(final String name) {
 		final double asyncIndex = getAsyncInd();
-		PlayGames.getSnapshotsClient(GetActivity()).open(name, /* create */ false, /* conflict policy */ 1)
+		PlayGames.getSnapshotsClient(GetActivity()).open(name, /* create */ false, SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
 				.addOnCompleteListener((Task<DataOrConflict<Snapshot>> task) -> {
-					GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_Open", asyncIndex);
+					GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_Open_Conflict", asyncIndex);
+					if (task.isSuccessful()) {
+						DataOrConflict<Snapshot> dataOrConflict = task.getResult();
+
+						Snapshot snapshot = dataOrConflict.getData();
+
+						assert snapshot != null;
+						SnapshotMetadata snapshotMetadata = snapshot.getMetadata();
+						snapshotHashMap.put(snapshotMetadata.getUniqueName(), snapshot);
+						map.put("snapshotMetadata", snapshotMetadataToJSON(snapshotMetadata));
+
+						try {
+							SnapshotContents snapshotContents = snapshot.getSnapshotContents();
+							byte[] dataInBytes = snapshotContents.readFully();
+							String dataString = new String(dataInBytes, StandardCharsets.UTF_8);
+							map.put("data", dataString).success();
+
+						} catch (Exception exception) {
+							map.failure(exception);
+						}
+					} else {
+						map.failure(task.getException());
+					}
+					map.send();
+				});
+
+		return asyncIndex;
+	}
+	
+	
+	public double GooglePlayServices_SavedGames_Open_Conflict(final String name,double conflictPolicy) {
+		final double asyncIndex = getAsyncInd();
+		PlayGames.getSnapshotsClient(GetActivity()).open(name, /* create */ false, (int)conflictPolicy)
+				.addOnCompleteListener((Task<DataOrConflict<Snapshot>> task) -> {
+					GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_Open_Conflict", asyncIndex);
 					if (task.isSuccessful()) {
 						DataOrConflict<Snapshot> dataOrConflict = task.getResult();
 
@@ -696,7 +701,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 							map.put("isConflict", true);
 							map.put("conflictId", dataOrConflict.getConflict().getConflictId());
 							
-							Snapshot snapshotConflictLocal = dataOrConflict.getConflict().getConflictingSnapshot();
+							/*Snapshot*/ snapshotConflictLocal = dataOrConflict.getConflict().getConflictingSnapshot();
 							map.put("snapshotMetadataLocal", snapshotMetadataToJSON(snapshotConflictLocal.getMetadata()));
 							try {
 								SnapshotContents snapshotContents = snapshotConflictLocal.getSnapshotContents();
@@ -707,7 +712,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 								map.failure(exception);
 							}
 							
-							Snapshot snapshotConflictRemote = dataOrConflict.getConflict().getSnapshot();
+							/*Snapshot*/ snapshotConflictRemote = dataOrConflict.getConflict().getSnapshot();
 							map.put("snapshotMetadataRemote", snapshotMetadataToJSON(snapshotConflictRemote.getMetadata()));
 							try {
 								SnapshotContents snapshotContents = snapshotConflictRemote.getSnapshotContents();
@@ -717,8 +722,6 @@ public class YYGooglePlayServices extends RunnerSocial {
 							} catch (Exception exception) {
 								map.failure(exception);
 							}
-														
-							map.put("success", false).fail("Found conflict while commiting data");
 						}
 					} else {
 						map.failure(task.getException());
@@ -753,10 +756,11 @@ public class YYGooglePlayServices extends RunnerSocial {
 	
 	public double GooglePlayServices_SavedGames_Resolve_Conflict(String conflict_id,double local_remote) {
 		final double asyncIndex = getAsyncInd();
-		
+		Log.i("yoyo","GooglePlayServices_SavedGames_Resolve_Conflict CALLED");
 		SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(GetActivity());
 		snapshotsClient.resolveConflict(conflict_id,(local_remote==1)?snapshotConflictLocal:snapshotConflictRemote).addOnCompleteListener((Task<DataOrConflict<Snapshot>> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_Resolve_Conflict", asyncIndex);
+					Log.i("yoyo","GooglePlayServices_SavedGames_Resolve_Conflict CALLBACK");
 					if (task.isSuccessful()) {
 						DataOrConflict<Snapshot> dataOrConflict = task.getResult();
 						
@@ -804,8 +808,6 @@ public class YYGooglePlayServices extends RunnerSocial {
 							} catch (Exception exception) {
 								map.failure(exception);
 							}
-														
-							map.put("success", false).fail("Found conflict while commiting data");
 						}
 					} else {
 						map.failure(task.getException());

@@ -1,5 +1,5 @@
 /// @description Sloat loading/editing
-
+show_debug_message(json_encode(async_load))
 switch(async_load[? "type"])
 {
 	// @triggered by the button (+) button on the ShowSavedGamesUI
@@ -80,6 +80,30 @@ switch(async_load[? "type"])
 		setSlotEditMode(false);
 		break;
 
+	case GOOGLE_PLAY_EV_SAVEDGAMES_OPEN_CONFLICT:
+		
+		if(async_load[?"isConflict"])
+		{
+			show_message_async("isConflict")
+			
+			var conflictId = async_load[?"conflictId"]
+			var snapshotMetadataLocal = async_load[?"snapshotMetadataLocal"]
+			var dataLocal = async_load[?"dataLocal"]
+			var snapshotMetadataRemote = async_load[?"snapshotMetadataRemote"]
+			var dataRemote = async_load[?"dataRemote"]
+			
+			//take the choose using previosly information... in this exmaple we will select GOOGLE_PLAY_SNAPSHOT_REMOTE
+			var resolution = GOOGLE_PLAY_SNAPSHOT_REMOTE //or GOOGLE_PLAY_SNAPSHOT_LOCAL
+			
+			GooglePlayServices_SavedGames_Resolve_Conflict(conflictId,resolution)
+			
+			break
+		}
+		else
+			show_message_async("NOT Conflict")
+		
+	//break //continue like GOOGLE_PLAY_EV_SAVEDGAMES_OPEN
+	
 	// @triggered by GooglePlayServices_SavedGames_Open()
 	case GOOGLE_PLAY_EV_SAVEDGAMES_OPEN:
 		
