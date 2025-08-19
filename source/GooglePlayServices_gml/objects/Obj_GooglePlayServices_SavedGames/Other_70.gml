@@ -1,5 +1,5 @@
 /// @description Sloat loading/editing
-show_debug_message(json_encode(async_load))
+
 switch(async_load[? "type"])
 {
 	// @triggered by the button (+) button on the ShowSavedGamesUI
@@ -79,6 +79,9 @@ switch(async_load[? "type"])
 		// This is a helper function defined inside the Create event.
 		setSlotEditMode(false);
 		break;
+		
+	case GOOGLE_PLAY_EV_SAVEDGAMES_RESOLVE_CONFLICT:
+	break
 
 	case GOOGLE_PLAY_EV_SAVEDGAMES_OPEN_CONFLICT:
 		
@@ -100,9 +103,11 @@ switch(async_load[? "type"])
 			break
 		}
 		else
+		{
 			show_message_async("NOT Conflict")
-		
-	//break //continue like GOOGLE_PLAY_EV_SAVEDGAMES_OPEN
+			//break //contining like we do in GOOGLE_PLAY_EV_SAVEDGAMES_OPEN		
+		}
+	
 	
 	// @triggered by GooglePlayServices_SavedGames_Open()
 	case GOOGLE_PLAY_EV_SAVEDGAMES_OPEN:
