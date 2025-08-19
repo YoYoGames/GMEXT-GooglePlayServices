@@ -757,6 +757,9 @@ public class YYGooglePlayServices extends RunnerSocial {
 	public double GooglePlayServices_SavedGames_Resolve_Conflict(String conflict_id,double local_remote) {
 		final double asyncIndex = getAsyncInd();
 		
+		if(snapshotConflictLocal == null || snapshotConflictRemote == null)
+			return -1;
+			
 		SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(GetActivity());
 		snapshotsClient.resolveConflict(conflict_id,(local_remote==1)?snapshotConflictLocal:snapshotConflictRemote).addOnCompleteListener((Task<DataOrConflict<Snapshot>> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_Resolve_Conflict", asyncIndex);
