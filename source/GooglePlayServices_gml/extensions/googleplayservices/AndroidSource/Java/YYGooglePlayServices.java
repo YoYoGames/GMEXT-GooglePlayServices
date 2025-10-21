@@ -77,6 +77,8 @@ import com.google.android.gms.common.images.ImageManager;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.ConnectionResult;
 
+import org.json.JSONObject;
+
 public class YYGooglePlayServices extends RunnerSocial {
 
 	// Activity handler
@@ -541,9 +543,29 @@ public class YYGooglePlayServices extends RunnerSocial {
 		return uiAsyncId;
 	}
 
-	public double GooglePlayServices_SavedGames_CommitAndClose(final String name, final String desc, final String data,
-			final String coverImagePath) {
+	public double __GooglePlayServices_SavedGames_CommitAndClose(String json_str) {
 
+		final String name;
+		final String desc;
+		final String data;
+		final String coverImagePath;
+		final double playedTimeMillis;
+		final double progressValue;
+		
+		try{
+			JSONObject json = new JSONObject(json_str);
+			name = json.getString("name");
+			desc = json.getString("desc");
+			data = json.getString("data");
+			coverImagePath = json.getString("coverImagePath");
+			playedTimeMillis = json.getDouble("playedTimeMillis");
+			progressValue = json.getDouble("progressValue");
+		}
+		catch (Exception ex) {
+			Log.i("yoyo","This shouldn't happen");
+			return -4;
+		}
+		
 		final Snapshot snapshot = snapshotHashMap.get(name);
 		if (snapshot == null)
 			return -1;
@@ -553,7 +575,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 			try {
 				snapshot.getSnapshotContents().writeBytes(data.getBytes(StandardCharsets.UTF_8));
 				SnapshotMetadataChange.Builder b = new SnapshotMetadataChange.Builder();
-				fillMetadata(b, desc, coverImagePath);
+				fillMetadata(b, desc, coverImagePath,playedTimeMillis,progressValue);
 
 				runMain(() -> commitSnapshot(snapshot, b.build(), "GooglePlayServices_SavedGames_CommitAndClose",
 						asyncIndex));
@@ -568,8 +590,29 @@ public class YYGooglePlayServices extends RunnerSocial {
 		return asyncIndex;
 	}
 
-	public double GooglePlayServices_SavedGames_CommitNew(final String name, final String desc, final String data,
-			final String coverImagePath) {
+	public double __GooglePlayServices_SavedGames_CommitNew(String json_str) {
+		
+		final String name;
+		final String desc;
+		final String data;
+		final String coverImagePath;
+		final double playedTimeMillis;
+		final double progressValue;
+		
+		try{
+			JSONObject json = new JSONObject(json_str);
+			name = json.getString("name");
+			desc = json.getString("desc");
+			data = json.getString("data");
+			coverImagePath = json.getString("coverImagePath");
+			playedTimeMillis = json.getDouble("playedTimeMillis");
+			progressValue = json.getDouble("progressValue");
+		}
+		catch (Exception ex) {
+			Log.i("yoyo","This shouldn't happen");
+			return -4;
+		}
+		
 		final double asyncIndex = getAsyncInd();
 		Activity act = GetActivity();
 		PlayGames.getSnapshotsClient(act).open(name, /* create */ true, SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
@@ -597,7 +640,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 									snapshot.getSnapshotContents().writeBytes(data.getBytes(StandardCharsets.UTF_8));
 
 									SnapshotMetadataChange.Builder b = new SnapshotMetadataChange.Builder();
-									fillMetadata(b, desc, coverImagePath);
+									fillMetadata(b, desc, coverImagePath,playedTimeMillis,progressValue);
 
 									runMain(() -> commitSnapshot(snapshot, b.build(),
 											"GooglePlayServices_SavedGames_CommitNew", asyncIndex));
@@ -843,7 +886,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 	}
 
 	private void fillMetadata(@NonNull SnapshotMetadataChange.Builder b, @NonNull String desc,
-			@NonNull String coverImagePath) {
+			@NonNull String coverImagePath,double playedTimeMillis,double progressValue) {
 
 		if (!desc.isEmpty())
 			b.setDescription(desc);
@@ -856,6 +899,12 @@ public class YYGooglePlayServices extends RunnerSocial {
 					b.setCoverImage(bmp);
 			}
 		}
+		
+		if(playedTimeMillis > 0)
+			b.setPlayedTimeMillis((long)playedTimeMillis);
+		
+		if(progressValue > 0)
+			b.setProgressValue((long)progressValue);
 	}
 
 	private void commitSnapshot(@NonNull Snapshot snap, @NonNull SnapshotMetadataChange change,

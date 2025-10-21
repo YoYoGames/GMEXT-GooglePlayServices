@@ -83,6 +83,7 @@
     {"id":{"name":"Room_GooglePlayServices_Leaderboards","path":"rooms/Room_GooglePlayServices_Leaderboards/Room_GooglePlayServices_Leaderboards.yy",},},
     {"id":{"name":"Room_GooglePlayServices_SavedGames","path":"rooms/Room_GooglePlayServices_SavedGames/Room_GooglePlayServices_SavedGames.yy",},},
     {"id":{"name":"Room_GooglePlayServices","path":"rooms/Room_GooglePlayServices/Room_GooglePlayServices.yy",},},
+    {"id":{"name":"GooglePlayServicesWrapper","path":"scripts/GooglePlayServicesWrapper/GooglePlayServicesWrapper.yy",},},
     {"id":{"name":"sprite_save_w","path":"scripts/sprite_save_w/sprite_save_w.yy",},},
     {"id":{"name":"Spr_GooglePlayServices_SavedGames","path":"sprites/Spr_GooglePlayServices_SavedGames/Spr_GooglePlayServices_SavedGames.yy",},},
     {"id":{"name":"Spr_YoYo_Background","path":"sprites/Spr_YoYo_Background/Spr_YoYo_Background.yy",},},

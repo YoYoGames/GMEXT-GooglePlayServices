@@ -57,6 +57,7 @@
     {"name":"Room_GooglePlayServices_Leaderboards_Advanced","order":5,"path":"rooms/Room_GooglePlayServices_Leaderboards_Advanced/Room_GooglePlayServices_Leaderboards_Advanced.yy",},
     {"name":"Room_GooglePlayServices_Leaderboards","order":2,"path":"rooms/Room_GooglePlayServices_Leaderboards/Room_GooglePlayServices_Leaderboards.yy",},
     {"name":"Room_GooglePlayServices_SavedGames","order":3,"path":"rooms/Room_GooglePlayServices_SavedGames/Room_GooglePlayServices_SavedGames.yy",},
+    {"name":"GooglePlayServicesWrapper","order":1,"path":"scripts/GooglePlayServicesWrapper/GooglePlayServicesWrapper.yy",},
     {"name":"sprite_save_w","order":2,"path":"scripts/sprite_save_w/sprite_save_w.yy",},
     {"name":"Spr_GooglePlayServices_SavedGames","order":3,"path":"sprites/Spr_GooglePlayServices_SavedGames/Spr_GooglePlayServices_SavedGames.yy",},
     {"name":"Spr_YoYo_button","order":1,"path":"sprites/Spr_YoYo_button/Spr_YoYo_button.yy",},
