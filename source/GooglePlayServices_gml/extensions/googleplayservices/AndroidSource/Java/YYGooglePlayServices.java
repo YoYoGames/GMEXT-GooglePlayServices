@@ -1376,13 +1376,21 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	@NonNull
 	private static JSONArray leaderboardScoreBufferToJSON(LeaderboardScoreBuffer leaderboardScoreBuffer) {
-		// https://developers.google.com/android/reference/com/google/android/gms/games/leaderboard/LeaderboardScore
 		JSONArray scoresJSON = new JSONArray();
-
-		for (LeaderboardScore leaderboardScore : leaderboardScoreBuffer) {
-			scoresJSON.put(leaderboardScoreToJSON(leaderboardScore));
+		
+		// Use index-based iteration so we can control get(i)
+		for (int i = 0; i < leaderboardScoreBuffer.getCount(); i++) {
+			try {
+				LeaderboardScore leaderboardScore = leaderboardScoreBuffer.get(i); // may throw
+				scoresJSON.put(leaderboardScoreToJSON(leaderboardScore));
+			} catch (Exception e) {
+				Log.e("yoyo",
+					"leaderboardScoreBufferToJSON: skipping invalid leaderboard score at index " + i,
+					e);
+				// Continue with next score instead of killing the whole loop
+			}
 		}
-
+		
 		return scoresJSON;
 	}
 
