@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"Sprite_GooglePlayServices_SavedGames_dataObj",
   "bboxMode":0,
   "bbox_bottom":93,
@@ -12,9 +12,9 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"847908f8-d80d-4e9b-8939-7f51cde3fa05","name":"847908f8-d80d-4e9b-8939-7f51cde3fa05","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"24e7e26f-5efd-4e97-8a02-58be4e584000","name":"24e7e26f-5efd-4e97-8a02-58be4e584000","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"670d8546-a067-47ed-8930-2aed775e7b99","name":"670d8546-a067-47ed-8930-2aed775e7b99","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"847908f8-d80d-4e9b-8939-7f51cde3fa05","name":"847908f8-d80d-4e9b-8939-7f51cde3fa05","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"24e7e26f-5efd-4e97-8a02-58be4e584000","name":"24e7e26f-5efd-4e97-8a02-58be4e584000","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"670d8546-a067-47ed-8930-2aed775e7b99","name":"670d8546-a067-47ed-8930-2aed775e7b99","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,
