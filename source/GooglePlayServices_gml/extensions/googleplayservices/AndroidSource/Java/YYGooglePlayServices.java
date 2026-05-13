@@ -567,8 +567,10 @@ public class YYGooglePlayServices extends RunnerSocial {
 		}
 		
 		final Snapshot snapshot = snapshotHashMap.get(name);
-		if (snapshot == null)
+		if (snapshot == null){
+			Log.i("yoyo","No snapshot found. Will not commit.");
 			return -1;
+		}
 
 		final double asyncIndex = getAsyncInd();
 		runBackground(() -> {
