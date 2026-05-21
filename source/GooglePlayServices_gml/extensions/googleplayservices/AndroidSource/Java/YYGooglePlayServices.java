@@ -86,6 +86,45 @@ public class YYGooglePlayServices extends RunnerSocial {
 		return RunnerActivity.CurrentActivity;
 	}
 
+	private static final String TAG = "yoyo";
+	private volatile boolean gpsAuthenticationKnown = false;
+	private volatile boolean gpsAuthenticated = false;
+
+	private void setCachedAuthentication(boolean authenticated) {
+		gpsAuthenticationKnown = true;
+		gpsAuthenticated = authenticated;
+	}
+
+	private String getNotAuthenticatedReason() {
+		return gpsAuthenticationKnown
+				? "Google Play Games user is not authenticated"
+				: "Google Play Games authentication state is unknown; call GooglePlayServices_IsAuthenticated or GooglePlayServices_SignIn first";
+	}
+
+	private boolean failIfNotAuthenticated(@NonNull String eventType, double asyncIndex) {
+		if (gpsAuthenticationKnown && gpsAuthenticated) {
+			return false;
+		}
+
+		String reason = getNotAuthenticatedReason();
+		Log.w(TAG, eventType + " blocked: " + reason);
+		GMEventData.create(eventType, asyncIndex)
+				.put("isAuthenticated", false)
+				.fail(reason)
+				.send();
+		return true;
+	}
+
+	private boolean warnIfNotAuthenticated(@NonNull String methodName) {
+		if (gpsAuthenticationKnown && gpsAuthenticated) {
+			return false;
+		}
+
+		String reason = getNotAuthenticatedReason();
+		Log.w(TAG, methodName + " blocked: " + reason);
+		return true;
+	}
+
 	// ====================================
 	// Base
 	// ====================================
@@ -104,31 +143,65 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	public double GooglePlayServices_SignIn() {
 		final double asyncIndex = getAsyncInd();
-		PlayGames.getGamesSignInClient(GetActivity()).signIn()
+		Activity act = GetActivity();
+
+		if (act == null) {
+			setCachedAuthentication(false);
+			GMEventData.create("GooglePlayServices_SignIn", asyncIndex)
+					.put("isAuthenticated", false)
+					.fail("GooglePlayServices_SignIn failed: Activity is null")
+					.send();
+			return asyncIndex;
+		}
+
+		runMain(() -> PlayGames.getGamesSignInClient(act).signIn()
 				.addOnCompleteListener((Task<AuthenticationResult> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_SignIn", asyncIndex);
 					if (task.isSuccessful()) {
 						AuthenticationResult result = task.getResult();
-						map.put("isAuthenticated", result.isAuthenticated()).success();
+						boolean authenticated = result != null && result.isAuthenticated();
+						setCachedAuthentication(authenticated);
+						map.put("isAuthenticated", authenticated);
+
+						if (authenticated) {
+							map.success();
+						} else {
+							map.fail("Google Play Games sign-in completed but user is not authenticated");
+						}
 					} else {
-						map.failure(task.getException());
+						setCachedAuthentication(false);
+						map.put("isAuthenticated", false).failure(task.getException());
 					}
 					map.send();
-				});
+				}));
 
 		return asyncIndex;
 	}
 
 	public double GooglePlayServices_IsAuthenticated() {
 		final double asyncIndex = getAsyncInd();
-		PlayGames.getGamesSignInClient(GetActivity()).isAuthenticated()
+		Activity act = GetActivity();
+
+		if (act == null) {
+			setCachedAuthentication(false);
+			GMEventData.create("GooglePlayServices_IsAuthenticated", asyncIndex)
+					.put("isAuthenticated", false)
+					.fail("GooglePlayServices_IsAuthenticated failed: Activity is null")
+					.send();
+			return asyncIndex;
+		}
+
+		PlayGames.getGamesSignInClient(act).isAuthenticated()
 				.addOnCompleteListener((Task<AuthenticationResult> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_IsAuthenticated", asyncIndex);
 					if (task.isSuccessful()) {
 						AuthenticationResult result = task.getResult();
-						map.put("isAuthenticated", result.isAuthenticated()).success();
+						boolean authenticated = result != null && result.isAuthenticated();
+						setCachedAuthentication(authenticated);
+						map.put("isAuthenticated", authenticated).success();
 					} else {
-						map.failure(task.getException());
+						setCachedAuthentication(false);
+						map.put("isAuthenticated", false).failure(task.getException());
 					}
 					map.send();
 				});
@@ -137,6 +210,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	public double GooglePlayServices_RequestServerSideAccess(String serverClientId, double forceRefreshToken) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_RequestServerSideAccess", asyncIndex))
+			return asyncIndex;
 		PlayGames.getGamesSignInClient(GetActivity()).requestServerSideAccess(serverClientId, forceRefreshToken >= 0.5)
 				.addOnCompleteListener((Task<String> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_RequestServerSideAccess", asyncIndex);
@@ -193,6 +268,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	public double GooglePlayServices_Player_Current() {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_Player_Current", asyncIndex))
+			return asyncIndex;
 		PlayGames.getPlayersClient(GetActivity()).getCurrentPlayer()
 				.addOnCompleteListener((Task<Player> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_Player_Current", asyncIndex);
@@ -210,6 +287,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	public void GooglePlayServices_Player_CurrentID() {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_Player_CurrentID", asyncIndex))
+			return;
 		PlayGames.getPlayersClient(GetActivity()).getCurrentPlayerId()
 				.addOnCompleteListener((Task<String> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_Player_CurrentID", asyncIndex);
@@ -230,6 +309,9 @@ public class YYGooglePlayServices extends RunnerSocial {
 	private static final int RC_ACHIEVEMENT_UI = 9003;
 
 	public void GooglePlayServices_Achievements_Show() {
+		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_Achievements_Show", asyncIndex))
+			return;
 		PlayGames.getAchievementsClient(GetActivity()).getAchievementsIntent()
 				.addOnSuccessListener((Intent intent) -> {
 					try {
@@ -243,6 +325,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	public double GooglePlayServices_Achievements_Increment(final String achievementId, double steps) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_Achievements_Increment", asyncIndex))
+			return asyncIndex;
 		PlayGames.getAchievementsClient(GetActivity()).incrementImmediate(achievementId, (int) steps)
 				.addOnCompleteListener((Task<Boolean> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_Achievements_Increment", asyncIndex);
@@ -259,6 +343,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	public double GooglePlayServices_Achievements_Reveal(final String achievementId) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_Achievements_Reveal", asyncIndex))
+			return asyncIndex;
 		PlayGames.getAchievementsClient(GetActivity()).revealImmediate(achievementId)
 				.addOnCompleteListener((Task<Void> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_Achievements_Reveal", asyncIndex);
@@ -275,6 +361,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	public double GooglePlayServices_Achievements_SetSteps(final String achievementId, double steps) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_Achievements_SetSteps", asyncIndex))
+			return asyncIndex;
 		PlayGames.getAchievementsClient(GetActivity()).setStepsImmediate(achievementId, (int) steps)
 				.addOnCompleteListener((Task<Boolean> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_Achievements_SetSteps", asyncIndex);
@@ -291,6 +379,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	public double GooglePlayServices_Achievements_Unlock(final String achievementId) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_Achievements_Unlock", asyncIndex))
+			return asyncIndex;
 		PlayGames.getAchievementsClient(GetActivity()).unlockImmediate(achievementId)
 				.addOnCompleteListener((Task<Void> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_Achievements_Unlock", asyncIndex);
@@ -307,6 +397,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	public double GooglePlayServices_Achievements_GetStatus(double forceReload) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_Achievements_GetStatus", asyncIndex))
+			return asyncIndex;
 		PlayGames.getAchievementsClient(GetActivity()).load(forceReload >= 0.5)
 				.addOnCompleteListener((Task<AnnotatedData<AchievementBuffer>> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_Achievements_GetStatus", asyncIndex);
@@ -337,6 +429,9 @@ public class YYGooglePlayServices extends RunnerSocial {
 	private static final int RC_LEADERBOARD_UI = 9004;
 
 	public void GooglePlayServices_Leaderboard_ShowAll() {
+		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_Leaderboard_ShowAll", asyncIndex))
+			return;
 		PlayGames.getLeaderboardsClient(GetActivity()).getAllLeaderboardsIntent()
 				.addOnSuccessListener(intent -> {
 					try {
@@ -348,6 +443,9 @@ public class YYGooglePlayServices extends RunnerSocial {
 	}
 
 	public void GooglePlayServices_Leaderboard_Show(String leaderboardId) {
+		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_Leaderboard_Show", asyncIndex))
+			return;
 		PlayGames.getLeaderboardsClient(GetActivity()).getLeaderboardIntent(leaderboardId)
 				.addOnSuccessListener(intent -> {
 					try {
@@ -362,6 +460,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 			final String scoreTag) {
 
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_Leaderboard_SubmitScore", asyncIndex))
+			return asyncIndex;
 		PlayGames.getLeaderboardsClient(GetActivity()).submitScoreImmediate(leaderboardId, (long) score, scoreTag)
 				.addOnCompleteListener((Task<ScoreSubmissionData> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_Leaderboard_SubmitScore", asyncIndex);
@@ -381,6 +481,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 	public double GooglePlayServices_Leaderboard_LoadPlayerCenteredScores(String leaderboardId, double span,
 			double leaderboardCollection, double maxResults, double forceReload) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_Leaderboard_LoadPlayerCenteredScores", asyncIndex))
+			return asyncIndex;
 
 		PlayGames.getLeaderboardsClient(GetActivity())
 				.loadPlayerCenteredScores(leaderboardId, (int) span, (int) leaderboardCollection, (int) maxResults,
@@ -413,6 +515,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 	public double GooglePlayServices_Leaderboard_LoadTopScores(String leaderboardId, double span,
 			double leaderboardCollection, double maxResults, double forceReload) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_Leaderboard_LoadTopScores", asyncIndex))
+			return asyncIndex;
 		PlayGames.getLeaderboardsClient(GetActivity())
 				.loadTopScores(leaderboardId, (int) span, (int) leaderboardCollection, (int) maxResults,
 						forceReload >= 0.5)
@@ -524,6 +628,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 	public double GooglePlayServices_SavedGames_ShowSavedGamesUI(String title, double buttonAdd, double buttonDelete,
 			double max) {
 		uiAsyncId = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_SavedGames_ShowSavedGamesUI", uiAsyncId))
+			return uiAsyncId;
 
 		boolean showAddButton = buttonAdd > 0.5;
 		boolean showDeleteButton = buttonDelete > 0.5;
@@ -544,6 +650,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 	}
 
 	public double __GooglePlayServices_SavedGames_CommitAndClose(String json_str) {
+		final double asyncIndex = getAsyncInd();
 
 		final String name;
 		final String desc;
@@ -562,15 +669,22 @@ public class YYGooglePlayServices extends RunnerSocial {
 			progressValue = json.getDouble("progressValue");
 		}
 		catch (Exception ex) {
-			Log.i("yoyo","This shouldn't happen");
-			return -4;
+			GMEventData.create("__GooglePlayServices_SavedGames_CommitAndClose", asyncIndex)
+					.failure(ex)
+					.send();
+			return asyncIndex;
 		}
 		
-		final Snapshot snapshot = snapshotHashMap.get(name);
-		if (snapshot == null)
-			return -1;
+		if (failIfNotAuthenticated("__GooglePlayServices_SavedGames_CommitAndClose", asyncIndex))
+			return asyncIndex;
 
-		final double asyncIndex = getAsyncInd();
+		final Snapshot snapshot = snapshotHashMap.get(name);
+		if (snapshot == null) {
+			GMEventData.create("__GooglePlayServices_SavedGames_CommitAndClose", asyncIndex)
+					.fail("__GooglePlayServices_SavedGames_CommitAndClose failed: snapshot not opened or already closed: " + name)
+					.send();
+			return asyncIndex;
+		}
 		runBackground(() -> {
 			try {
 				snapshot.getSnapshotContents().writeBytes(data.getBytes(StandardCharsets.UTF_8));
@@ -591,6 +705,7 @@ public class YYGooglePlayServices extends RunnerSocial {
 	}
 
 	public double __GooglePlayServices_SavedGames_CommitNew(String json_str) {
+		final double asyncIndex = getAsyncInd();
 		
 		final String name;
 		final String desc;
@@ -609,11 +724,14 @@ public class YYGooglePlayServices extends RunnerSocial {
 			progressValue = json.getDouble("progressValue");
 		}
 		catch (Exception ex) {
-			Log.i("yoyo","This shouldn't happen");
-			return -4;
+			GMEventData.create("__GooglePlayServices_SavedGames_CommitNew", asyncIndex)
+					.failure(ex)
+					.send();
+			return asyncIndex;
 		}
 		
-		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("__GooglePlayServices_SavedGames_CommitNew", asyncIndex))
+			return asyncIndex;
 		Activity act = GetActivity();
 		PlayGames.getSnapshotsClient(act).open(name, /* create */ true, SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
 				.addOnCompleteListener(act,
@@ -656,6 +774,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	public double GooglePlayServices_SavedGames_Load(final double forceReload) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_SavedGames_Load", asyncIndex))
+			return asyncIndex;
 		PlayGames.getSnapshotsClient(GetActivity()).load(forceReload >= 0.5)
 				.addOnCompleteListener((Task<AnnotatedData<SnapshotMetadataBuffer>> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_Load", asyncIndex);
@@ -681,6 +801,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	public double GooglePlayServices_SavedGames_Open(final String name) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_SavedGames_Open", asyncIndex))
+			return asyncIndex;
 		PlayGames.getSnapshotsClient(GetActivity()).open(name, /* create */ false, SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
 				.addOnCompleteListener((Task<DataOrConflict<Snapshot>> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_Open_Conflict", asyncIndex);
@@ -715,6 +837,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 	
 	public double GooglePlayServices_SavedGames_Open_Conflict(final String name,double conflictPolicy) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_SavedGames_Open_Conflict", asyncIndex))
+			return asyncIndex;
 		PlayGames.getSnapshotsClient(GetActivity()).open(name, /* create */ false, (int)conflictPolicy)
 				.addOnCompleteListener((Task<DataOrConflict<Snapshot>> task) -> {
 					GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_Open_Conflict", asyncIndex);
@@ -776,11 +900,18 @@ public class YYGooglePlayServices extends RunnerSocial {
 	}
 
 	public double GooglePlayServices_SavedGames_Delete(final String name) {
-		final Snapshot snapshot = snapshotHashMap.get(name);
-		if (snapshot == null)
-			return -1;
-
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_SavedGames_Delete", asyncIndex))
+			return asyncIndex;
+
+		final Snapshot snapshot = snapshotHashMap.get(name);
+		if (snapshot == null) {
+			GMEventData.create("GooglePlayServices_SavedGames_Delete", asyncIndex)
+					.fail("GooglePlayServices_SavedGames_Delete failed: snapshot not opened or already closed: " + name)
+					.send();
+			return asyncIndex;
+		}
+
 		SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(GetActivity());
 		SnapshotMetadata snapshotMetadata = snapshot.getMetadata();
 		snapshotsClient.delete(snapshotMetadata).addOnCompleteListener((Task<String> task) -> {
@@ -799,9 +930,15 @@ public class YYGooglePlayServices extends RunnerSocial {
 	
 	public double GooglePlayServices_SavedGames_Resolve_Conflict(String conflict_id,double local_remote) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_SavedGames_Resolve_Conflict", asyncIndex))
+			return asyncIndex;
 		
-		if(snapshotConflictLocal == null || snapshotConflictRemote == null)
-			return -1;
+		if(snapshotConflictLocal == null || snapshotConflictRemote == null) {
+			GMEventData.create("GooglePlayServices_SavedGames_Resolve_Conflict", asyncIndex)
+					.fail("GooglePlayServices_SavedGames_Resolve_Conflict failed: no active conflict snapshots")
+					.send();
+			return asyncIndex;
+		}
 			
 		SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(GetActivity());
 		snapshotsClient.resolveConflict(conflict_id,(local_remote==1)?snapshotConflictLocal:snapshotConflictRemote).addOnCompleteListener((Task<DataOrConflict<Snapshot>> task) -> {
@@ -865,11 +1002,18 @@ public class YYGooglePlayServices extends RunnerSocial {
 	}
 
 	public double GooglePlayServices_SavedGames_DiscardAndClose(String name) {
-		final Snapshot snapshot = snapshotHashMap.get(name);
-		if (snapshot == null)
-			return -1;
-
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_SavedGames_DiscardAndClose", asyncIndex))
+			return asyncIndex;
+
+		final Snapshot snapshot = snapshotHashMap.get(name);
+		if (snapshot == null) {
+			GMEventData.create("GooglePlayServices_SavedGames_DiscardAndClose", asyncIndex)
+					.fail("GooglePlayServices_SavedGames_DiscardAndClose failed: snapshot not opened or already closed: " + name)
+					.send();
+			return asyncIndex;
+		}
+
 		SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(GetActivity());
 		snapshotsClient.discardAndClose(snapshot).addOnCompleteListener((Task<Void> task) -> {
 			GMEventData map = GMEventData.create("GooglePlayServices_SavedGames_DiscardAndClose", asyncIndex);
@@ -912,8 +1056,12 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 		// This might be called in the background so lets be safe
 		Activity act = GetActivity();
-		if (act == null)
+		if (act == null) {
+			GMEventData.create(eventType, asyncIndex)
+					.fail(eventType + " failed: Activity is null")
+					.send();
 			return;
+		}
 
 		PlayGames.getSnapshotsClient(act)
 				.commitAndClose(snap, change)
@@ -936,6 +1084,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	public double GooglePlayServices_PlayerStats_LoadPlayerStats(double forceReload) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("GooglePlayServices_PlayerStats_LoadPlayerStats", asyncIndex))
+			return asyncIndex;
 		boolean shouldForceReload = forceReload >= 0.5;
 
 		PlayGames.getPlayerStatsClient(GetActivity()).loadPlayerStats(shouldForceReload)
@@ -967,12 +1117,16 @@ public class YYGooglePlayServices extends RunnerSocial {
 	// ====================================
 
 	public double google_play_events_increment_event(String eventId, double incrementAmount) {
+		if (warnIfNotAuthenticated("google_play_events_increment_event"))
+			return 0;
 		PlayGames.getEventsClient(GetActivity()).increment(eventId, (int) incrementAmount);
 		return 0;
 	}
 
 	public double google_play_events_load_events(double forceReload) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("google_play_events_load_events", asyncIndex))
+			return asyncIndex;
 		boolean shouldForceReload = forceReload >= 0.5;
 
 		PlayGames.getEventsClient(GetActivity()).load(shouldForceReload)
@@ -1002,6 +1156,8 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	public double google_play_events_load_by_ids(double forceReload, String eventIds) {
 		final double asyncIndex = getAsyncInd();
+		if (failIfNotAuthenticated("google_play_events_load_by_ids", asyncIndex))
+			return asyncIndex;
 		boolean shouldForceReload = forceReload >= 0.5;
 
 		String[] args = toEventIdArray(eventIds);
@@ -1126,8 +1282,15 @@ public class YYGooglePlayServices extends RunnerSocial {
 			return this;
 		}
 
+		GMEventData failureMessage(@NonNull String msg) {
+			put("success", 0);
+			put("error", msg);
+			Log.w(TAG, requestType + " failed: " + msg);
+			return this;
+		}
+
 		GMEventData fail(String msg) {
-			return failure(new RuntimeException(msg));
+			return failureMessage(msg);
 		}
 
 		GMEventData fail() {
@@ -1164,8 +1327,11 @@ public class YYGooglePlayServices extends RunnerSocial {
 
 	private static void runMain(Runnable r) {
 		Activity a = GetActivity();
-		if (a != null)
+		if (a != null) {
 			a.runOnUiThread(r);
+		} else {
+			Log.w(TAG, "runMain skipped: Activity is null");
+		}
 	}
 
 	// ====================================
