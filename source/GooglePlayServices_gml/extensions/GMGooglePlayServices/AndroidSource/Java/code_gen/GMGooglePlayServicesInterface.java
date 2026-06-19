@@ -12,6 +12,7 @@ public interface GMGooglePlayServicesInterface {
     public void gpgs_request_server_side_access(String server_client_id, boolean force_refresh_token, GMFunction callback);
     public void gpgs_player_current(GMFunction callback);
     public void gpgs_player_current_id(GMFunction callback);
+    public void gpgs_player_stats_load(boolean force_reload, GMFunction callback);
     public void gpgs_achievements_show();
     public void gpgs_achievements_increment(String achievement_id, double steps, GMFunction callback);
     public void gpgs_achievements_reveal(String achievement_id, GMFunction callback);

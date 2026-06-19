@@ -1,6 +1,5 @@
 
 sprite = noone
-UriToPath_request = noone
 
 ID = ""
 description = ""
@@ -19,7 +18,7 @@ totalSteps = noone
 
 alarm[0] = 1
 
-function gpgs_uri_to_path_callback(success,uri,error){
+gpgs_uri_to_path_callback = function(success,uri,error){
 	
 	if(!success)
 		return

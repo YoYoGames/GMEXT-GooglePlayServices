@@ -40,6 +40,7 @@ import com.google.android.gms.games.snapshot.SnapshotContents;
 import com.google.android.gms.games.snapshot.SnapshotMetadata;
 import com.google.android.gms.games.snapshot.SnapshotMetadataBuffer;
 import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
+import com.google.android.gms.games.stats.PlayerStats;
 import com.google.android.gms.tasks.Task;
 
 
@@ -260,6 +261,56 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     callback.call(true, task.getResult(), "");
                 else
                     callback.call(false, "", error(task.getException()));
+            });
+    }
+
+    /**
+     * Loads analytics/statistics for the currently authenticated player.
+     *
+     * Callback:
+     *     callback(success, player_stats_json, error)
+     */
+    public void gpgs_player_stats_load(
+        boolean force_reload,
+        final GMFunction callback)
+    {
+        if (!requireAuthentication(
+            callback, false, "{}", authenticationError()))
+            return;
+
+        PlayGames.getPlayerStatsClient(activity())
+            .loadPlayerStats(force_reload)
+            .addOnCompleteListener(task ->
+            {
+                if (!task.isSuccessful())
+                {
+                    callback.call(
+                        false,
+                        "{}",
+                        error(task.getException())
+                    );
+                    return;
+                }
+
+                AnnotatedData<PlayerStats> annotatedData = task.getResult();
+                PlayerStats stats =
+                    annotatedData != null ? annotatedData.get() : null;
+
+                if (stats == null)
+                {
+                    callback.call(
+                        false,
+                        "{}",
+                        "No player statistics were returned."
+                    );
+                    return;
+                }
+
+                callback.call(
+                    true,
+                    playerStatsToJson(stats).toString(),
+                    ""
+                );
             });
     }
 
@@ -1075,6 +1126,64 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             );
         }
         catch (Exception ignored) {}
+
+        return json;
+    }
+
+
+    private static JSONObject playerStatsToJson(PlayerStats stats)
+    {
+        JSONObject json = new JSONObject();
+
+        try
+        {
+            json.put(
+                "averageSessionLength",
+                stats.getAverageSessionLength()
+            );
+            json.put(
+                "daysSinceLastPlayed",
+                stats.getDaysSinceLastPlayed()
+            );
+            json.put(
+                "numberOfPurchases",
+                stats.getNumberOfPurchases()
+            );
+            json.put(
+                "numberOfSessions",
+                stats.getNumberOfSessions()
+            );
+            json.put(
+                "sessionPercentile",
+                stats.getSessionPercentile()
+            );
+            json.put(
+                "spendPercentile",
+                stats.getSpendPercentile()
+            );
+
+            // These fields are deprecated in newer Play Games SDK versions,
+            // but are retained for compatibility with the legacy extension.
+            json.put(
+                "churnProbability",
+                stats.getChurnProbability()
+            );
+            json.put(
+                "highSpenderProbability",
+                stats.getHighSpenderProbability()
+            );
+            json.put(
+                "spendProbability",
+                stats.getSpendProbability()
+            );
+            json.put(
+                "totalSpendNext28Days",
+                stats.getTotalSpendNext28Days()
+            );
+        }
+        catch (Exception ignored)
+        {
+        }
 
         return json;
     }

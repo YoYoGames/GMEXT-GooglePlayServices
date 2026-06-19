@@ -23,6 +23,9 @@ function gpgs_player_current(callback: func): unit;
 [global, bind = typed_gml]
 function gpgs_player_current_id(callback: func): unit;
 
+[global, bind = typed_gml]
+function gpgs_player_stats_load(force_reload: bool, callback: func): unit;
+
 // Achievements
 
 [global, bind = typed_gml]

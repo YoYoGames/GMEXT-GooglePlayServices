@@ -1,2 +1,2 @@
 
-UriToPath_request = gpgs_uri_to_path(scoreHolderHiResImageUri)
+gpgs_uri_to_path(scoreHolderHiResImageUri,gpgs_uri_to_path_callback)

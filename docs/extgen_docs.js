@@ -37,6 +37,13 @@
  */
 
 /**
+ * @function_partial gpgs_player_stats_load
+ * @param {Bool} force_reload
+ * @param {Function} callback
+ * @function_end 
+ */
+
+/**
  * @function_partial gpgs_achievements_show
  * @function_end 
  */

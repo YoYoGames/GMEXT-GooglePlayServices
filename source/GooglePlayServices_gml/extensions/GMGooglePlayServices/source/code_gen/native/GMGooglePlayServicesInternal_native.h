@@ -92,6 +92,7 @@ void gpgs_is_authenticated(const gm::wire::GMFunction& callback);
 void gpgs_request_server_side_access(std::string_view server_client_id, bool force_refresh_token, const gm::wire::GMFunction& callback);
 void gpgs_player_current(const gm::wire::GMFunction& callback);
 void gpgs_player_current_id(const gm::wire::GMFunction& callback);
+void gpgs_player_stats_load(bool force_reload, const gm::wire::GMFunction& callback);
 void gpgs_achievements_show();
 void gpgs_achievements_increment(std::string_view achievement_id, double steps, const gm::wire::GMFunction& callback);
 void gpgs_achievements_reveal(std::string_view achievement_id, const gm::wire::GMFunction& callback);

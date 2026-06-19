@@ -12,6 +12,7 @@ GMEXPORT double __EXT_NATIVE__gpgs_is_authenticated(char* __arg_buffer, double _
 GMEXPORT double __EXT_NATIVE__gpgs_request_server_side_access(char* __arg_buffer, double __arg_buffer_length);
 GMEXPORT double __EXT_NATIVE__gpgs_player_current(char* __arg_buffer, double __arg_buffer_length);
 GMEXPORT double __EXT_NATIVE__gpgs_player_current_id(char* __arg_buffer, double __arg_buffer_length);
+GMEXPORT double __EXT_NATIVE__gpgs_player_stats_load(char* __arg_buffer, double __arg_buffer_length);
 GMEXPORT double __EXT_NATIVE__gpgs_achievements_show();
 GMEXPORT double __EXT_NATIVE__gpgs_achievements_increment(char* __arg_buffer, double __arg_buffer_length);
 GMEXPORT double __EXT_NATIVE__gpgs_achievements_reveal(char* __arg_buffer, double __arg_buffer_length);

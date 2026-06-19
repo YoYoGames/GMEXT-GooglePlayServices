@@ -184,6 +184,30 @@ function gpgs_player_current_id(_callback)
     return _return_value;
 }
 
+/**
+ * @param {Bool} _force_reload
+ * @param {Function} _callback
+ */
+function gpgs_player_stats_load(_force_reload, _callback)
+{
+    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+
+    var __args_buffer = __ext_core_get_args_buffer();
+
+    // param: _force_reload, type: Bool
+    if (!is_bool(_force_reload)) show_error($"{_GMFUNCTION_} :: _force_reload expected bool", true);
+    buffer_write(__args_buffer, buffer_bool, _force_reload);
+
+    // param: _callback, type: Function
+    if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    buffer_write(__args_buffer, buffer_u64, _callback_handle);
+
+    var _return_value = __gpgs_player_stats_load(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+
+    return _return_value;
+}
+
 // Skipping function gpgs_achievements_show (no wrapper is required)
 
 

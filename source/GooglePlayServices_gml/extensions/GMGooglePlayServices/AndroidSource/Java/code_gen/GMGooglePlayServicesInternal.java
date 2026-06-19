@@ -84,6 +84,20 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         return 0;
     }
 
+    public double __EXT_NATIVE__gpgs_player_stats_load(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    {
+        GMExtWire.order(__arg_buffer);
+
+        // field: force_reload, type: Bool
+        boolean force_reload = GMExtWire.readBool(__arg_buffer);
+
+        // field: callback, type: Function
+        GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
+
+        gpgs_player_stats_load(force_reload, callback);
+        return 0;
+    }
+
     public double __EXT_NATIVE__gpgs_achievements_show()
     {
         gpgs_achievements_show();

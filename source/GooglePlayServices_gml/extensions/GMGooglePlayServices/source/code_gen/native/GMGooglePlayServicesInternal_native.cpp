@@ -82,6 +82,20 @@ GMEXPORT double __EXT_NATIVE__gpgs_player_current_id(char* __arg_buffer, double 
     return 0;
 }
 
+GMEXPORT double __EXT_NATIVE__gpgs_player_stats_load(char* __arg_buffer, double __arg_buffer_length)
+{
+    gm::byteio::BufferReader __br{__arg_buffer, static_cast<size_t>(__arg_buffer_length)};
+
+    // field: force_reload, type: Bool
+    bool force_reload = gm::wire::codec::readValue<bool>(__br);
+
+    // field: callback, type: Function
+    gm::wire::GMFunction callback = gm::wire::codec::readFunction(__br, &__dispatch_queue);
+
+    gpgs_player_stats_load(force_reload, callback);
+    return 0;
+}
+
 GMEXPORT double __EXT_NATIVE__gpgs_achievements_show()
 {
     gpgs_achievements_show();
