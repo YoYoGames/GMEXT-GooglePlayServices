@@ -44,4 +44,16 @@ var description = Obj_GooglePlayServices_SavedGames.opened_description;
 // This function call will trigger an Social Async event callback of the same name
 // "gpgs_SavedGames_CommitAndClose"
 
-gpgs_saved_games_commit_and_close(name, description, jsonData, path);
+__gpgs_saved_games_commit_and_close(name, description, jsonData, path,function(success,name,error){
+	
+			// Early exit if the callback "success" flag is not true.
+			if (!async_load[? "success"]) exit;
+
+			// Upon creating a new game save slot we refresh the current UI
+			// by destroying all previous slots and reloading the data.
+			instance_destroy(Obj_GooglePlayServices_SavedGames_Slot);
+			with(Obj_GooglePlayServices_SavedGames)
+				gpgs_saved_games_load(true,callback_saved_games_load);
+			
+		});
+
