@@ -1,4 +1,4 @@
 /// @description Show all leaderboards
 
 // This function shows all the available leaderboards
-GooglePlayServices_Leaderboard_ShowAll()
+gpgs_leaderboard_show_all()

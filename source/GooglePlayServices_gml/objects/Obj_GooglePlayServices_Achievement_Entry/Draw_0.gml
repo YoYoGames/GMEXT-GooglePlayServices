@@ -4,15 +4,15 @@ draw_set_valign(fa_middle)
 
 switch(state)
 {
-	case Achievement_STATE_HIDDEN:
+	case GPGSAchievementState.Hidden:
 		
 		draw_text(x,y-120,"Hidden")
 	
 		draw_rectangle(x-100,y-100,x+100,y+100,true)
 	break
 	
-	case Achievement_STATE_REVEALED:
-	case Achievement_STATE_UNLOCKED:
+	case GPGSAchievementState.Revealed:
+	case GPGSAchievementState.Unlocked:
 	
 		draw_text(x,y-120,name)
 		
@@ -22,12 +22,12 @@ switch(state)
 			
 		switch(typeAchievement)
 		{
-			case Achievement_TYPE_INCREMENTAL:
+			case GPGSAchievementType.Incremental:
 				draw_text(x,y+120,formattedCurrentSteps + "/" + formattedTotalSteps)
 				
 			break
 	
-			case Achievement_TYPE_STANDARD:
+			case GPGSAchievementType.Standard:
 				
 			break
 		}

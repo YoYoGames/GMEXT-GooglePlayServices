@@ -45,9 +45,9 @@ var description = async_load[? "result"];
 // Create a new save game commit, this function allows the developer to commit a new data slot to be saved.
 // TYhe user can pass in a: 
 // - name: an unique slot identification id
-// - description: this is a tag that appears when showing saved games using 'GooglePlayServices_SavedGames_ShowSavedGamesUI'
+// - description: this is a tag that appears when showing saved games using 'gpgs_SavedGames_ShowSavedGamesUI'
 // - jsonData: The data being saved to the slot (this must be a string and should probably be a json)
 // - path: the path for the save game thumbnail image.
-// This function triggers a Social Async callback (check: "GooglePlayServices_SavedGames_CommitNew")
-GooglePlayServices_SavedGames_CommitNew(name, description, jsonData, path);
+// This function triggers a Social Async callback (check: "gpgs_SavedGames_CommitNew")
+gpgs_saved_games_commit_new(name, description, jsonData, path);
 

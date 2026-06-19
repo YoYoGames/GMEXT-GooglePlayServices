@@ -10,6 +10,7 @@
   },
   "defaultScriptType":1,
   "Folders":[
+    {"$GMFolder":"","%Name":"ExtensionCore","folderPath":"folders/ExtensionCore.yy","name":"ExtensionCore","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"GooglePlayServices Demo","folderPath":"folders/GooglePlayServices Demo.yy","name":"GooglePlayServices Demo","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Objects","folderPath":"folders/GooglePlayServices Demo/Objects.yy","name":"Objects","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Achievements","folderPath":"folders/GooglePlayServices Demo/Objects/Achievements.yy","name":"Achievements","resourceType":"GMFolder","resourceVersion":"2.0",},
@@ -40,7 +41,8 @@
   },
   "name":"GooglePlayServices",
   "resources":[
-    {"id":{"name":"GooglePlayServices","path":"extensions/GooglePlayServices/GooglePlayServices.yy",},},
+    {"id":{"name":"ExtensionCore","path":"extensions/ExtensionCore/ExtensionCore.yy",},},
+    {"id":{"name":"GMGooglePlayServices","path":"extensions/GMGooglePlayServices/GMGooglePlayServices.yy",},},
     {"id":{"name":"Font_YoYo_15","path":"fonts/Font_YoYo_15/Font_YoYo_15.yy",},},
     {"id":{"name":"Font_YoYo_20","path":"fonts/Font_YoYo_20/Font_YoYo_20.yy",},},
     {"id":{"name":"Font_YoYo_30","path":"fonts/Font_YoYo_30/Font_YoYo_30.yy",},},
@@ -83,6 +85,8 @@
     {"id":{"name":"Room_GooglePlayServices_Leaderboards","path":"rooms/Room_GooglePlayServices_Leaderboards/Room_GooglePlayServices_Leaderboards.yy",},},
     {"id":{"name":"Room_GooglePlayServices_SavedGames","path":"rooms/Room_GooglePlayServices_SavedGames/Room_GooglePlayServices_SavedGames.yy",},},
     {"id":{"name":"Room_GooglePlayServices","path":"rooms/Room_GooglePlayServices/Room_GooglePlayServices.yy",},},
+    {"id":{"name":"ExtensionCore_api","path":"scripts/ExtensionCore_api/ExtensionCore_api.yy",},},
+    {"id":{"name":"GMGooglePlayServices_API","path":"scripts/GMGooglePlayServices_API/GMGooglePlayServices_API.yy",},},
     {"id":{"name":"GooglePlayServicesWrapper","path":"scripts/GooglePlayServicesWrapper/GooglePlayServicesWrapper.yy",},},
     {"id":{"name":"sprite_save_w","path":"scripts/sprite_save_w/sprite_save_w.yy",},},
     {"id":{"name":"Spr_GooglePlayServices_SavedGames","path":"sprites/Spr_GooglePlayServices_SavedGames/Spr_GooglePlayServices_SavedGames.yy",},},

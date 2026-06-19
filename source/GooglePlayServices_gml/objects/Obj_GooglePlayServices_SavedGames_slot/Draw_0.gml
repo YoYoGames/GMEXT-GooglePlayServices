@@ -12,8 +12,8 @@ if(sprite_exists(sprite))
 else if (!is_undefined(coverImageUri)) {
 	// The function call below will take in a URI (unique resource identifier)
 	// and query it's path. The function returns an Async call id, that you can match
-	// using the Async Social Event callback of type "GooglePlayServices_UriToPath".
-	UriToPath_ind = GooglePlayServices_UriToPath(coverImageUri);
+	// using the Async Social Event callback of type "gpgs_UriToPath".
+	UriToPath_ind = gpgs_UriToPath(coverImageUri);
 	
 	coverImageUri = undefined;
 }

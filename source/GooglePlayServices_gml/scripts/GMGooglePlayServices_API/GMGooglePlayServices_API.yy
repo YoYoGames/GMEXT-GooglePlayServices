@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"GMGooglePlayServices_API",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"GMGooglePlayServices_API",
+  "parent":{
+    "name":"GooglePlayServices",
+    "path":"folders/GooglePlayServices.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

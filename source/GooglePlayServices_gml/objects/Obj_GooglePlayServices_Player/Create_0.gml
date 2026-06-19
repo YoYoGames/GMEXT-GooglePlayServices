@@ -24,5 +24,5 @@ function playerInfoReset()
 {
 	// This is a method that triggers a Social Async event callback
 	// returning the player information (check social async event).
-	GooglePlayServices_Player_Current()
+	gpgs_player_current()
 }

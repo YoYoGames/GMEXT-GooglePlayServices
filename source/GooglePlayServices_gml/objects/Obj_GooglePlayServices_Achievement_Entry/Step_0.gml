@@ -3,26 +3,32 @@ if(mouse_check_button_pressed(mb_left))
 if(point_in_circle(mouse_x,mouse_y,x,y,100))
 switch(state)
 {
-	case Achievement_STATE_HIDDEN:
-		GooglePlayServices_Achievements_Reveal()
+	case GPGSAchievementState.Hidden:
+		gpgs_achievements_reveal(ID,function(success,achievementId,error){
+			show_debug_message({success,achievementId,error})
+		});
 	break
 	
-	case Achievement_STATE_REVEALED:
+	case GPGSAchievementState.Revealed:
 		
 		switch(typeAchievement)
 		{
-			case Achievement_TYPE_INCREMENTAL:
-				GooglePlayServices_Achievements_Increment(ID,1)
+			case GPGSAchievementType.Incremental:
+				gpgs_achievements_increment(ID,1,function(success,achievementId,error){
+						show_debug_message({success,achievementId,error})
+					});
 			break
 	
-			case Achievement_TYPE_STANDARD:
-				GooglePlayServices_Achievements_Unlock(ID)
+			case GPGSAchievementType.Standard:
+				gpgs_achievements_unlock(ID,function(success,achievementId,error){
+						show_debug_message({success,achievementId,error})
+					});
 			break
 		}
 
 	break
 	
-	case Achievement_STATE_UNLOCKED:
+	case GPGSAchievementState.Unlocked:
 		//Noting... DONE
 	break
 }

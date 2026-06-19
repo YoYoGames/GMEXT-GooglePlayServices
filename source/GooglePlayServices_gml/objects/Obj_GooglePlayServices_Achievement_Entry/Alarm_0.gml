@@ -1,16 +1,16 @@
 
 switch(state)
 {
-	case Achievement_STATE_HIDDEN:
+	case GPGSAchievementState.Hidden:
 
 	break
 	
-	case Achievement_STATE_REVEALED:
-		UriToPath_request = GooglePlayServices_UriToPath(revealedImage)
+	case GPGSAchievementState.Revealed:
+		UriToPath_request = gpgs_uri_to_path(revealedImage,gpgs_uri_to_path_callback)
 	break
 	
-	case Achievement_STATE_UNLOCKED:
-		UriToPath_request = GooglePlayServices_UriToPath(unlockedImage)
+	case GPGSAchievementState.Unlocked:
+		UriToPath_request = gpgs_uri_to_path(unlockedImage,gpgs_uri_to_path_callback)
 	break
 }
 

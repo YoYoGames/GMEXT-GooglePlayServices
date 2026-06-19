@@ -1,0 +1,162 @@
+[gml_api]
+module GMGooglePlayServices;
+
+// Base
+
+[global, bind = typed_gml]
+function gpgs_is_available(): bool;
+
+[global, bind = typed_gml]
+function gpgs_sign_in(callback: func): unit;
+
+[global, bind = typed_gml]
+function gpgs_is_authenticated(callback: func): unit;
+
+[global, bind = typed_gml]
+function gpgs_request_server_side_access(server_client_id: string, force_refresh_token: bool, callback: func): unit;
+
+// Player
+
+[global, bind = typed_gml]
+function gpgs_player_current(callback: func): unit;
+
+[global, bind = typed_gml]
+function gpgs_player_current_id(callback: func): unit;
+
+// Achievements
+
+[global, bind = typed_gml]
+function gpgs_achievements_show(): unit;
+
+[global, bind = typed_gml]
+function gpgs_achievements_increment(achievement_id: string, steps: real, callback: func): unit;
+
+[global, bind = typed_gml]
+function gpgs_achievements_reveal(achievement_id: string, callback: func): unit;
+
+[global, bind = typed_gml]
+function gpgs_achievements_set_steps(achievement_id: string, steps: real, callback: func): unit;
+
+[global, bind = typed_gml]
+function gpgs_achievements_unlock(achievement_id: string, callback: func): unit;
+
+[global, bind = typed_gml]
+function gpgs_achievements_get_status(force_reload: bool, callback: func): unit;
+
+// Leaderboards
+
+[global, bind = typed_gml]
+function gpgs_leaderboard_show_all(): unit;
+
+[global, bind = typed_gml]
+function gpgs_leaderboard_show(leaderboard_id: string): unit;
+
+[global, bind = typed_gml]
+function gpgs_leaderboard_submit_score(leaderboard_id: string, score: real, score_tag: string, callback: func): unit;
+
+[global, bind = typed_gml]
+function gpgs_leaderboard_load_player_centered_scores(leaderboard_id: string, [type_hint=`GPGSLeaderboardTimeSpan`] span, [type_hint=`GPGSLeaderboardCollection`] leaderboard_collection, max_results: real, force_reload: bool, callback: func): unit;
+
+[global, bind = typed_gml]
+function gpgs_leaderboard_load_top_scores(leaderboard_id: string, [type_hint=`GPGSLeaderboardTimeSpan`] span, [type_hint=`GPGSLeaderboardCollection`] leaderboard_collection, max_results: real, force_reload: bool, callback: func): unit;
+
+// URI helper
+
+[global, bind = typed_gml]
+function gpgs_uri_to_path(uri: string, callback: func): unit;
+
+// Saved Games
+
+[global, bind = typed_gml]
+function gpgs_saved_games_show_saved_games_ui(title: string, button_add: bool, button_delete: bool, max_results: real, callback: func): unit;
+
+[global, bind = typed_gml]
+function __gpgs_saved_games_commit_and_close(options_json: string, callback: func): unit;
+
+[global, bind = typed_gml]
+function __gpgs_saved_games_commit_new(options_json: string, callback: func): unit;
+
+[global, bind = typed_gml]
+function gpgs_saved_games_load(force_reload: bool, callback: func): unit;
+
+[global, bind = typed_gml]
+function gpgs_saved_games_open(name: string, callback: func): unit;
+
+[global, bind = typed_gml]
+function gpgs_saved_games_open_conflict(name: string, [type_hint=`GPGSSavedGamesConflictPolicy`] conflict_policy, callback: func): unit;
+
+[global, bind = typed_gml]
+function gpgs_saved_games_delete(name: string, callback: func): unit;
+
+[global, bind = typed_gml]
+function gpgs_saved_games_resolve_conflict(conflict_id: string, use_local: bool, callback: func): unit;
+
+
+// Constants returned by gpgs_achievements_get_status() in each achievement struct.
+
+[global, bind = typed_gml]
+enum GPGSAchievementState:int32
+{
+    Unlocked = 0,
+    Revealed = 1,
+    Hidden = 2,
+}
+
+[global, bind = typed_gml]
+enum GPGSAchievementType:int32
+{
+    Standard = 0,
+    Incremental = 1,
+}
+
+// Leaderboard request parameters and values returned in leaderboard JSON.
+
+[global, bind = typed_gml]
+enum GPGSLeaderboardTimeSpan:int32
+{
+    Daily = 0,
+    Weekly = 1,
+    AllTime = 2,
+}
+
+[global, bind = typed_gml]
+enum GPGSLeaderboardCollection:int32
+{
+    Public = 0,
+    Friends = 3,
+}
+
+[global, bind = typed_gml]
+enum GPGSLeaderboardScoreOrder:int32
+{
+    SmallerIsBetter = 0,
+    LargerIsBetter = 1,
+}
+
+// Saved Games constants.
+
+[global, bind = typed_gml]
+enum GPGSSavedGamesConflictPolicy:int32
+{
+    Manual = -1,
+    LongestPlaytime = 1,
+    LastKnownGood = 2,
+    MostRecentlyModified = 3,
+    HighestProgress = 4,
+}
+
+[global, bind = typed_gml]
+enum GPGSSavedGamesDisplayLimit:int32
+{
+    None = -1,
+}
+
+[global, bind = typed_gml]
+enum GPGSSavedGamesUIResult:int32
+{
+    Cancelled = 0,
+    Selected = 1,
+    CreatedNew = 2,
+    Deleted = 3,
+    Error = -1,
+}

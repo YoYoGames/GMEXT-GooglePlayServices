@@ -27,5 +27,5 @@ function setSlotEditMode(enable)
 
 // Load the current saved games.
 // The boolean flagged passed onto the function will force the load.
-GooglePlayServices_SavedGames_Load(true);
+gpgs_saved_games_load(true);
 

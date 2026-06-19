@@ -1,5 +1,6 @@
 {
   "FolderOrderSettings":[
+    {"name":"ExtensionCore","order":8,"path":"folders/ExtensionCore.yy",},
     {"name":"GooglePlayServices Demo","order":2,"path":"folders/GooglePlayServices Demo.yy",},
     {"name":"Achievements","order":3,"path":"folders/GooglePlayServices Demo/Objects/Achievements.yy",},
     {"name":"Advanced","order":7,"path":"folders/GooglePlayServices Demo/Objects/Advanced.yy",},
@@ -18,6 +19,7 @@
     {"name":"Sprites","order":3,"path":"folders/YoYo Extensions Assets/Sprites.yy",},
   ],
   "ResourceOrderSettings":[
+    {"name":"GMGooglePlayServices","order":2,"path":"extensions/GMGooglePlayServices/GMGooglePlayServices.yy",},
     {"name":"Font_YoYo_15","order":3,"path":"fonts/Font_YoYo_15/Font_YoYo_15.yy",},
     {"name":"Font_YoYo_20","order":4,"path":"fonts/Font_YoYo_20/Font_YoYo_20.yy",},
     {"name":"Font_YoYo_30","order":5,"path":"fonts/Font_YoYo_30/Font_YoYo_30.yy",},
@@ -57,6 +59,8 @@
     {"name":"Room_GooglePlayServices_Leaderboards_Advanced","order":5,"path":"rooms/Room_GooglePlayServices_Leaderboards_Advanced/Room_GooglePlayServices_Leaderboards_Advanced.yy",},
     {"name":"Room_GooglePlayServices_Leaderboards","order":2,"path":"rooms/Room_GooglePlayServices_Leaderboards/Room_GooglePlayServices_Leaderboards.yy",},
     {"name":"Room_GooglePlayServices_SavedGames","order":3,"path":"rooms/Room_GooglePlayServices_SavedGames/Room_GooglePlayServices_SavedGames.yy",},
+    {"name":"ExtensionCore_api","order":1,"path":"scripts/ExtensionCore_api/ExtensionCore_api.yy",},
+    {"name":"GMGooglePlayServices_API","order":3,"path":"scripts/GMGooglePlayServices_API/GMGooglePlayServices_API.yy",},
     {"name":"GooglePlayServicesWrapper","order":1,"path":"scripts/GooglePlayServicesWrapper/GooglePlayServicesWrapper.yy",},
     {"name":"sprite_save_w","order":2,"path":"scripts/sprite_save_w/sprite_save_w.yy",},
     {"name":"Spr_GooglePlayServices_SavedGames","order":3,"path":"sprites/Spr_GooglePlayServices_SavedGames/Spr_GooglePlayServices_SavedGames.yy",},

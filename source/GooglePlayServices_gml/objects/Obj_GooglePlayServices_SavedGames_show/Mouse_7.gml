@@ -9,4 +9,4 @@ if (locked) exit;
 // - allow add
 // - allow delete
 // - provide a max number of allowed save slots
-GooglePlayServices_SavedGames_ShowSavedGamesUI("YoYo Games SavedGames", true, true, 3);
+gpgs_saved_games_show_saved_games_ui("YoYo Games SavedGames", true, true, 3);

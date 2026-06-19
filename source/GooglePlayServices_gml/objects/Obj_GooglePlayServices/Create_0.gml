@@ -30,4 +30,18 @@ function setSignedInMode(enable)
 }
 
 setSignedInMode(false);
-GooglePlayServices_IsAuthenticated()
+gpgs_is_authenticated(function(success,authenticated,error){
+	show_debug_message($"is authenticated: {{success,authenticated,error}}")
+		if(success)
+		if(authenticated)
+		{
+			setSignedInMode(true)
+			//instance_create_depth(30,100,0,Obj_GooglePlayServices_PlayerStats)
+			//instance_create_depth(450,110,0,Obj_GooglePlayServices_Player)
+			
+		}
+		else 
+			gpgs_sign_in(function(success,sign_in,error){
+					show_debug_message({success,sign_in,error})
+				});
+	})

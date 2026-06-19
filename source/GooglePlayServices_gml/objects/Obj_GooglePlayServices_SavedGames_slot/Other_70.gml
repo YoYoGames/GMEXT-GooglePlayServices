@@ -1,7 +1,7 @@
 
 switch(async_load[?"type"])
 {
-	// @triggered by GooglePlayServices_UriToPath()
+	// @triggered by gpgs_UriToPath()
 	case GOOGLE_PLAY_EV_UTILS_URI_TO_PATH:
 
 		// At this point we received a callback from a UriToPath request.

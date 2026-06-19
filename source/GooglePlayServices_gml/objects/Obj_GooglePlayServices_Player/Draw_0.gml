@@ -25,7 +25,7 @@ draw_text(x + 160, y, "Player Info:");
 var info = playerInfo;
 
 // We check if 'info' is a valid struct
-// NOTE: Data is retreived in callback Async Social 'GooglePlayServices_Player_Current'
+// NOTE: Data is retreived in callback Async Social 'gpgs_Player_Current'
 if (!is_struct(info)) exit;
 
 // We loop through all the properties inside the struct and draw them to screen.

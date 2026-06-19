@@ -15,13 +15,13 @@ switch(async_load[? "type"])
 		// At point we just requested a slot to be opened.
 		// The selected slot (snapshot) metadata is returned inside the 'snapshotMetadata' key
 		// amough other properties we have access to the 'uniqueName' identifier that we need
-		// to call the function 'GooglePlayServices_SavedGames_Open' to query the saved data.
+		// to call the function 'gpgs_SavedGames_Open' to query the saved data.
 		var snapshotMeta = json_parse(async_load[? "snapshotMetadata"]);
 		var uniqueName = snapshotMeta.uniqueName;
 		
 		// This function uses the unique identifier name of the slot to query its data.
-		// Note that this will trigger an Async Social event - "GooglePlayServices_SavedGames_Open"
-		GooglePlayServices_SavedGames_Open(uniqueName);	
+		// Note that this will trigger an Async Social event - "gpgs_SavedGames_Open"
+		gpgs_saved_games_open(uniqueName);	
 		break;
 	
 	// @triggered by closing the ShowSavedGamesUI
@@ -29,10 +29,10 @@ switch(async_load[? "type"])
 		// At this point we just closed the ShowSavedGames google play UI.
 		// We use this event to reload all the saves slots to properly display them
 		// since we could have deleted a slot through the 'ShowSavedGamesUI'.
-		GooglePlayServices_SavedGames_Load(true);
+		gpgs_saved_games_load(true);
 		break;
 	
-	// @triggered by GooglePlayServices_SavedGames_CommitNew()
+	// @triggered by gpgs_SavedGames_CommitNew()
 	case GOOGLE_PLAY_EV_SAVEDGAMES_COMMIT_NEW:
 		
 		// Early exit if the callback "success" flag is not true.
@@ -41,10 +41,10 @@ switch(async_load[? "type"])
 		// Upon creating a new game save slot we refresh the current UI
 		// by destroying all previous slots and reloading the data.
 		instance_destroy(Obj_GooglePlayServices_SavedGames_Slot);
-		GooglePlayServices_SavedGames_Load(true);
+		gpgs_saved_games_load(true);
 		break;
 
-	// @triggered by GooglePlayServices_SavedGames_Load()
+	// @triggered by gpgs_SavedGames_Load()
 	case GOOGLE_PLAY_EV_SAVEDGAMES_LOAD:
 		
 		// Early exit if the callback "success" flag is not true.
@@ -98,7 +98,7 @@ switch(async_load[? "type"])
 			//take the choose using previosly information... in this exmaple we will select GOOGLE_PLAY_SNAPSHOT_REMOTE
 			var resolution = GOOGLE_PLAY_SNAPSHOT_REMOTE //or GOOGLE_PLAY_SNAPSHOT_LOCAL
 			
-			GooglePlayServices_SavedGames_Resolve_Conflict(conflictId,resolution)
+			gpgs_saved_games_resolve_conflict(conflictId,resolution)
 			
 			break
 		}
@@ -109,13 +109,13 @@ switch(async_load[? "type"])
 		}
 	
 	
-	// @triggered by GooglePlayServices_SavedGames_Open()
+	// @triggered by gpgs_SavedGames_Open()
 	case GOOGLE_PLAY_EV_SAVEDGAMES_OPEN:
 		
 		// Early exit if the callback "success" flag is not true.
 		if (!async_load[? "success"])
 		{
-			GooglePlayServices_SavedGames_Load(true);
+			gpgs_saved_games_load(true);
 			return;
 		}
 		
@@ -152,9 +152,9 @@ switch(async_load[? "type"])
 		}
 		break;
 	
-	// @triggered by GooglePlayServices_SavedGames_Delete()
+	// @triggered by gpgs_SavedGames_Delete()
 	case GOOGLE_PLAY_EV_SAVEDGAMES_DELETE:
-	// @triggered by GooglePlayServices_SavedGames_CommitAndClose()
+	// @triggered by gpgs_SavedGames_CommitAndClose()
 	case GOOGLE_PLAY_EV_SAVEDGAMES_COMMIT_CLOSE:
 
 		// Early exit if the callback "success" flag is not true.
@@ -170,7 +170,7 @@ switch(async_load[? "type"])
 		opened_description = "";
 		break;
 	
-	// @triggered by GooglePlayServices_SavedGames_DiscardAndClose()
+	// @triggered by gpgs_SavedGames_DiscardAndClose()
 	case GOOGLE_PLAY_EV_SAVEDGAMES_DISCARD_CLOSE:
 	
 		// Early exit if the callback "success" flag is not true.

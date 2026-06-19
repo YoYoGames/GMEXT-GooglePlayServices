@@ -2,17 +2,17 @@
 
 switch (async_load[?"type"])
 {
-	// @triggered by GooglePlayServices_StartSignInIntent()
+	// @triggered by gpgs_StartSignInIntent()
 	case GOOGLE_PLAY_EV_SIGNIN:
 	
 		// If we succeeded to get the player info
 		if(async_load[?"success"])
 		{
-			GooglePlayServices_Player_Current();
+			gpgs_Player_Current();
 		}
 		break;
 	
-	// @triggered by GooglePlayServices_Player_Current()
+	// @triggered by gpgs_Player_Current()
 	case GOOGLE_PLAY_EV_PLAYERS_CURRENT:
 	
 		// If we succeeded to get the player info
@@ -24,15 +24,15 @@ switch (async_load[?"type"])
 			
 			// Check if the player has a HiRes image or an icon.
 			// Either way this retrieved variable is an URI and needs to be converted to a path
-			// for the sprite to be loaded from so we need to call 'GooglePlayServices_UriToPath'
+			// for the sprite to be loaded from so we need to call 'gpgs_UriToPath'
 			// which will trigger an Async Social event with the sprite path.
 			if (playerInfo.hasHiResImage)
 			{
-				UriToPath_request = GooglePlayServices_UriToPath(playerInfo.hiResImageUri);
+				UriToPath_request = gpgs_UriToPath(playerInfo.hiResImageUri);
 			}
 			else if (playerInfo.hasIconImage)
 			{
-				UriToPath_request = GooglePlayServices_UriToPath(playerInfo.hasIconImage);
+				UriToPath_request = gpgs_UriToPath(playerInfo.hasIconImage);
 			}
 		}
 		else
@@ -43,7 +43,7 @@ switch (async_load[?"type"])
 		}
 		break;
 	
-	// @triggered by GooglePlayServices_UriToPath()
+	// @triggered by gpgs_UriToPath()
 	case GOOGLE_PLAY_EV_UTILS_URI_TO_PATH:
 		
 		// We need to check the id of the request to make sure it matches the current request

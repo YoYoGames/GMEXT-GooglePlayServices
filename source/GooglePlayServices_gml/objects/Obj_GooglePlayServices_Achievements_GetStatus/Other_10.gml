@@ -1,4 +1,0 @@
-
-instance_destroy(Obj_GooglePlayServices_Achievement_Entry);
-
-GooglePlayServices_Achievements_GetStatus(true)

@@ -2,4 +2,4 @@
 
 // This function show the leaderboard with a given id.
 // This id is the leaderboard unique identifier string.
-GooglePlayServices_Leaderboard_Show(leaderboard_id)
+gpgs_leaderboard_show(leaderboard_id)

@@ -6,5 +6,5 @@ show_message_async("Your Score: " + string(newScore));
 
 // This function submits a new value to the leaderboard with a given id and allows to set a tag.
 // This id is the leaderboard unique identifier string.
-GooglePlayServices_Leaderboard_SubmitScore(leaderboard_id, newScore, "test");
+gpgs_leaderboard_submit_score(leaderboard_id, newScore, "test");
 

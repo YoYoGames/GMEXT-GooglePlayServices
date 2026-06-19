@@ -42,6 +42,6 @@ var description = Obj_GooglePlayServices_SavedGames.opened_description;
 // in string format (it can be any data as long as it is a string) and the path to the
 // thumbnail being used for the save.
 // This function call will trigger an Social Async event callback of the same name
-// "GooglePlayServices_SavedGames_CommitAndClose"
+// "gpgs_SavedGames_CommitAndClose"
 
-GooglePlayServices_SavedGames_CommitAndClose(name, description, jsonData, path);
+gpgs_saved_games_commit_and_close(name, description, jsonData, path);
