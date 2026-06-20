@@ -3,6 +3,8 @@ instance_destroy(Obj_GooglePlayServices_Achievement_Entry);
 
 gpgs_achievements_get_status(true,function(success,str_array,error){
 	
+	show_debug_message({success,str_array,error})
+	
 		var array = json_parse(str_array)
 	
 		array_sort(array, function(_ach1, _ach2) { return _ach1.name < _ach2.name ? -1 : 1 });
@@ -23,7 +25,7 @@ gpgs_achievements_get_status(true,function(success,str_array,error){
 			ins.unlockedImage = struct.unlockedImage
 			ins.xpValue = struct.xpValue
 		
-			if(ins.typeAchievement == Achievement_TYPE_INCREMENTAL)
+			if(ins.typeAchievement == GPGSAchievementType.Incremental)
 			{
 				ins.currentSteps = struct.currentSteps
 				ins.formattedCurrentSteps = struct.formattedCurrentSteps

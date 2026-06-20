@@ -2,19 +2,19 @@
 
 // ############### LEADERBOARDS ###############
 
-#macro Leaderboard1 "CggI47itmU0QAhAD"
-#macro Leaderboard2 "CggI47itmU0QAhAE"
+#macro Leaderboard1 "CgkI9bH92usSEAIQBA"
+#macro Leaderboard2 "CgkI9bH92usSEAIQBQ"
 
 // ############### ACHIEVEMENTS ###############
 
 // Incremental achievement
-#macro Achievement1 "CggI47itmU0QAhAC"
+#macro Achievement1 "CgkI9bH92usSEAIQAQ"
 
 // Hidden achievement
-#macro Achievement2 "CggI47itmU0QAhAF"
+#macro Achievement2 "CgkI9bH92usSEAIQAg"
 
 // Achievement locked (unlock example)
-#macro Achievement3 "CggI47itmU0QAhAB"
+#macro Achievement3 "CgkI9bH92usSEAIQAw"
 
 
 // Code start here!!
