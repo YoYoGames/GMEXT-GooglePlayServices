@@ -1,21 +1,3 @@
+/// @description Legacy Social Async event
 
-switch(async_load[?"type"])
-{
-	// @triggered by gpgs_UriToPath()
-	case GOOGLE_PLAY_EV_UTILS_URI_TO_PATH:
-
-		// At this point we received a callback from a UriToPath request.
-		// However we still need to check if the identification matches
-		// and if the query was a success.
-		if (async_load[?"ind"] != UriToPath_ind) exit;
-		
-		if (!async_load[?"success"]) exit;
-		
-		// At this point both checks above passed so we have a path that we can use to
-		// load the sprite.
-		var path = async_load[?"path"]
-		sprite = sprite_add(path, 0, 0, 0, 0, 0);
-	
-	break
-}
-
+// URI conversion now uses uri_to_path_callback from the Create Event.

@@ -1,5 +1,3 @@
-/// @description Reload the slots
+/// @description Reload save slots
 
-// We use this event to reload all the saves slots to properly display them
-// since we could have deleted or edited a slot
-gpgs_saved_games_load(true,callback_saved_games_load);
+gpgs_saved_games_load(true, callback_saved_games_load);

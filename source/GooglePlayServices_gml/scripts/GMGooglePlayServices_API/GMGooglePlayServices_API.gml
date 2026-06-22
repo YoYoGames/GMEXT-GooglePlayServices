@@ -662,7 +662,7 @@ function gpgs_saved_games_commit_and_close(_options, _callback)
     var __args_buffer = __ext_core_get_args_buffer();
 
     // param: _options, type: struct GPGSSavedGameCommitOptions
-    if (_options.__uid != 2822368498) show_error($"{_GMFUNCTION_} :: _options expected GPGSSavedGameCommitOptions", true);
+    
     __GPGSSavedGameCommitOptions_encode(_options, __args_buffer, buffer_tell(__args_buffer), _GMFUNCTION_);
 
     // param: _callback, type: Function
@@ -686,7 +686,7 @@ function gpgs_saved_games_commit_new(_options, _callback)
     var __args_buffer = __ext_core_get_args_buffer();
 
     // param: _options, type: struct GPGSSavedGameCommitOptions
-    if (_options.__uid != 2822368498) show_error($"{_GMFUNCTION_} :: _options expected GPGSSavedGameCommitOptions", true);
+    
     __GPGSSavedGameCommitOptions_encode(_options, __args_buffer, buffer_tell(__args_buffer), _GMFUNCTION_);
 
     // param: _callback, type: Function

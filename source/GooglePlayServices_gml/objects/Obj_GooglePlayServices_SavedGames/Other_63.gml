@@ -1,53 +1,46 @@
-/// @description Handle dialog callback
+/// @description Handle the new-slot description dialog
 
-// Early exit if sync identification doesn't match
-if (async_load[?"id"] != dialog_ind) exit;
+if (async_load[? "id"] != dialog_ind) exit;
+if (!async_load[? "status"]) exit;
+if (async_load[? "result"] == "") exit;
 
-// Early exit if status if false (Cancel button was pressed)
-if (!async_load[?"status"]) exit;
+var _thumbnail_path = "save_thumbnail.png";
+sprite_save_w(Spr_GooglePlayServices_SavedGames, 0, _thumbnail_path);
 
-// Early exit if result is empty string.
-if (async_load[?"result"] == "") exit;
-
-// Temporary path to save the saved game icon.
-var path = "save_thumbnail.png"
-
-sprite_save_w(Spr_GooglePlayServices_SavedGames, 0, path);
-			
-// Create initial position/image data to save
-var objsArray = [];	
-for (var i = 0 ; i < 3; i++)
+var _objects = [];
+for (var i = 0; i < 3; ++i)
 {
-	var objData = {};
-	objData.x = 700 + i*125;
-	objData.y = 250;
-	objData.image_index = 0;
-		
-	array_push(objsArray, objData);
+    array_push(_objects, {
+        x: 700 + i * 125,
+        y: 250,
+        image_index: 0
+    });
 }
 
-// Pack the data into a struct with object data and default icon index
-var data = {};
-data.objs = objsArray;
-data.icon_index = 0;
+var _save_data = {
+    objs: _objects,
+    icon_index: 0
+};
 
-// Convert the struct into a string to be saved
-var jsonData = json_stringify(data);
+var _options = {
+    name: "slot_" + string(current_time) + "_" + string(irandom_range(0, 99999)),
+    data: json_stringify(_save_data),
+    desc: async_load[? "result"],
+    played_time_millis: 0,
+    progress_value: 0,
+    cover_image_path: _thumbnail_path
+};
 
-// Generate a unique slot identifier name
-// This is not the perfect way for generating unique identifiers
-// Use your own unique id generation logic.
-var name = "slotUniqueName_" + string(irandom_range(0, 99999)) // This should be unique
+gpgs_saved_games_commit_new(_options, function(_success, _name, _error)
+{
+    if (!_success)
+    {
+        show_debug_message(_error);
+        return;
+    }
 
-// Get the description from the dialog result
-var description = async_load[? "result"];
-
-// Create a new save game commit, this function allows the developer to commit a new data slot to be saved.
-// TYhe user can pass in a: 
-// - name: an unique slot identification id
-// - description: this is a tag that appears when showing saved games using 'gpgs_SavedGames_ShowSavedGamesUI'
-// - jsonData: The data being saved to the slot (this must be a string and should probably be a json)
-// - path: the path for the save game thumbnail image.
-// This function triggers a Social Async callback (check: "gpgs_SavedGames_CommitNew")
-gpgs_saved_games_commit_new(name, description, jsonData, path);
-
+    with (Obj_GooglePlayServices_SavedGames)
+    {
+        gpgs_saved_games_load(true, callback_saved_games_load);
+    }
+});

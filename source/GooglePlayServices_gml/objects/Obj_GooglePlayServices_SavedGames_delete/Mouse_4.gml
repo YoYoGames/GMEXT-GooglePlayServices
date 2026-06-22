@@ -1,10 +1,10 @@
 
 
 
-if(Obj_GooglePlayServices_SavedGames_Controller.opened_uniqueName != "")
+if(Obj_GooglePlayServices_SavedGames.opened_unique_name != "")
 {
 
 	GooglePlayServices_SavedGames_Delete(
-	Obj_GooglePlayServices_SavedGames_Controller.opened_uniqueName)
+	Obj_GooglePlayServices_SavedGames.opened_unique_name)
 	
 }

@@ -1,7 +1,7 @@
-/// @description Delete sprite
+/// @description Delete dynamically loaded cover sprite
 
-if(sprite_exists(sprite)) {
-	sprite_delete(sprite)
-	sprite = noone;
+if (sprite_exists(cover_sprite))
+{
+    sprite_delete(cover_sprite);
+    cover_sprite = noone;
 }
-

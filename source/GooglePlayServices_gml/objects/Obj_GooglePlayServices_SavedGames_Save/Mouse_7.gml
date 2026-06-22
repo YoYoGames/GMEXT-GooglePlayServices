@@ -1,59 +1,57 @@
-/// @description Save slot
+/// @description Save and close the opened slot
 
-// Early exit if locked
 if (locked) exit;
 
-// We create a temporary path for the thumbnail to be saved to.
-var path = "save_thumbnail.png"
+var _thumbnail_path = "save_thumbnail.png";
 
-// We have this thumbnail to the given path
-var sprite = Obj_GooglePlayServices_SavedGames_Icon.sprite_index;
-var subimage = Obj_GooglePlayServices_SavedGames_Icon.image_index;
-sprite_save_w(sprite, subimage, path);
-
-// Now we need to handle the DataObjs for that we loop through them and
-// store position and image_index information into a struct and push
-// that struct into an array.
-var objsArray = [];
-with(Obj_GooglePlayServices_SavedGames_DataObj)
+if (instance_exists(Obj_GooglePlayServices_SavedGames_Icon))
 {
-	var objData = {};
-	objData.x = x;
-	objData.y = y;
-	objData.image_index = image_index;
-		
-	array_push(objsArray, objData);
+    sprite_save_w(
+        Obj_GooglePlayServices_SavedGames_Icon.sprite_index,
+        Obj_GooglePlayServices_SavedGames_Icon.image_index,
+        _thumbnail_path
+    );
 }
 
-// We pack the final game data using the icon information and the objects information.
-var data = {};
-data.objs = objsArray;
-data.icon_index = Obj_GooglePlayServices_SavedGames_Icon.image_index;
+var _objects = [];
+with (Obj_GooglePlayServices_SavedGames_DataObj)
+{
+    array_push(_objects, {
+        x: x,
+        y: y,
+        image_index: image_index
+    });
+}
 
-// We need to convert the data to string
-var jsonData = json_stringify(data);
+var _icon_index = 0;
+if (instance_exists(Obj_GooglePlayServices_SavedGames_Icon))
+    _icon_index = Obj_GooglePlayServices_SavedGames_Icon.image_index;
 
-//We get the currently opened slot uniqueName and description
-var name = Obj_GooglePlayServices_SavedGames.opened_uniqueName;
-var description = Obj_GooglePlayServices_SavedGames.opened_description;
+var _save_data = {
+    objs: _objects,
+    icon_index: _icon_index
+};
 
-// Finally we can commit the changes and close the slot using the function
-// below the requires the 'name' (unique id) the 'description' tag, the 'jsonData'
-// in string format (it can be any data as long as it is a string) and the path to the
-// thumbnail being used for the save.
-// This function call will trigger an Social Async event callback of the same name
-// "gpgs_SavedGames_CommitAndClose"
+var _options = {
+    name: Obj_GooglePlayServices_SavedGames.opened_unique_name,
+    data: json_stringify(_save_data),
+    desc: Obj_GooglePlayServices_SavedGames.opened_description,
+    played_time_millis: 0,
+    progress_value: 0,
+    cover_image_path: _thumbnail_path
+};
 
-__gpgs_saved_games_commit_and_close(name, description, jsonData, path,function(success,name,error){
-	
-			// Early exit if the callback "success" flag is not true.
-			if (!async_load[? "success"]) exit;
+gpgs_saved_games_commit_and_close(_options, function(_success, _name, _error)
+{
+    if (!_success)
+    {
+        show_debug_message(_error);
+        return;
+    }
 
-			// Upon creating a new game save slot we refresh the current UI
-			// by destroying all previous slots and reloading the data.
-			instance_destroy(Obj_GooglePlayServices_SavedGames_Slot);
-			with(Obj_GooglePlayServices_SavedGames)
-				gpgs_saved_games_load(true,callback_saved_games_load);
-			
-		});
-
+    with (Obj_GooglePlayServices_SavedGames)
+    {
+        close_local_slot();
+        gpgs_saved_games_load(true, callback_saved_games_load);
+    }
+});
