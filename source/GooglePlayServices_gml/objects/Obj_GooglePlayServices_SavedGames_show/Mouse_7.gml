@@ -19,6 +19,8 @@ gpgs_saved_games_show_saved_games_ui(
                 {
                     if (!_open_result.success)
                         show_debug_message(_open_result.error);
+					else
+						Obj_GooglePlayServices_SavedGames_Slot.slot_open(_open_result.result.snapshot_metadata.unique_name )
                 });
                 break;
 
