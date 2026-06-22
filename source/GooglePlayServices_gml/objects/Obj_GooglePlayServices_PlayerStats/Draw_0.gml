@@ -1,11 +1,25 @@
+draw_set_font(Font_YoYo_20);
+draw_set_halign(fa_left);
+draw_set_valign(fa_top);
 
-draw_set_font(Font_YoYo_20)
-draw_set_halign(fa_left)
-draw_set_valign(fa_left)
+draw_text(x, y, "Player Stats:");
 
-draw_text(x,y,"Player Stats:")
-var array = variable_struct_get_names(struct)
-for(var a  = 0 ; a < array_length(array) ; a++)
+if (!is_struct(player_stats))
 {
-	draw_text(x,y+a*30+30,array[a] + ": " + string(variable_struct_get(struct,array[a])))
+    draw_text(x, y + 30, "Loading...");
+    exit;
+}
+
+var names = variable_struct_get_names(player_stats);
+
+for (var i = 0; i < array_length(names); ++i)
+{
+    var key = names[i];
+    var value = variable_struct_get(player_stats, key);
+
+    draw_text(
+        x,
+        y + i * 30 + 30,
+        key + ": " + string(value)
+    );
 }

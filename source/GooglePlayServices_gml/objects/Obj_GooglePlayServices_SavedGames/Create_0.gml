@@ -38,7 +38,7 @@ callback_saved_games_load = function(success,str_snapshots,error)
 		instance_destroy(Obj_GooglePlayServices_SavedGames_Slot);
 		
 		// We loop through all the queried snapshots and recreate the new slot data.
-		var snapshots = json_parse(str_snapshots);
+		var snapshots = str_snapshots;
 		var count = array_length(snapshots);
 		for(var i = 0; i < count; i++)
 		{

@@ -1,9 +1,7 @@
-/// @description Delete sprite
+/// @description Release the dynamically loaded player sprite
 
-// We need to check if the sprite exists and delete it
-// otherwise we will have memory leaks.
-if(sprite_exists(sprite))
+if (sprite_exists(player_sprite))
 {
-	sprite_delete(sprite)
-	sprite = noone
+    sprite_delete(player_sprite);
+    player_sprite = noone;
 }

@@ -1,38 +1,42 @@
-
 instance_destroy(Obj_GooglePlayServices_Achievement_Entry);
 
-gpgs_achievements_get_status(true,function(success,str_array,error){
-	
-	show_debug_message({success,str_array,error})
-	
-		var array = json_parse(str_array)
-	
-		array_sort(array, function(_ach1, _ach2) { return _ach1.name < _ach2.name ? -1 : 1 });
-		for(var a = 0 ; a < array_length(array) ; a++)
-		{
-			var struct = array[a];
-		
-			show_debug_message(struct);
-		
-			var ins = instance_create_depth(150+a*300,room_height/2-50,0,Obj_GooglePlayServices_Achievement_Entry)
-			ins.ID = struct.id
-			ins.description = struct.description
-			ins.lastUpdatedTimestamp = struct.lastUpdatedTimestamp
-			ins.name = struct.name
-			ins.revealedImage = struct.revealedImage
-			ins.state = struct.state
-			ins.typeAchievement = struct.typeAchievement
-			ins.unlockedImage = struct.unlockedImage
-			ins.xpValue = struct.xpValue
-		
-			if(ins.typeAchievement == GPGSAchievementType.Incremental)
-			{
-				ins.currentSteps = struct.currentSteps
-				ins.formattedCurrentSteps = struct.formattedCurrentSteps
-				ins.formattedTotalSteps = struct.formattedTotalSteps
-				ins.totalSteps = struct.totalSteps
-			}
-		}	
-	})
+gpgs_achievements_get_status(true, function(_result)
+{
+    show_debug_message(_result);
 
-	
+    if (!_result.success)
+    {
+        show_debug_message(_result.error);
+        return;
+    }
+
+    var _achievements = _result.achievements;
+
+    array_sort(_achievements, function(_achievement1, _achievement2)
+    {
+        if (_achievement1.name < _achievement2.name)
+            return -1;
+
+        if (_achievement1.name > _achievement2.name)
+            return 1;
+
+        return 0;
+    });
+
+    for (var i = 0; i < array_length(_achievements); ++i)
+    {
+        var _achievement = _achievements[i];
+
+        show_debug_message(_achievement);
+
+        instance_create_depth(
+            150 + i * 300,
+            room_height / 2 - 50,
+            0,
+            Obj_GooglePlayServices_Achievement_Entry,
+            {
+                data: _achievement
+            }
+        );
+    }
+});

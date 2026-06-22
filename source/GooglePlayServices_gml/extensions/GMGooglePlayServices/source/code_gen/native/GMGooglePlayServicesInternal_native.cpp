@@ -299,31 +299,31 @@ GMEXPORT double __EXT_NATIVE__gpgs_saved_games_show_saved_games_ui(char* __arg_b
     return 0;
 }
 
-GMEXPORT double __EXT_NATIVE____gpgs_saved_games_commit_and_close(char* __arg_buffer, double __arg_buffer_length)
+GMEXPORT double __EXT_NATIVE__gpgs_saved_games_commit_and_close(char* __arg_buffer, double __arg_buffer_length)
 {
     gm::byteio::BufferReader __br{__arg_buffer, static_cast<size_t>(__arg_buffer_length)};
 
-    // field: options_json, type: String
-    std::string_view options_json = gm::wire::codec::readValue<std::string_view>(__br);
+    // field: options, type: struct GPGSSavedGameCommitOptions
+    gm_structs::GPGSSavedGameCommitOptions options = gm::wire::codec::readValue<gm_structs::GPGSSavedGameCommitOptions>(__br);
 
     // field: callback, type: Function
     gm::wire::GMFunction callback = gm::wire::codec::readFunction(__br, &__dispatch_queue);
 
-    __gpgs_saved_games_commit_and_close(options_json, callback);
+    gpgs_saved_games_commit_and_close(options, callback);
     return 0;
 }
 
-GMEXPORT double __EXT_NATIVE____gpgs_saved_games_commit_new(char* __arg_buffer, double __arg_buffer_length)
+GMEXPORT double __EXT_NATIVE__gpgs_saved_games_commit_new(char* __arg_buffer, double __arg_buffer_length)
 {
     gm::byteio::BufferReader __br{__arg_buffer, static_cast<size_t>(__arg_buffer_length)};
 
-    // field: options_json, type: String
-    std::string_view options_json = gm::wire::codec::readValue<std::string_view>(__br);
+    // field: options, type: struct GPGSSavedGameCommitOptions
+    gm_structs::GPGSSavedGameCommitOptions options = gm::wire::codec::readValue<gm_structs::GPGSSavedGameCommitOptions>(__br);
 
     // field: callback, type: Function
     gm::wire::GMFunction callback = gm::wire::codec::readFunction(__br, &__dispatch_queue);
 
-    __gpgs_saved_games_commit_new(options_json, callback);
+    gpgs_saved_games_commit_new(options, callback);
     return 0;
 }
 

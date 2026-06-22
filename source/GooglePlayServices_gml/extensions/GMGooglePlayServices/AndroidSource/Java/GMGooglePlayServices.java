@@ -3,6 +3,7 @@ package ${YYAndroidPackageName};
 import ${YYAndroidPackageName}.R;
 
 import ${YYAndroidPackageName}.enums.*;
+import ${YYAndroidPackageName}.records.GPGSSavedGameCommitOptions;
 import ${YYAndroidPackageName}.GMExtWire;
 import ${YYAndroidPackageName}.GMExtWire.GMFunction;
 import ${YYAndroidPackageName}.GMExtWire.GMValue;
@@ -44,8 +45,6 @@ import com.google.android.gms.games.stats.PlayerStats;
 import com.google.android.gms.tasks.Task;
 
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -62,7 +61,8 @@ import java.util.concurrent.Executors;
  * Extension Generator conversion of YYGooglePlayServices.
  *
  * Social Async events have been replaced by GMFunction callbacks.
- * Nested structures are returned as JSON strings.
+ * Outbound structured payloads use GMExtWire.StructStream and ArrayStream.
+ * Generated records are used only for structured values received from GML.
  */
 public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 {
@@ -126,6 +126,11 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         callback.call(failureArguments);
         return false;
+    }
+
+    private static String safeString(String value)
+    {
+        return value != null ? value : "";
     }
 
     private static String error(Throwable throwable)
@@ -234,17 +239,35 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
     public void gpgs_player_current(final GMFunction callback)
     {
-        if (!requireAuthentication(
-            callback, false, "{}", authenticationError()))
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(playerResultStream(
+                false,
+                emptyPlayerStream(),
+                authenticationError()
+            ));
             return;
+        }
 
         PlayGames.getPlayersClient(activity()).getCurrentPlayer()
             .addOnCompleteListener(task ->
             {
                 if (task.isSuccessful() && task.getResult() != null)
-                    callback.call(true, playerToJson(task.getResult()).toString(), "");
+                {
+                    callback.call(playerResultStream(
+                        true,
+                        playerToStream(task.getResult()),
+                        ""
+                    ));
+                }
                 else
-                    callback.call(false, "{}", error(task.getException()));
+                {
+                    callback.call(playerResultStream(
+                        false,
+                        emptyPlayerStream(),
+                        error(task.getException())
+                    ));
+                }
             });
     }
 
@@ -264,19 +287,19 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             });
     }
 
-    /**
-     * Loads analytics/statistics for the currently authenticated player.
-     *
-     * Callback:
-     *     callback(success, player_stats_json, error)
-     */
     public void gpgs_player_stats_load(
         boolean force_reload,
         final GMFunction callback)
     {
-        if (!requireAuthentication(
-            callback, false, "{}", authenticationError()))
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(playerStatsResultStream(
+                false,
+                emptyPlayerStatsStream(),
+                authenticationError()
+            ));
             return;
+        }
 
         PlayGames.getPlayerStatsClient(activity())
             .loadPlayerStats(force_reload)
@@ -284,11 +307,11 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             {
                 if (!task.isSuccessful())
                 {
-                    callback.call(
+                    callback.call(playerStatsResultStream(
                         false,
-                        "{}",
+                        emptyPlayerStatsStream(),
                         error(task.getException())
-                    );
+                    ));
                     return;
                 }
 
@@ -298,19 +321,19 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
                 if (stats == null)
                 {
-                    callback.call(
+                    callback.call(playerStatsResultStream(
                         false,
-                        "{}",
+                        emptyPlayerStatsStream(),
                         "No player statistics were returned."
-                    );
+                    ));
                     return;
                 }
 
-                callback.call(
+                callback.call(playerStatsResultStream(
                     true,
-                    playerStatsToJson(stats).toString(),
+                    playerStatsToStream(stats),
                     ""
-                );
+                ));
             });
     }
 
@@ -406,30 +429,65 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         boolean force_reload,
         final GMFunction callback)
     {
-        if (!requireAuthentication(
-            callback, false, "[]", authenticationError()))
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(achievementsResultStream(
+                false,
+                streamArray(),
+                authenticationError()
+            ));
             return;
+        }
 
-        PlayGames.getAchievementsClient(activity()).load(force_reload)
+        PlayGames.getAchievementsClient(activity())
+            .load(force_reload)
             .addOnCompleteListener(task ->
             {
                 if (!task.isSuccessful())
                 {
-                    callback.call(false, "[]", error(task.getException()));
+                    callback.call(achievementsResultStream(
+                        false,
+                        streamArray(),
+                        error(task.getException())
+                    ));
                     return;
                 }
 
-                AchievementBuffer buffer = task.getResult().get();
-                JSONArray data = new JSONArray();
+                AchievementBuffer buffer =
+                    task.getResult() != null
+                        ? task.getResult().get()
+                        : null;
+
+                GMExtWire.ArrayStream achievements =
+                    streamArray();
 
                 if (buffer != null)
                 {
-                    for (Achievement achievement : buffer)
-                        data.put(achievementToJson(achievement));
-                    buffer.release();
+                    try
+                    {
+                        for (Achievement achievement : buffer)
+                            achievements.add(achievementToStream(achievement));
+                    }
+                    catch (Exception exception)
+                    {
+                        callback.call(achievementsResultStream(
+                            false,
+                            streamArray(),
+                            error(exception)
+                        ));
+                        return;
+                    }
+                    finally
+                    {
+                        buffer.release();
+                    }
                 }
 
-                callback.call(true, data.toString(), "");
+                callback.call(achievementsResultStream(
+                    true,
+                    achievements,
+                    ""
+                ));
             });
     }
 
@@ -474,10 +532,18 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         String scoreTag,
         final GMFunction callback)
     {
-        if (!requireAuthentication(
-            callback, false, leaderboardId, score, scoreTag, "{}",
-            authenticationError()))
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(leaderboardSubmitResultStream(
+                false,
+                leaderboardId,
+                score,
+                safeString(scoreTag),
+                emptyScoreReportStream(),
+                authenticationError()
+            ));
             return;
+        }
 
         PlayGames.getLeaderboardsClient(activity())
             .submitScoreImmediate(leaderboardId, (long)score, scoreTag)
@@ -485,34 +551,47 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             {
                 if (task.isSuccessful())
                 {
-                    callback.call(
+                    callback.call(leaderboardSubmitResultStream(
                         true,
                         leaderboardId,
                         score,
-                        scoreTag,
-                        scoreReportToJson(task.getResult()).toString(),
+                        safeString(scoreTag),
+                        scoreReportToStream(task.getResult()),
                         ""
-                    );
+                    ));
                 }
                 else
                 {
-                    callback.call(
+                    callback.call(leaderboardSubmitResultStream(
                         false,
                         leaderboardId,
                         score,
-                        scoreTag,
-                        "{}",
+                        safeString(scoreTag),
+                        emptyScoreReportStream(),
                         error(task.getException())
-                    );
+                    ));
                 }
             });
     }
 
-    public void gpgs_leaderboard_load_player_centered_scores(String leaderboard_id, GPGSLeaderboardTimeSpan span, GPGSLeaderboardCollection leaderboard_collection, double max_results, boolean force_reload, GMFunction callback)
+    public void gpgs_leaderboard_load_player_centered_scores(
+        String leaderboard_id,
+        GPGSLeaderboardTimeSpan span,
+        GPGSLeaderboardCollection leaderboard_collection,
+        double max_results,
+        boolean force_reload,
+        GMFunction callback)
     {
-        if (!requireAuthentication(
-            callback, false, "{}", "[]", authenticationError()))
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(leaderboardScoresResultStream(
+                false,
+                emptyLeaderboardStream(),
+                streamArray(),
+                authenticationError()
+            ));
             return;
+        }
 
         PlayGames.getLeaderboardsClient(activity())
             .loadPlayerCenteredScores(
@@ -521,15 +600,27 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                 (int)leaderboard_collection.value(),
                 (int)max_results,
                 force_reload)
-            .addOnCompleteListener(task ->
-                completeScores(task, callback));
+            .addOnCompleteListener(task -> completeScores(task, callback));
     }
 
-    public void gpgs_leaderboard_load_top_scores(String leaderboard_id, GPGSLeaderboardTimeSpan span, GPGSLeaderboardCollection leaderboard_collection, double max_results, boolean force_reload, GMFunction callback)
+    public void gpgs_leaderboard_load_top_scores(
+        String leaderboard_id,
+        GPGSLeaderboardTimeSpan span,
+        GPGSLeaderboardCollection leaderboard_collection,
+        double max_results,
+        boolean force_reload,
+        GMFunction callback)
     {
-        if (!requireAuthentication(
-            callback, false, "{}", "[]", authenticationError()))
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(leaderboardScoresResultStream(
+                false,
+                emptyLeaderboardStream(),
+                streamArray(),
+                authenticationError()
+            ));
             return;
+        }
 
         PlayGames.getLeaderboardsClient(activity())
             .loadTopScores(
@@ -538,8 +629,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                 (int)leaderboard_collection.value(),
                 (int)max_results,
                 force_reload)
-            .addOnCompleteListener(task ->
-                completeScores(task, callback));
+            .addOnCompleteListener(task -> completeScores(task, callback));
     }
 
     private void completeScores(
@@ -548,27 +638,51 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     {
         if (!task.isSuccessful())
         {
-            callback.call(false, "{}", "[]", error(task.getException()));
+            callback.call(leaderboardScoresResultStream(
+                false,
+                emptyLeaderboardStream(),
+                streamArray(),
+                error(task.getException())
+            ));
             return;
         }
 
-        LeaderboardsClient.LeaderboardScores scores = task.getResult().get();
+        AnnotatedData<LeaderboardsClient.LeaderboardScores> annotatedData =
+            task.getResult();
+
+        LeaderboardsClient.LeaderboardScores scores =
+            annotatedData != null ? annotatedData.get() : null;
+
         if (scores == null)
         {
-            callback.call(false, "{}", "[]", "No leaderboard score data.");
+            callback.call(leaderboardScoresResultStream(
+                false,
+                emptyLeaderboardStream(),
+                streamArray(),
+                "No leaderboard score data."
+            ));
             return;
         }
 
         LeaderboardScoreBuffer buffer = scores.getScores();
-        JSONArray scoreArray = leaderboardScoresToJson(buffer);
-        buffer.release();
+        GMExtWire.ArrayStream scoreArray;
 
-        callback.call(
+        try
+        {
+            scoreArray = leaderboardScoresToStream(buffer);
+        }
+        finally
+        {
+            if (buffer != null)
+                buffer.release();
+        }
+
+        callback.call(leaderboardScoresResultStream(
             true,
-            leaderboardToJson(scores.getLeaderboard()).toString(),
-            scoreArray.toString(),
+            leaderboardToStream(scores.getLeaderboard()),
+            scoreArray,
             ""
-        );
+        ));
     }
 
     // -------------------------------------------------------------------------
@@ -690,9 +804,15 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         double max_results,
         final GMFunction callback)
     {
-        if (!requireAuthentication(
-            callback, SAVED_UI_ERROR, "{}", authenticationError()))
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(savedGamesUIResultStream(
+                GPGSSavedGamesUIResult.Error.value(),
+                emptySnapshotMetadataStream(),
+                authenticationError()
+            ));
             return;
+        }
 
         savedGamesUiCallback = callback;
 
@@ -708,12 +828,22 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             {
                 GMFunction pending = savedGamesUiCallback;
                 savedGamesUiCallback = null;
+
                 if (pending != null)
-                    pending.call(SAVED_UI_ERROR, "{}", error(exception));
+                {
+                    pending.call(savedGamesUIResultStream(
+                        GPGSSavedGamesUIResult.Error.value(),
+                        emptySnapshotMetadataStream(),
+                        error(exception)
+                    ));
+                }
             });
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    public void onActivityResult(
+        int requestCode,
+        int resultCode,
+        Intent data)
     {
         if (requestCode != RC_SAVED_GAMES)
             return;
@@ -726,116 +856,119 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (data == null || resultCode != Activity.RESULT_OK)
         {
-            callback.call(SAVED_UI_CANCELLED, "{}", "");
+            callback.call(savedGamesUIResultStream(
+                GPGSSavedGamesUIResult.Cancelled.value(),
+                emptySnapshotMetadataStream(),
+                ""
+            ));
             return;
         }
 
         if (data.hasExtra(SnapshotsClient.EXTRA_SNAPSHOT_METADATA))
         {
             SnapshotMetadata metadata =
-                data.getParcelableExtra(SnapshotsClient.EXTRA_SNAPSHOT_METADATA);
+                data.getParcelableExtra(
+                    SnapshotsClient.EXTRA_SNAPSHOT_METADATA);
 
-            callback.call(
-                SAVED_UI_SELECTED,
-                metadata != null ? snapshotMetadataToJson(metadata).toString() : "{}",
+            callback.call(savedGamesUIResultStream(
+                GPGSSavedGamesUIResult.Selected.value(),
+                snapshotMetadataToStream(metadata),
                 ""
-            );
+            ));
             return;
         }
 
         if (data.hasExtra(SnapshotsClient.EXTRA_SNAPSHOT_NEW))
         {
-            callback.call(SAVED_UI_CREATED_NEW, "{}", "");
+            callback.call(savedGamesUIResultStream(
+                GPGSSavedGamesUIResult.CreatedNew.value(),
+                emptySnapshotMetadataStream(),
+                ""
+            ));
             return;
         }
 
-        callback.call(SAVED_UI_CANCELLED, "{}", "");
+        callback.call(savedGamesUIResultStream(
+            GPGSSavedGamesUIResult.Cancelled.value(),
+            emptySnapshotMetadataStream(),
+            ""
+        ));
     }
 
-    public void __gpgs_saved_games_commit_and_close(
-        String optionsJson,
+    public void gpgs_saved_games_commit_and_close(
+        GPGSSavedGameCommitOptions options,
         final GMFunction callback)
     {
         if (!requireAuthentication(
             callback, false, "", authenticationError()))
             return;
 
-        try
+        if (options == null)
         {
-            JSONObject options = new JSONObject(optionsJson);
-            String name = options.getString("name");
-            Snapshot snapshot = snapshots.get(name);
+            callback.call(false, "", "Commit options cannot be null.");
+            return;
+        }
 
-            if (snapshot == null)
-            {
-                callback.call(
-                    false,
-                    name,
-                    "Snapshot is not opened or has already been closed."
-                );
-                return;
-            }
+        String name = options.name();
+        Snapshot snapshot = snapshots.get(name);
 
-            commitSnapshot(
-                snapshot,
-                options,
-                true,
-                callback
+        if (snapshot == null)
+        {
+            callback.call(
+                false,
+                name,
+                "Snapshot is not opened or has already been closed."
             );
+            return;
         }
-        catch (Exception exception)
-        {
-            callback.call(false, "", error(exception));
-        }
+
+        commitSnapshot(snapshot, options, callback);
     }
 
-    public void __gpgs_saved_games_commit_new(
-        String optionsJson,
+    public void gpgs_saved_games_commit_new(
+        GPGSSavedGameCommitOptions options,
         final GMFunction callback)
     {
         if (!requireAuthentication(
             callback, false, "", authenticationError()))
             return;
 
-        try
+        if (options == null)
         {
-            JSONObject options = new JSONObject(optionsJson);
-            String name = options.getString("name");
+            callback.call(false, "", "Commit options cannot be null.");
+            return;
+        }
 
-            PlayGames.getSnapshotsClient(activity())
-                .open(
-                    name,
-                    true,
-                    SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
-                .addOnCompleteListener(task ->
+        String name = options.name();
+
+        PlayGames.getSnapshotsClient(activity())
+            .open(
+                name,
+                true,
+                SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
+            .addOnCompleteListener(task ->
+            {
+                if (!task.isSuccessful())
                 {
-                    if (!task.isSuccessful())
-                    {
-                        callback.call(false, name, error(task.getException()));
-                        return;
-                    }
+                    callback.call(false, name, error(task.getException()));
+                    return;
+                }
 
-                    Snapshot snapshot = task.getResult().getData();
-                    if (snapshot == null)
-                    {
-                        callback.call(false, name, "No snapshot was returned.");
-                        return;
-                    }
+                Snapshot snapshot = task.getResult().getData();
+                if (snapshot == null)
+                {
+                    callback.call(false, name, "No snapshot was returned.");
+                    return;
+                }
 
-                    snapshots.put(snapshot.getMetadata().getUniqueName(), snapshot);
-                    commitSnapshot(snapshot, options, true, callback);
-                });
-        }
-        catch (Exception exception)
-        {
-            callback.call(false, "", error(exception));
-        }
+                snapshots.put(snapshot.getMetadata().getUniqueName(), snapshot);
+                commitSnapshot(snapshot, options, callback);
+            });
     }
 
     private void commitSnapshot(
         Snapshot snapshot,
-        JSONObject options,
-        boolean close,
+        GPGSSavedGameCommitOptions options,
         GMFunction callback)
     {
         background.execute(() ->
@@ -844,28 +977,24 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
             try
             {
-                String data = options.optString("data", "");
+                String data = options.data() != null ? options.data() : "";
                 snapshot.getSnapshotContents()
                     .writeBytes(data.getBytes(StandardCharsets.UTF_8));
 
                 SnapshotMetadataChange.Builder builder =
                     new SnapshotMetadataChange.Builder();
 
-                if (options.has("desc"))
-                    builder.setDescription(options.optString("desc", ""));
+                if (options.desc() != null && !options.desc().isEmpty())
+                    builder.setDescription(options.desc());
 
-                if (options.has("playedTimeMillis"))
-                    builder.setPlayedTimeMillis(
-                        (long)options.optDouble("playedTimeMillis", 0.0));
+                if (options.played_time_millis() >= 0)
+                    builder.setPlayedTimeMillis((long)options.played_time_millis());
 
-                if (options.has("progressValue"))
-                    builder.setProgressValue(
-                        (long)options.optDouble("progressValue", 0.0));
+                if (options.progress_value() >= 0)
+                    builder.setProgressValue((long)options.progress_value());
 
-                String coverImagePath =
-                    options.optString("coverImagePath", "");
-
-                if (!coverImagePath.isEmpty())
+                String coverImagePath = options.cover_image_path();
+                if (coverImagePath != null && !coverImagePath.isEmpty())
                 {
                     Bitmap bitmap = android.graphics.BitmapFactory
                         .decodeFile(coverImagePath);
@@ -897,30 +1026,56 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         boolean force_reload,
         final GMFunction callback)
     {
-        if (!requireAuthentication(
-            callback, false, "[]", authenticationError()))
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(savedGamesLoadResultStream(
+                false,
+                streamArray(),
+                authenticationError()
+            ));
             return;
+        }
 
-        PlayGames.getSnapshotsClient(activity()).load(force_reload)
+        PlayGames.getSnapshotsClient(activity())
+            .load(force_reload)
             .addOnCompleteListener(task ->
             {
                 if (!task.isSuccessful())
                 {
-                    callback.call(false, "[]", error(task.getException()));
+                    callback.call(savedGamesLoadResultStream(
+                        false,
+                        streamArray(),
+                        error(task.getException())
+                    ));
                     return;
                 }
 
-                SnapshotMetadataBuffer buffer = task.getResult().get();
-                JSONArray data = new JSONArray();
+                SnapshotMetadataBuffer buffer =
+                    task.getResult() != null
+                        ? task.getResult().get()
+                        : null;
+
+                GMExtWire.ArrayStream snapshotArray =
+                    streamArray();
 
                 if (buffer != null)
                 {
-                    for (SnapshotMetadata metadata : buffer)
-                        data.put(snapshotMetadataToJson(metadata));
-                    buffer.release();
+                    try
+                    {
+                        for (SnapshotMetadata metadata : buffer)
+                            snapshotArray.add(snapshotMetadataToStream(metadata));
+                    }
+                    finally
+                    {
+                        buffer.release();
+                    }
                 }
 
-                callback.call(true, data.toString(), "");
+                callback.call(savedGamesLoadResultStream(
+                    true,
+                    snapshotArray,
+                    ""
+                ));
             });
     }
 
@@ -947,76 +1102,136 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         boolean includeConflict,
         GMFunction callback)
     {
-        if (!requireAuthentication(
-            callback, false, "{}", authenticationError()))
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(savedGameOpenCallbackResultStream(
+                false,
+                emptySavedGameOpenResultStream(),
+                authenticationError()
+            ));
             return;
+        }
 
-        PlayGames.getSnapshotsClient(activity()).open(name, false, policy)
+        PlayGames.getSnapshotsClient(activity())
+            .open(name, false, policy)
             .addOnCompleteListener(task ->
             {
                 if (!task.isSuccessful())
                 {
-                    callback.call(false, "{}", error(task.getException()));
+                    callback.call(savedGameOpenCallbackResultStream(
+                        false,
+                        emptySavedGameOpenResultStream(),
+                        error(task.getException())
+                    ));
                     return;
                 }
 
                 DataOrConflict<Snapshot> result = task.getResult();
-                JSONObject response = new JSONObject();
 
                 try
                 {
+                    GMExtWire.StructStream response;
+
                     if (!result.isConflict())
                     {
                         Snapshot snapshot = result.getData();
+
                         if (snapshot == null)
-                            throw new IllegalStateException("No snapshot was returned.");
+                        {
+                            throw new IllegalStateException(
+                                "No snapshot was returned."
+                            );
+                        }
 
                         snapshots.put(
                             snapshot.getMetadata().getUniqueName(),
                             snapshot
                         );
 
-                        response.put("isConflict", false);
-                        response.put(
-                            "snapshotMetadata",
-                            snapshotMetadataToJson(snapshot.getMetadata())
-                        );
-                        response.put("data", readSnapshot(snapshot));
+                        response = new GMExtWire.StructStream()
+                            .kv("is_conflict", false)
+                            .kv(
+                                "snapshot_metadata",
+                                snapshotMetadataToStream(
+                                    snapshot.getMetadata()
+                                )
+                            )
+                            .kv("data", readSnapshot(snapshot))
+                            .kv("conflict_id", "")
+                            .kv(
+                                "snapshot_metadata_local",
+                                emptySnapshotMetadataStream()
+                            )
+                            .kv("data_local", "")
+                            .kv(
+                                "snapshot_metadata_remote",
+                                emptySnapshotMetadataStream()
+                            )
+                            .kv("data_remote", "");
                     }
                     else
                     {
                         if (!includeConflict)
+                        {
                             throw new IllegalStateException(
                                 "A Saved Games conflict was returned."
                             );
+                        }
 
                         conflictLocal =
                             result.getConflict().getConflictingSnapshot();
+
                         conflictRemote =
                             result.getConflict().getSnapshot();
 
-                        response.put("isConflict", true);
-                        response.put(
-                            "conflictId",
-                            result.getConflict().getConflictId()
-                        );
-                        response.put(
-                            "snapshotMetadataLocal",
-                            snapshotMetadataToJson(conflictLocal.getMetadata())
-                        );
-                        response.put("dataLocal", readSnapshot(conflictLocal));
-                        response.put(
-                            "snapshotMetadataRemote",
-                            snapshotMetadataToJson(conflictRemote.getMetadata())
-                        );
-                        response.put("dataRemote", readSnapshot(conflictRemote));
+                        response = new GMExtWire.StructStream()
+                            .kv("is_conflict", true)
+                            .kv(
+                                "snapshot_metadata",
+                                emptySnapshotMetadataStream()
+                            )
+                            .kv("data", "")
+                            .kv(
+                                "conflict_id",
+                                safeString(
+                                    result.getConflict().getConflictId()
+                                )
+                            )
+                            .kv(
+                                "snapshot_metadata_local",
+                                snapshotMetadataToStream(
+                                    conflictLocal.getMetadata()
+                                )
+                            )
+                            .kv(
+                                "data_local",
+                                readSnapshot(conflictLocal)
+                            )
+                            .kv(
+                                "snapshot_metadata_remote",
+                                snapshotMetadataToStream(
+                                    conflictRemote.getMetadata()
+                                )
+                            )
+                            .kv(
+                                "data_remote",
+                                readSnapshot(conflictRemote)
+                            );
                     }
 
-                    callback.call(true, response.toString(), "");
+                    callback.call(savedGameOpenCallbackResultStream(
+                        true,
+                        response,
+                        ""
+                    ));
                 }
                 catch (Exception exception)
                 {
-                    callback.call(false, "{}", error(exception));
+                    callback.call(savedGameOpenCallbackResultStream(
+                        false,
+                        emptySavedGameOpenResultStream(),
+                        error(exception)
+                    ));
                 }
             });
     }
@@ -1099,263 +1314,486 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     }
 
     // -------------------------------------------------------------------------
-    // JSON conversion
+    // Dynamic GML stream conversion
     // -------------------------------------------------------------------------
 
-    private static JSONObject playerToJson(
+    private static GMExtWire.StructStream streamStruct()
+    {
+        return new GMExtWire.StructStream(4096);
+    }
+
+    private static GMExtWire.ArrayStream streamArray()
+    {
+        return new GMExtWire.ArrayStream(32768);
+    }
+
+    private static GMExtWire.StructStream playerResultStream(
+        boolean success,
+        GMExtWire.StructStream player,
+        String error)
+    {
+        return streamStruct()
+            .kv("success", success)
+            .kv("player", player)
+            .kv("error", safeString(error));
+    }
+
+    private static GMExtWire.StructStream playerStatsResultStream(
+        boolean success,
+        GMExtWire.StructStream stats,
+        String error)
+    {
+        return streamStruct()
+            .kv("success", success)
+            .kv("stats", stats)
+            .kv("error", safeString(error));
+    }
+
+    private static GMExtWire.StructStream achievementsResultStream(
+        boolean success,
+        GMExtWire.ArrayStream achievements,
+        String error)
+    {
+        return streamStruct()
+            .kv("success", success)
+            .kv("achievements", achievements)
+            .kv("error", safeString(error));
+    }
+
+    private static GMExtWire.StructStream leaderboardSubmitResultStream(
+        boolean success,
+        String leaderboardId,
+        double score,
+        String scoreTag,
+        GMExtWire.StructStream report,
+        String error)
+    {
+        return streamStruct()
+            .kv("success", success)
+            .kv("leaderboard_id", safeString(leaderboardId))
+            .kv("score", score)
+            .kv("score_tag", safeString(scoreTag))
+            .kv("report", report)
+            .kv("error", safeString(error));
+    }
+
+    private static GMExtWire.StructStream leaderboardScoresResultStream(
+        boolean success,
+        GMExtWire.StructStream leaderboard,
+        GMExtWire.ArrayStream scores,
+        String error)
+    {
+        return streamStruct()
+            .kv("success", success)
+            .kv("leaderboard", leaderboard)
+            .kv("scores", scores)
+            .kv("error", safeString(error));
+    }
+
+    private static GMExtWire.StructStream savedGamesUIResultStream(
+        double result,
+        GMExtWire.StructStream snapshotMetadata,
+        String error)
+    {
+        return streamStruct()
+            .kv("result", result)
+            .kv("snapshot_metadata", snapshotMetadata)
+            .kv("error", safeString(error));
+    }
+
+    private static GMExtWire.StructStream savedGamesLoadResultStream(
+        boolean success,
+        GMExtWire.ArrayStream snapshots,
+        String error)
+    {
+        return streamStruct()
+            .kv("success", success)
+            .kv("snapshots", snapshots)
+            .kv("error", safeString(error));
+    }
+
+    private static GMExtWire.StructStream savedGameOpenCallbackResultStream(
+        boolean success,
+        GMExtWire.StructStream result,
+        String error)
+    {
+        return streamStruct()
+            .kv("success", success)
+            .kv("result", result)
+            .kv("error", safeString(error));
+    }
+
+    private static GMExtWire.StructStream playerToStream(
         com.google.android.gms.games.Player player)
     {
-        JSONObject json = new JSONObject();
+        if (player == null)
+            return emptyPlayerStream();
 
-        try
-        {
-            json.put("playerId", player.getPlayerId());
-            json.put("displayName", player.getDisplayName());
-            json.put("title", player.getTitle());
-            json.put(
-                "iconImageUri",
+        return streamStruct()
+            .kv("player_id", safeString(player.getPlayerId()))
+            .kv("display_name", safeString(player.getDisplayName()))
+            .kv("title", safeString(player.getTitle()))
+            .kv(
+                "icon_image_uri",
                 player.getIconImageUri() != null
                     ? player.getIconImageUri().toString()
                     : ""
-            );
-            json.put(
-                "hiResImageUri",
+            )
+            .kv(
+                "hi_res_image_uri",
                 player.getHiResImageUri() != null
                     ? player.getHiResImageUri().toString()
                     : ""
             );
-        }
-        catch (Exception ignored) {}
-
-        return json;
     }
 
-
-    private static JSONObject playerStatsToJson(PlayerStats stats)
+    private static GMExtWire.StructStream playerStatsToStream(
+        PlayerStats stats)
     {
-        JSONObject json = new JSONObject();
-
-        try
-        {
-            json.put(
-                "averageSessionLength",
+        return streamStruct()
+            .kv(
+                "average_session_length",
                 stats.getAverageSessionLength()
-            );
-            json.put(
-                "daysSinceLastPlayed",
+            )
+            .kv(
+                "days_since_last_played",
                 stats.getDaysSinceLastPlayed()
-            );
-            json.put(
-                "numberOfPurchases",
+            )
+            .kv(
+                "number_of_purchases",
                 stats.getNumberOfPurchases()
-            );
-            json.put(
-                "numberOfSessions",
+            )
+            .kv(
+                "number_of_sessions",
                 stats.getNumberOfSessions()
-            );
-            json.put(
-                "sessionPercentile",
+            )
+            .kv(
+                "session_percentile",
                 stats.getSessionPercentile()
-            );
-            json.put(
-                "spendPercentile",
+            )
+            .kv(
+                "spend_percentile",
                 stats.getSpendPercentile()
-            );
-
-            // These fields are deprecated in newer Play Games SDK versions,
-            // but are retained for compatibility with the legacy extension.
-            json.put(
-                "churnProbability",
+            )
+            .kv(
+                "churn_probability",
                 stats.getChurnProbability()
-            );
-            json.put(
-                "highSpenderProbability",
+            )
+            .kv(
+                "high_spender_probability",
                 stats.getHighSpenderProbability()
-            );
-            json.put(
-                "spendProbability",
+            )
+            .kv(
+                "spend_probability",
                 stats.getSpendProbability()
-            );
-            json.put(
-                "totalSpendNext28Days",
+            )
+            .kv(
+                "total_spend_next_28_days",
                 stats.getTotalSpendNext28Days()
             );
-        }
-        catch (Exception ignored)
-        {
-        }
-
-        return json;
     }
 
-    private static JSONObject achievementToJson(Achievement achievement)
+    private static GMExtWire.StructStream achievementToStream(
+        Achievement achievement)
     {
-        JSONObject json = new JSONObject();
+        int type = achievement.getType();
+        boolean incremental = type == Achievement.TYPE_INCREMENTAL;
 
-        try
-        {
-            json.put("achievementId", achievement.getAchievementId());
-            json.put("name", achievement.getName());
-            json.put("description", achievement.getDescription());
-            json.put("state", achievement.getState());
-            json.put("type", achievement.getType());
-            json.put("currentSteps", achievement.getCurrentSteps());
-            json.put("totalSteps", achievement.getTotalSteps());
-            json.put("lastUpdatedTimestamp", achievement.getLastUpdatedTimestamp());
-            json.put("xpValue", achievement.getXpValue());
-            json.put(
-                "revealedImageUri",
+        int currentSteps =
+            incremental ? achievement.getCurrentSteps() : 0;
+
+        int totalSteps =
+            incremental ? achievement.getTotalSteps() : 0;
+
+        return streamStruct()
+            .kv(
+                "achievement_id",
+                safeString(achievement.getAchievementId())
+            )
+            .kv("name", safeString(achievement.getName()))
+            .kv(
+                "description",
+                safeString(achievement.getDescription())
+            )
+            .kv("state", achievement.getState())
+            .kv("type", type)
+            .kv("current_steps", currentSteps)
+            .kv("total_steps", totalSteps)
+            .kv(
+                "last_updated_timestamp",
+                achievement.getLastUpdatedTimestamp()
+            )
+            .kv("xp_value", achievement.getXpValue())
+            .kv(
+                "revealed_image_uri",
                 achievement.getRevealedImageUri() != null
                     ? achievement.getRevealedImageUri().toString()
                     : ""
-            );
-            json.put(
-                "unlockedImageUri",
+            )
+            .kv(
+                "unlocked_image_uri",
                 achievement.getUnlockedImageUri() != null
                     ? achievement.getUnlockedImageUri().toString()
                     : ""
             );
-        }
-        catch (Exception ignored) {}
-
-        return json;
     }
 
-    private static JSONObject leaderboardToJson(Leaderboard leaderboard)
+    private static GMExtWire.StructStream leaderboardToStream(
+        Leaderboard leaderboard)
     {
-        JSONObject json = new JSONObject();
+        if (leaderboard == null)
+            return emptyLeaderboardStream();
 
-        try
+        GMExtWire.ArrayStream variants = streamArray();
+
+        for (LeaderboardVariant variant : leaderboard.getVariants())
         {
-            json.put("leaderboardId", leaderboard.getLeaderboardId());
-            json.put("displayName", leaderboard.getDisplayName());
-            json.put("scoreOrder", leaderboard.getScoreOrder());
-
-            JSONArray variants = new JSONArray();
-            for (LeaderboardVariant variant : leaderboard.getVariants())
-            {
-                JSONObject item = new JSONObject();
-                item.put("collection", variant.getCollection());
-                item.put("timeSpan", variant.getTimeSpan());
-                item.put("hasPlayerInfo", variant.hasPlayerInfo());
-                variants.put(item);
-            }
-
-            json.put("variants", variants);
+            variants.add(
+                streamStruct()
+                    .kv("collection", variant.getCollection())
+                    .kv("time_span", variant.getTimeSpan())
+                    .kv("has_player_info", variant.hasPlayerInfo())
+            );
         }
-        catch (Exception ignored) {}
 
-        return json;
+        return streamStruct()
+            .kv(
+                "leaderboard_id",
+                safeString(leaderboard.getLeaderboardId())
+            )
+            .kv(
+                "display_name",
+                safeString(leaderboard.getDisplayName())
+            )
+            .kv("score_order", leaderboard.getScoreOrder())
+            .kv("variants", variants);
     }
 
-    private static JSONArray leaderboardScoresToJson(
+    private static GMExtWire.ArrayStream leaderboardScoresToStream(
         LeaderboardScoreBuffer buffer)
     {
-        JSONArray json = new JSONArray();
+        GMExtWire.ArrayStream scores = streamArray();
 
         if (buffer == null)
-            return json;
+            return scores;
 
         for (LeaderboardScore score : buffer)
         {
-            JSONObject item = new JSONObject();
-
-            try
-            {
-                item.put("displayRank", score.getDisplayRank());
-                item.put("displayScore", score.getDisplayScore());
-                item.put("rawScore", score.getRawScore());
-                item.put("scoreTag", score.getScoreTag());
-                item.put("timestampMillis", score.getTimestampMillis());
-
-                if (score.getScoreHolder() != null)
-                    item.put("scoreHolder", playerToJson(score.getScoreHolder()));
-            }
-            catch (Exception ignored) {}
-
-            json.put(item);
+            scores.add(
+                streamStruct()
+                    .kv(
+                        "display_rank",
+                        safeString(score.getDisplayRank())
+                    )
+                    .kv(
+                        "display_score",
+                        safeString(score.getDisplayScore())
+                    )
+                    .kv("raw_score", score.getRawScore())
+                    .kv(
+                        "score_tag",
+                        safeString(score.getScoreTag())
+                    )
+                    .kv(
+                        "timestamp_millis",
+                        score.getTimestampMillis()
+                    )
+                    .kv(
+                        "score_holder",
+                        playerToStream(score.getScoreHolder())
+                    )
+            );
         }
 
-        return json;
+        return scores;
     }
 
-    private static JSONObject scoreReportToJson(
-        ScoreSubmissionData report)
-    {
-        JSONObject json = new JSONObject();
-
-        if (report == null)
-            return json;
-
-        try
-        {
-            json.put("leaderboardId", report.getLeaderboardId());
-            json.put("playerId", report.getPlayerId());
-
-            JSONObject results = new JSONObject();
-            putScoreResult(
-                results,
-                "daily",
-                report.getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY));
-            putScoreResult(
-                results,
-                "weekly",
-                report.getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY));
-            putScoreResult(
-                results,
-                "allTime",
-                report.getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME));
-
-            json.put("results", results);
-        }
-        catch (Exception ignored) {}
-
-        return json;
-    }
-
-    private static void putScoreResult(
-        JSONObject target,
-        String key,
+    private static GMExtWire.StructStream scoreResultToStream(
         ScoreSubmissionData.Result result)
     {
         if (result == null)
-            return;
+            return emptyScoreResultStream();
 
-        try
-        {
-            JSONObject json = new JSONObject();
-            json.put("rawScore", result.rawScore);
-            json.put("formattedScore", result.formattedScore);
-            json.put("scoreTag", result.scoreTag);
-            json.put("newBest", result.newBest);
-            target.put(key, json);
-        }
-        catch (Exception ignored) {}
+        return streamStruct()
+            .kv("raw_score", result.rawScore)
+            .kv(
+                "formatted_score",
+                safeString(result.formattedScore)
+            )
+            .kv("score_tag", safeString(result.scoreTag))
+            .kv("new_best", result.newBest);
     }
 
-    private static JSONObject snapshotMetadataToJson(
+    private static GMExtWire.StructStream scoreReportToStream(
+        ScoreSubmissionData report)
+    {
+        if (report == null)
+            return emptyScoreReportStream();
+
+        GMExtWire.StructStream results = streamStruct()
+            .kv(
+                "daily",
+                scoreResultToStream(
+                    report.getScoreResult(
+                        LeaderboardVariant.TIME_SPAN_DAILY
+                    )
+                )
+            )
+            .kv(
+                "weekly",
+                scoreResultToStream(
+                    report.getScoreResult(
+                        LeaderboardVariant.TIME_SPAN_WEEKLY
+                    )
+                )
+            )
+            .kv(
+                "all_time",
+                scoreResultToStream(
+                    report.getScoreResult(
+                        LeaderboardVariant.TIME_SPAN_ALL_TIME
+                    )
+                )
+            );
+
+        return streamStruct()
+            .kv(
+                "leaderboard_id",
+                safeString(report.getLeaderboardId())
+            )
+            .kv("player_id", safeString(report.getPlayerId()))
+            .kv("results", results);
+    }
+
+    private static GMExtWire.StructStream snapshotMetadataToStream(
         SnapshotMetadata metadata)
     {
-        JSONObject json = new JSONObject();
+        if (metadata == null)
+            return emptySnapshotMetadataStream();
 
-        try
-        {
-            json.put("uniqueName", metadata.getUniqueName());
-            json.put("description", metadata.getDescription());
-            json.put("deviceName", metadata.getDeviceName());
-            json.put("lastModifiedTimestamp", metadata.getLastModifiedTimestamp());
-            json.put("playedTime", metadata.getPlayedTime());
-            json.put("progressValue", metadata.getProgressValue());
-            json.put("hasChangePending", metadata.hasChangePending());
-            json.put(
-                "coverImageUri",
+        return streamStruct()
+            .kv(
+                "unique_name",
+                safeString(metadata.getUniqueName())
+            )
+            .kv(
+                "description",
+                safeString(metadata.getDescription())
+            )
+            .kv(
+                "device_name",
+                safeString(metadata.getDeviceName())
+            )
+            .kv(
+                "last_modified_timestamp",
+                metadata.getLastModifiedTimestamp()
+            )
+            .kv("played_time", metadata.getPlayedTime())
+            .kv("progress_value", metadata.getProgressValue())
+            .kv(
+                "has_change_pending",
+                metadata.hasChangePending()
+            )
+            .kv(
+                "cover_image_uri",
                 metadata.getCoverImageUri() != null
                     ? metadata.getCoverImageUri().toString()
                     : ""
             );
-        }
-        catch (Exception ignored) {}
+    }
 
-        return json;
+    private static GMExtWire.StructStream emptyPlayerStream()
+    {
+        return streamStruct()
+            .kv("player_id", "")
+            .kv("display_name", "")
+            .kv("title", "")
+            .kv("icon_image_uri", "")
+            .kv("hi_res_image_uri", "");
+    }
+
+    private static GMExtWire.StructStream emptyPlayerStatsStream()
+    {
+        return streamStruct()
+            .kv("average_session_length", 0.0)
+            .kv("days_since_last_played", 0.0)
+            .kv("number_of_purchases", 0.0)
+            .kv("number_of_sessions", 0.0)
+            .kv("session_percentile", 0.0)
+            .kv("spend_percentile", 0.0)
+            .kv("churn_probability", 0.0)
+            .kv("high_spender_probability", 0.0)
+            .kv("spend_probability", 0.0)
+            .kv("total_spend_next_28_days", 0.0);
+    }
+
+    private static GMExtWire.StructStream emptyScoreResultStream()
+    {
+        return streamStruct()
+            .kv("raw_score", 0.0)
+            .kv("formatted_score", "")
+            .kv("score_tag", "")
+            .kv("new_best", false);
+    }
+
+    private static GMExtWire.StructStream emptyScoreReportStream()
+    {
+        return streamStruct()
+            .kv("leaderboard_id", "")
+            .kv("player_id", "")
+            .kv(
+                "results",
+                streamStruct()
+                    .kv("daily", emptyScoreResultStream())
+                    .kv("weekly", emptyScoreResultStream())
+                    .kv("all_time", emptyScoreResultStream())
+            );
+    }
+
+    private static GMExtWire.StructStream emptyLeaderboardStream()
+    {
+        return streamStruct()
+            .kv("leaderboard_id", "")
+            .kv("display_name", "")
+            .kv(
+                "score_order",
+                GPGSLeaderboardScoreOrder.SmallerIsBetter.value()
+            )
+            .kv("variants", streamArray());
+    }
+
+    private static GMExtWire.StructStream emptySnapshotMetadataStream()
+    {
+        return streamStruct()
+            .kv("unique_name", "")
+            .kv("description", "")
+            .kv("device_name", "")
+            .kv("last_modified_timestamp", 0.0)
+            .kv("played_time", 0.0)
+            .kv("progress_value", 0.0)
+            .kv("has_change_pending", false)
+            .kv("cover_image_uri", "");
+    }
+
+    private static GMExtWire.StructStream emptySavedGameOpenResultStream()
+    {
+        return streamStruct()
+            .kv("is_conflict", false)
+            .kv(
+                "snapshot_metadata",
+                emptySnapshotMetadataStream()
+            )
+            .kv("data", "")
+            .kv("conflict_id", "")
+            .kv(
+                "snapshot_metadata_local",
+                emptySnapshotMetadataStream()
+            )
+            .kv("data_local", "")
+            .kv(
+                "snapshot_metadata_remote",
+                emptySnapshotMetadataStream()
+            )
+            .kv("data_remote", "");
     }
 }

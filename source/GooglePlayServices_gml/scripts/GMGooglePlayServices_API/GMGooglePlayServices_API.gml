@@ -67,9 +67,114 @@ enum GPGSSavedGamesUIResult
 // # Constructors
 // #####################################################################
 
+/**
+ * @returns {Struct.GPGSSavedGameCommitOptions} 
+ */
+function GPGSSavedGameCommitOptions() constructor
+{
+    /**
+     * Internally generated hash for quick validation
+     * @ignore 
+     */
+    static __uid = 2822368498;
+
+    self.name = undefined;
+    self.data = undefined;
+    self.desc = undefined;
+    self.played_time_millis = undefined;
+    self.progress_value = undefined;
+    self.cover_image_path = undefined;
+
+}
+
 // #####################################################################
 // # Codecs
 // #####################################################################
+
+/**
+ * @func __GPGSSavedGameCommitOptions_encode(_inst, _buffer, _offset, _where)
+ * @param {Struct.GPGSSavedGameCommitOptions} _inst
+ * @param {Id.Buffer} _buffer
+ * @param {Real} _offset
+ * @param {String} _where
+ * @ignore 
+ */
+function __GPGSSavedGameCommitOptions_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
+{
+    buffer_seek(_buffer, buffer_seek_start, _offset);
+    with (_inst)
+    {
+        // field: name, type: String
+        if (!is_string(self.name)) show_error($"{_where} :: self.name expected string", true);
+        buffer_write(_buffer, buffer_u32, string_byte_length(self.name));
+        buffer_write(_buffer, buffer_string, self.name);
+
+        // field: data, type: String
+        if (!is_string(self.data)) show_error($"{_where} :: self.data expected string", true);
+        buffer_write(_buffer, buffer_u32, string_byte_length(self.data));
+        buffer_write(_buffer, buffer_string, self.data);
+
+        // field: desc, type: String
+        if (!is_string(self.desc)) show_error($"{_where} :: self.desc expected string", true);
+        buffer_write(_buffer, buffer_u32, string_byte_length(self.desc));
+        buffer_write(_buffer, buffer_string, self.desc);
+
+        // field: played_time_millis, type: Float64
+        if (!is_numeric(self.played_time_millis)) show_error($"{_where} :: self.played_time_millis expected number", true);
+        buffer_write(_buffer, buffer_f64, self.played_time_millis);
+
+        // field: progress_value, type: Float64
+        if (!is_numeric(self.progress_value)) show_error($"{_where} :: self.progress_value expected number", true);
+        buffer_write(_buffer, buffer_f64, self.progress_value);
+
+        // field: cover_image_path, type: String
+        if (!is_string(self.cover_image_path)) show_error($"{_where} :: self.cover_image_path expected string", true);
+        buffer_write(_buffer, buffer_u32, string_byte_length(self.cover_image_path));
+        buffer_write(_buffer, buffer_string, self.cover_image_path);
+
+    }
+}
+
+/**
+ * @func __GPGSSavedGameCommitOptions_decode(_buffer, _offset)
+ * @param {Id.Buffer} _buffer
+ * @param {Real} _offset
+ * @returns {Struct.GPGSSavedGameCommitOptions} 
+ * @ignore 
+ */
+function __GPGSSavedGameCommitOptions_decode(_buffer, _offset)
+{
+    buffer_seek(_buffer, buffer_seek_start, _offset);
+
+    _inst = new GPGSSavedGameCommitOptions();
+    with (_inst)
+    {
+        // field: name, type: String
+        buffer_read(_buffer, buffer_u32);
+        self.name = buffer_read(_buffer, buffer_string);
+
+        // field: data, type: String
+        buffer_read(_buffer, buffer_u32);
+        self.data = buffer_read(_buffer, buffer_string);
+
+        // field: desc, type: String
+        buffer_read(_buffer, buffer_u32);
+        self.desc = buffer_read(_buffer, buffer_string);
+
+        // field: played_time_millis, type: Float64
+        self.played_time_millis = buffer_read(_buffer, buffer_f64);
+
+        // field: progress_value, type: Float64
+        self.progress_value = buffer_read(_buffer, buffer_f64);
+
+        // field: cover_image_path, type: String
+        buffer_read(_buffer, buffer_u32);
+        self.cover_image_path = buffer_read(_buffer, buffer_string);
+
+    }
+
+    return _inst;
+}
 
 // #####################################################################
 // # Functions
@@ -547,51 +652,49 @@ function gpgs_saved_games_show_saved_games_ui(_title, _button_add, _button_delet
 }
 
 /**
- * @param {String} _options_json
+ * @param {Struct.GPGSSavedGameCommitOptions} _options
  * @param {Function} _callback
  */
-function __gpgs_saved_games_commit_and_close(_options_json, _callback)
+function gpgs_saved_games_commit_and_close(_options, _callback)
 {
     static __dispatcher = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
-    // param: _options_json, type: String
-    if (!is_string(_options_json)) show_error($"{_GMFUNCTION_} :: _options_json expected string", true);
-    buffer_write(__args_buffer, buffer_u32, string_byte_length(_options_json));
-    buffer_write(__args_buffer, buffer_string, _options_json);
+    // param: _options, type: struct GPGSSavedGameCommitOptions
+    if (_options.__uid != 2822368498) show_error($"{_GMFUNCTION_} :: _options expected GPGSSavedGameCommitOptions", true);
+    __GPGSSavedGameCommitOptions_encode(_options, __args_buffer, buffer_tell(__args_buffer), _GMFUNCTION_);
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
     var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = ____gpgs_saved_games_commit_and_close(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var _return_value = __gpgs_saved_games_commit_and_close(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
     return _return_value;
 }
 
 /**
- * @param {String} _options_json
+ * @param {Struct.GPGSSavedGameCommitOptions} _options
  * @param {Function} _callback
  */
-function __gpgs_saved_games_commit_new(_options_json, _callback)
+function gpgs_saved_games_commit_new(_options, _callback)
 {
     static __dispatcher = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
-    // param: _options_json, type: String
-    if (!is_string(_options_json)) show_error($"{_GMFUNCTION_} :: _options_json expected string", true);
-    buffer_write(__args_buffer, buffer_u32, string_byte_length(_options_json));
-    buffer_write(__args_buffer, buffer_string, _options_json);
+    // param: _options, type: struct GPGSSavedGameCommitOptions
+    if (_options.__uid != 2822368498) show_error($"{_GMFUNCTION_} :: _options expected GPGSSavedGameCommitOptions", true);
+    __GPGSSavedGameCommitOptions_encode(_options, __args_buffer, buffer_tell(__args_buffer), _GMFUNCTION_);
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
     var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = ____gpgs_saved_games_commit_new(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var _return_value = __gpgs_saved_games_commit_new(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
     return _return_value;
 }
@@ -734,7 +837,9 @@ function gpgs_saved_games_resolve_conflict(_conflict_id, _use_local, _callback)
 /// @ignore
 function __GMGooglePlayServices_get_decoders()
 {
-    static __decoders = [];
+    static __decoders = [
+        __GPGSSavedGameCommitOptions_decode
+    ];
     return __decoders;
 }
 /// @ignore

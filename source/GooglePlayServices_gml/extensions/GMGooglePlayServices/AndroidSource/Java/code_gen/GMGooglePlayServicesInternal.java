@@ -7,6 +7,8 @@ import java.util.*;
 import ${YYAndroidPackageName}.GMExtWire;
 import ${YYAndroidPackageName}.GMExtWire.GMFunction;
 import ${YYAndroidPackageName}.GMExtWire.GMValue;
+import ${YYAndroidPackageName}.records.*;
+import ${YYAndroidPackageName}.codecs.*;
 import ${YYAndroidPackageName}.enums.*;
 
 public abstract class GMGooglePlayServicesInternal extends RunnerSocial implements GMGooglePlayServicesInterface {
@@ -301,31 +303,31 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         return 0;
     }
 
-    public double __EXT_NATIVE____gpgs_saved_games_commit_and_close(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    public double __EXT_NATIVE__gpgs_saved_games_commit_and_close(ByteBuffer __arg_buffer, double __arg_buffer_length)
     {
         GMExtWire.order(__arg_buffer);
 
-        // field: options_json, type: String
-        String options_json = GMExtWire.readString(__arg_buffer);
+        // field: options, type: struct GPGSSavedGameCommitOptions
+        GPGSSavedGameCommitOptions options = GPGSSavedGameCommitOptionsCodec.read(__arg_buffer);
 
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        __gpgs_saved_games_commit_and_close(options_json, callback);
+        gpgs_saved_games_commit_and_close(options, callback);
         return 0;
     }
 
-    public double __EXT_NATIVE____gpgs_saved_games_commit_new(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    public double __EXT_NATIVE__gpgs_saved_games_commit_new(ByteBuffer __arg_buffer, double __arg_buffer_length)
     {
         GMExtWire.order(__arg_buffer);
 
-        // field: options_json, type: String
-        String options_json = GMExtWire.readString(__arg_buffer);
+        // field: options, type: struct GPGSSavedGameCommitOptions
+        GPGSSavedGameCommitOptions options = GPGSSavedGameCommitOptionsCodec.read(__arg_buffer);
 
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        __gpgs_saved_games_commit_new(options_json, callback);
+        gpgs_saved_games_commit_new(options, callback);
         return 0;
     }
 

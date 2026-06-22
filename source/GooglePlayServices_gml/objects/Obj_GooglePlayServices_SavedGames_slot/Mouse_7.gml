@@ -20,7 +20,7 @@ gpgs_saved_games_open(uniqueName,function(success,snapshot_metadata,error){
 		
 			// Ad this point we successfully queried the save data slot so we get access
 			// to its 'metadata' and 'data' to 
-			var snapshotMeta = json_parse(snapshot_metadata);			
+			var snapshotMeta = snapshot_metadata;
 			opened_uniqueName = snapshotMeta.uniqueName;
 			opened_description = snapshotMeta.description;
 		
@@ -29,7 +29,7 @@ gpgs_saved_games_open(uniqueName,function(success,snapshot_metadata,error){
 		
 			// We can now parse the data from the callback, the saved data will be in the async_load
 			// dictionary on a key named "data".
-			var data = json_parse(snapshot_data);
+			var data = snapshot_data;
 		
 			// We destroy previously exiting Icon and DataObj if existing.
 			instance_destroy(Obj_GooglePlayServices_SavedGames_Icon);

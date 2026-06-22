@@ -145,15 +145,15 @@
  */
 
 /**
- * @function_partial __gpgs_saved_games_commit_and_close
- * @param {String} options_json
+ * @function_partial gpgs_saved_games_commit_and_close
+ * @param {Struct.GPGSSavedGameCommitOptions} options
  * @param {Function} callback
  * @function_end 
  */
 
 /**
- * @function_partial __gpgs_saved_games_commit_new
- * @param {String} options_json
+ * @function_partial gpgs_saved_games_commit_new
+ * @param {Struct.GPGSSavedGameCommitOptions} options
  * @param {Function} callback
  * @function_end 
  */
@@ -193,6 +193,17 @@
  * @param {Bool} use_local
  * @param {Function} callback
  * @function_end 
+ */
+
+/**
+ * @struct_partial GPGSSavedGameCommitOptions
+ * @member {String} name
+ * @member {String} data
+ * @member {String} desc
+ * @member {Real} played_time_millis
+ * @member {Real} progress_value
+ * @member {String} cover_image_path
+ * @struct_end 
  */
 
 /**

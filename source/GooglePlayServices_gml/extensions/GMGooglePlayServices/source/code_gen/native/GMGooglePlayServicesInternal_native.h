@@ -75,15 +75,57 @@ namespace gm_enums
 
 namespace gm_structs
 {
+    struct GPGSSavedGameCommitOptions;
+
+    struct GPGSSavedGameCommitOptions
+    {
+        std::string name;
+        std::string data;
+        std::string desc;
+        double played_time_millis;
+        double progress_value;
+        std::string cover_image_path;
+    };
 
 }
 
 namespace gm::wire::codec
 {
+    template<>
+    inline void writeValue<gm_structs::GPGSSavedGameCommitOptions>(gm::byteio::IByteWriter& _buf, const gm_structs::GPGSSavedGameCommitOptions& obj)
+    {
+        gm::wire::codec::writeValue(_buf, obj.name);
+        gm::wire::codec::writeValue(_buf, obj.data);
+        gm::wire::codec::writeValue(_buf, obj.desc);
+        gm::wire::codec::writeValue(_buf, obj.played_time_millis);
+        gm::wire::codec::writeValue(_buf, obj.progress_value);
+        gm::wire::codec::writeValue(_buf, obj.cover_image_path);
+    }
+
+    template<>
+    inline gm_structs::GPGSSavedGameCommitOptions readValue<gm_structs::GPGSSavedGameCommitOptions>(gm::byteio::BufferReader& _buf)
+    {
+        gm_structs::GPGSSavedGameCommitOptions obj;
+        obj.name = gm::wire::codec::readValue<std::string>(_buf);
+        obj.data = gm::wire::codec::readValue<std::string>(_buf);
+        obj.desc = gm::wire::codec::readValue<std::string>(_buf);
+        obj.played_time_millis = gm::wire::codec::readValue<double>(_buf);
+        obj.progress_value = gm::wire::codec::readValue<double>(_buf);
+        obj.cover_image_path = gm::wire::codec::readValue<std::string>(_buf);
+        return obj;
+    }
+
 }
 
 namespace gm::wire::details
 {
+    template<>
+    struct gm_struct_traits<gm_structs::GPGSSavedGameCommitOptions>
+    {
+        static constexpr bool is_gm_struct = true;
+        static constexpr std::uint32_t codec_id = 0;
+    };
+
 }
 
 bool gpgs_is_available();
@@ -106,8 +148,8 @@ void gpgs_leaderboard_load_player_centered_scores(std::string_view leaderboard_i
 void gpgs_leaderboard_load_top_scores(std::string_view leaderboard_id, gm_enums::GPGSLeaderboardTimeSpan span, gm_enums::GPGSLeaderboardCollection leaderboard_collection, double max_results, bool force_reload, const gm::wire::GMFunction& callback);
 void gpgs_uri_to_path(std::string_view uri, const gm::wire::GMFunction& callback);
 void gpgs_saved_games_show_saved_games_ui(std::string_view title, bool button_add, bool button_delete, double max_results, const gm::wire::GMFunction& callback);
-void __gpgs_saved_games_commit_and_close(std::string_view options_json, const gm::wire::GMFunction& callback);
-void __gpgs_saved_games_commit_new(std::string_view options_json, const gm::wire::GMFunction& callback);
+void gpgs_saved_games_commit_and_close(const gm_structs::GPGSSavedGameCommitOptions& options, const gm::wire::GMFunction& callback);
+void gpgs_saved_games_commit_new(const gm_structs::GPGSSavedGameCommitOptions& options, const gm::wire::GMFunction& callback);
 void gpgs_saved_games_load(bool force_reload, const gm::wire::GMFunction& callback);
 void gpgs_saved_games_open(std::string_view name, const gm::wire::GMFunction& callback);
 void gpgs_saved_games_open_conflict(std::string_view name, gm_enums::GPGSSavedGamesConflictPolicy conflict_policy, const gm::wire::GMFunction& callback);

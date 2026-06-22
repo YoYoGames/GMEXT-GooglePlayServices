@@ -1,6 +1,18 @@
+player_stats = {};
 
-struct = {}
+gpgs_player_stats_load(true, function(_result)
+{
+    show_debug_message("gpgs_player_stats_load");
+    show_debug_message(_result);
 
-gpgs_player_stats_load(true,function(success,stats,error){
-	struct = json_parse(stats)
-})
+    if (_result.success)
+    {
+        player_stats = _result.stats;
+        show_debug_message(player_stats);
+    }
+    else
+    {
+        show_debug_message(_result.error);
+        player_stats = {};
+    }
+});

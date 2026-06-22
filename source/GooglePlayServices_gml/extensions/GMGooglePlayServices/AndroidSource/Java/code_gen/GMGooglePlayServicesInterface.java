@@ -4,6 +4,7 @@ package ${YYAndroidPackageName};
 import ${YYAndroidPackageName}.GMExtWire.GMFunction;
 import ${YYAndroidPackageName}.GMExtWire.GMValue;
 import ${YYAndroidPackageName}.enums.*;
+import ${YYAndroidPackageName}.records.*;
 
 public interface GMGooglePlayServicesInterface {
     public boolean gpgs_is_available();
@@ -26,8 +27,8 @@ public interface GMGooglePlayServicesInterface {
     public void gpgs_leaderboard_load_top_scores(String leaderboard_id, GPGSLeaderboardTimeSpan span, GPGSLeaderboardCollection leaderboard_collection, double max_results, boolean force_reload, GMFunction callback);
     public void gpgs_uri_to_path(String uri, GMFunction callback);
     public void gpgs_saved_games_show_saved_games_ui(String title, boolean button_add, boolean button_delete, double max_results, GMFunction callback);
-    public void __gpgs_saved_games_commit_and_close(String options_json, GMFunction callback);
-    public void __gpgs_saved_games_commit_new(String options_json, GMFunction callback);
+    public void gpgs_saved_games_commit_and_close(GPGSSavedGameCommitOptions options, GMFunction callback);
+    public void gpgs_saved_games_commit_new(GPGSSavedGameCommitOptions options, GMFunction callback);
     public void gpgs_saved_games_load(boolean force_reload, GMFunction callback);
     public void gpgs_saved_games_open(String name, GMFunction callback);
     public void gpgs_saved_games_open_conflict(String name, GPGSSavedGamesConflictPolicy conflict_policy, GMFunction callback);

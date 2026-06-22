@@ -1,74 +1,100 @@
-/// @description Initialize variables
+/// @description Initialize player information
 
-// These variables will be used to store player information.
-playerInfo = noone;
-sprite = noone
+player_info = undefined;
+player_sprite = noone;
+callback_owner = id;
 
-gpgs_uri_to_path_callback = function(success,uri,error){
-	
-	show_debug_message("gpgs_uri_to_path_callback")
-	show_debug_message({success,uri,error})
-	
-	if(!success)
-		return
-	
-	// At this point we matched the request id and can load the sprite using the retreived path.
-	sprite = sprite_add(uri, 0, 0, 0, 0, 0);
-	
-	show_debug_message("Here?")
-	show_debug_message(sprite)
-	
-	if(sprite_exists(sprite))
-		show_debug_message("Sprite Exists")
-	else
-		show_debug_message("Sprite NOT Exists")
-}
-
-
-// This is a help function that will reset the player information.
-function playerInfoReset()
+gpgs_uri_to_path_callback = function(_success, _path, _error)
 {
-	playerInfo = noone;
-	
-	// We need to check if the sprite exists and delete it
-	// otherwise we will have memory leaks.
-	if (sprite_exists(sprite))
-	{
-		sprite_delete(sprite);
-		sprite = noone;
-	}
+    show_debug_message("gpgs_uri_to_path_callback");
+    show_debug_message({
+        success: _success,
+        path: _path,
+        error: _error
+    });
+
+    if (!_success)
+    {
+        show_debug_message(_error);
+        return;
+    }
+
+    if (!instance_exists(callback_owner))
+        return;
+
+    with (callback_owner)
+    {
+        if (sprite_exists(player_sprite))
+            sprite_delete(player_sprite);
+
+        player_sprite = sprite_add(
+            _path,
+            1,
+            false,
+            false,
+            0,
+            0
+        );
+
+        show_debug_message({
+            player_sprite: player_sprite,
+            sprite_exists: sprite_exists(player_sprite)
+        });
+    }
+};
+
+function player_info_reset()
+{
+    player_info = undefined;
+
+    if (sprite_exists(player_sprite))
+    {
+        sprite_delete(player_sprite);
+        player_sprite = noone;
+    }
 }
 
+gpgs_player_current(function(_result)
 {
-	// This is a method that triggers a Social Async event callback
-	// returning the player information (check social async event).
-	gpgs_player_current(function(success,player,error){
-			// If we succeeded to get the player info
-			if(success)
-			{
-				show_debug_message(player)
-				
-				// We can parse the infomation into a struct
-				playerInfo = json_parse(player);
-			
-				// Check if the player has a HiRes image or an icon.
-				// Either way this retrieved variable is an URI and needs to be converted to a path
-				// for the sprite to be loaded from so we need to call 'gpgs_UriToPath'
-				// which will trigger an Async Social event with the sprite path.
-				if (struct_exists(playerInfo,"iconImageUri"))
-				{
-					gpgs_uri_to_path(playerInfo.iconImageUri,gpgs_uri_to_path_callback);
-				}
-				else if (struct_exists(playerInfo,"hiResImageUri"))
-				{
-					gpgs_uri_to_path(playerInfo.hiResImageUri,gpgs_uri_to_path_callback);
-				}
-			}
-			else
-			{
-				// At this point we were not successful to retreive user data so
-				// we proceed to reset any previously cached information.
-				playerInfoReset();
-			}
-		})
-}
+    show_debug_message(_result);
+
+    if (!_result.success)
+    {
+        show_debug_message(_result.error);
+        player_info_reset();
+        return;
+    }
+
+    player_info = _result.player;
+
+    if (!is_struct(player_info))
+    {
+        player_info_reset();
+        return;
+    }
+
+    var _image_uri = "";
+
+    if (struct_exists(player_info, "hi_res_image_uri")
+        && player_info.hi_res_image_uri != "")
+    {
+        _image_uri = player_info.hi_res_image_uri;
+    }
+    else if (struct_exists(player_info, "icon_image_uri")
+        && player_info.icon_image_uri != "")
+    {
+        _image_uri = player_info.icon_image_uri;
+    }
+
+    if (_image_uri != "")
+    {
+        gpgs_uri_to_path(
+            _image_uri,
+            gpgs_uri_to_path_callback
+        );
+    }
+    else
+    {
+        show_debug_message("The player has no usable image URI.");
+    }
+});
