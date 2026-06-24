@@ -50,7 +50,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -71,18 +70,12 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     private static final int RC_LEADERBOARD_UI = 9004;
     private static final int RC_SAVED_GAMES = 9009;
 
-    private static final int SAVED_UI_ERROR = -1;
-    private static final int SAVED_UI_CANCELLED = 0;
-    private static final int SAVED_UI_SELECTED = 1;
-    private static final int SAVED_UI_CREATED_NEW = 2;
-    private static final int SAVED_UI_DELETED = 3;
-
     private final ExecutorService background = Executors.newCachedThreadPool();
-    private final HashMap<String, Snapshot> snapshots = new HashMap<>();
+    private final Map<String, Snapshot> snapshots = new ConcurrentHashMap<>();
 
-    private Snapshot conflictLocal;
-    private Snapshot conflictRemote;
-    private GMFunction savedGamesUiCallback;
+    private volatile Snapshot conflictLocal;
+    private volatile Snapshot conflictRemote;
+    private volatile GMFunction savedGamesUiCallback;
 
     private volatile boolean authenticationKnown = false;
     private volatile boolean authenticated = false;
@@ -693,14 +686,17 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         String uriString,
         final GMFunction callback)
     {
+        final Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(false, "", "Activity is null.");
+            return;
+        }
+
         main(() ->
         {
             try
             {
-                Activity activity = activity();
-                if (activity == null)
-                    throw new IllegalStateException("Activity is null.");
-
                 UriImageListener.register(
                     activity,
                     Uri.parse(uriString),
@@ -1003,7 +999,15 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                         builder.setCoverImage(bitmap);
                 }
 
-                main(() -> PlayGames.getSnapshotsClient(activity())
+                Activity activity = activity();
+                if (activity == null)
+                {
+                    snapshots.remove(name);
+                    callback.call(false, name, "Activity is null.");
+                    return;
+                }
+
+                activity.runOnUiThread(() -> PlayGames.getSnapshotsClient(activity)
                     .commitAndClose(snapshot, builder.build())
                     .addOnCompleteListener(task ->
                     {
@@ -1112,9 +1116,12 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
+        // Run the completion on the background executor: the success path calls
+        // Snapshot.readFully() (synchronous disk I/O) which must not run on the UI
+        // thread. Callback delivery is thread-agnostic (marshalled via DispatchQueue).
         PlayGames.getSnapshotsClient(activity())
             .open(name, false, policy)
-            .addOnCompleteListener(task ->
+            .addOnCompleteListener(background, task ->
             {
                 if (!task.isSuccessful())
                 {
