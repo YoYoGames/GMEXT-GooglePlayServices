@@ -22,20 +22,19 @@ var _save_data = {
     icon_index: 0
 };
 
-var _options = {
-    name: "slot_" + string(current_time) + "_" + string(irandom_range(0, 99999)),
-    data: json_stringify(_save_data),
-    desc: async_load[? "result"],
-    played_time_millis: 0,
-    progress_value: 0,
-    cover_image_path: _thumbnail_path
-};
+var _options = new GPGSSavedGameCommitOptions();
+_options.name = "slot_" + string(current_time) + "_" + string(irandom_range(0, 99999));
+_options.data = json_stringify(_save_data);
+_options.desc = async_load[? "result"];
+_options.played_time_millis = 0;
+_options.progress_value = 0;
+_options.cover_image_path = _thumbnail_path;
 
-gpgs_saved_games_commit_new(_options, function(_success, _name, _error)
+gpgs_saved_games_commit_new(_options, function(_result)
 {
-    if (!_success)
+    if (!_result.success)
     {
-        show_debug_message(_error);
+        show_debug_message(_result.error);
         return;
     }
 

@@ -11,11 +11,11 @@ description = "";
 
 image_xscale = 5;
 
-uri_to_path_callback = function(_success, _path, _error)
+uri_to_path_callback = function(_result)
 {
-    if (!_success)
+    if (!_result.success)
     {
-        show_debug_message(_error);
+        show_debug_message(_result.error);
         return;
     }
 
@@ -27,7 +27,7 @@ uri_to_path_callback = function(_success, _path, _error)
         if (sprite_exists(cover_sprite))
             sprite_delete(cover_sprite);
 
-        cover_sprite = sprite_add(_path, 1, false, false, 0, 0);
+        cover_sprite = sprite_add(_result.value, 1, false, false, 0, 0);
     }
 };
 

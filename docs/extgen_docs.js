@@ -207,6 +207,190 @@
  */
 
 /**
+ * @struct_partial GPGSAuthResult
+ * @member {Bool} success
+ * @member {Bool} is_authenticated
+ * @member {String} error
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSPlayerInfo
+ * @member {String} player_id
+ * @member {String} display_name
+ * @member {String} title
+ * @member {String} icon_image_uri
+ * @member {String} hi_res_image_uri
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSPlayerStats
+ * @member {Bool} success
+ * @member {Real} average_session_length
+ * @member {Real} days_since_last_played
+ * @member {Real} number_of_purchases
+ * @member {Real} number_of_sessions
+ * @member {Real} session_percentile
+ * @member {Real} spend_percentile
+ * @member {Real} churn_probability
+ * @member {Real} high_spender_probability
+ * @member {Real} spend_probability
+ * @member {Real} total_spend_next_28_days
+ * @member {String} error
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSAchievement
+ * @member {String} achievement_id
+ * @member {String} name
+ * @member {String} description
+ * @member {Real} state
+ * @member {Real} type
+ * @member {Real} current_steps
+ * @member {Real} total_steps
+ * @member {Real} last_updated_timestamp
+ * @member {Real} xp_value
+ * @member {String} revealed_image_uri
+ * @member {String} unlocked_image_uri
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSScoreResult
+ * @member {Real} raw_score
+ * @member {String} formatted_score
+ * @member {String} score_tag
+ * @member {Bool} new_best
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSLeaderboardVariant
+ * @member {Real} collection
+ * @member {Real} time_span
+ * @member {Bool} has_player_info
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSSnapshotMetadata
+ * @member {String} unique_name
+ * @member {String} description
+ * @member {String} device_name
+ * @member {Real} last_modified_timestamp
+ * @member {Real} played_time
+ * @member {Real} progress_value
+ * @member {Bool} has_change_pending
+ * @member {String} cover_image_uri
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSTaskResult
+ * @member {Bool} success
+ * @member {String} value
+ * @member {String} error
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSPlayer
+ * @member {Bool} success
+ * @member {Struct.GPGSPlayerInfo} player
+ * @member {String} error
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSLeaderboardScore
+ * @member {String} display_rank
+ * @member {String} display_score
+ * @member {Real} raw_score
+ * @member {String} score_tag
+ * @member {Real} timestamp_millis
+ * @member {Struct.GPGSPlayerInfo} score_holder
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSAchievementList
+ * @member {Bool} success
+ * @member {Array[Struct.GPGSAchievement]} achievements
+ * @member {String} error
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSScoreReport
+ * @member {Bool} success
+ * @member {String} leaderboard_id
+ * @member {Real} score
+ * @member {String} score_tag
+ * @member {Struct.GPGSScoreResult} daily
+ * @member {Struct.GPGSScoreResult} weekly
+ * @member {Struct.GPGSScoreResult} all_time
+ * @member {String} error
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSLeaderboard
+ * @member {String} leaderboard_id
+ * @member {String} display_name
+ * @member {Real} score_order
+ * @member {Array[Struct.GPGSLeaderboardVariant]} variants
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSSnapshotMetadataList
+ * @member {Bool} success
+ * @member {Array[Struct.GPGSSnapshotMetadata]} snapshots
+ * @member {String} error
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSSnapshotOpenResult
+ * @member {Bool} is_conflict
+ * @member {Struct.GPGSSnapshotMetadata} snapshot_metadata
+ * @member {String} data
+ * @member {String} conflict_id
+ * @member {Struct.GPGSSnapshotMetadata} snapshot_metadata_local
+ * @member {String} data_local
+ * @member {Struct.GPGSSnapshotMetadata} snapshot_metadata_remote
+ * @member {String} data_remote
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSSavedGamesUIEvent
+ * @member {Real} result
+ * @member {Struct.GPGSSnapshotMetadata} snapshot_metadata
+ * @member {String} error
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSLeaderboardScores
+ * @member {Bool} success
+ * @member {Struct.GPGSLeaderboard} leaderboard
+ * @member {Array[Struct.GPGSLeaderboardScore]} scores
+ * @member {String} error
+ * @struct_end 
+ */
+
+/**
+ * @struct_partial GPGSSnapshot
+ * @member {Bool} success
+ * @member {Struct.GPGSSnapshotOpenResult} result
+ * @member {String} error
+ * @struct_end 
+ */
+
+/**
  * @enum_partial GPGSAchievementState
  * @member Unlocked
  * @member Revealed
@@ -250,12 +434,6 @@
  * @member LastKnownGood
  * @member MostRecentlyModified
  * @member HighestProgress
- * @enum_end 
- */
-
-/**
- * @enum_partial GPGSSavedGamesDisplayLimit
- * @member None
  * @enum_end 
  */
 

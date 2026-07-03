@@ -32,20 +32,19 @@ var _save_data = {
     icon_index: _icon_index
 };
 
-var _options = {
-    name: Obj_GooglePlayServices_SavedGames.opened_unique_name,
-    data: json_stringify(_save_data),
-    desc: Obj_GooglePlayServices_SavedGames.opened_description,
-    played_time_millis: 0,
-    progress_value: 0,
-    cover_image_path: _thumbnail_path
-};
+var _options = new GPGSSavedGameCommitOptions();
+_options.name = Obj_GooglePlayServices_SavedGames.opened_unique_name;
+_options.data = json_stringify(_save_data);
+_options.desc = Obj_GooglePlayServices_SavedGames.opened_description;
+_options.played_time_millis = 0;
+_options.progress_value = 0;
+_options.cover_image_path = _thumbnail_path;
 
-gpgs_saved_games_commit_and_close(_options, function(_success, _name, _error)
+gpgs_saved_games_commit_and_close(_options, function(_result)
 {
-    if (!_success)
+    if (!_result.success)
     {
-        show_debug_message(_error);
+        show_debug_message(_result.error);
         return;
     }
 

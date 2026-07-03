@@ -6,6 +6,8 @@ import ${YYAndroidPackageName}.GMExtWire.GMValue;
 import ${YYAndroidPackageName}.enums.*;
 import ${YYAndroidPackageName}.records.*;
 
+import java.util.List;
+
 public interface GMGooglePlayServicesInterface {
     public boolean gpgs_is_available();
     public void gpgs_sign_in(GMFunction callback);

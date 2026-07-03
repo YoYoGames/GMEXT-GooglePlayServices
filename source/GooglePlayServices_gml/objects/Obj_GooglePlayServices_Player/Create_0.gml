@@ -4,18 +4,14 @@ player_info = undefined;
 player_sprite = noone;
 callback_owner = id;
 
-gpgs_uri_to_path_callback = function(_success, _path, _error)
+gpgs_uri_to_path_callback = function(_result)
 {
     show_debug_message("gpgs_uri_to_path_callback");
-    show_debug_message({
-        success: _success,
-        path: _path,
-        error: _error
-    });
+    show_debug_message(_result);
 
-    if (!_success)
+    if (!_result.success)
     {
-        show_debug_message(_error);
+        show_debug_message(_result.error);
         return;
     }
 
@@ -28,7 +24,7 @@ gpgs_uri_to_path_callback = function(_success, _path, _error)
             sprite_delete(player_sprite);
 
         player_sprite = sprite_add(
-            _path,
+            _result.value,
             1,
             false,
             false,

@@ -1,9 +1,11 @@
 [gml_api]
 module GMGooglePlayServices;
 
-// Outbound structured callback data is returned dynamically with
-// GMExtWire.StructStream and GMExtWire.ArrayStream.
-// Only input data that must be decoded from GML uses a generated class.
+// Structured callback results are defined as GMIDL classes and automatically
+// marshaled by the code generator into typed GML structs that callers receive
+// as instances (e.g. new GPGSAuthResult(...)). This unifies the callback convention:
+// every gpgs_* callback receives a single typed result struct with success, data,
+// and error fields, making the extension a transparent projection of the GMS API.
 
 // Base
 [global, bind = typed_gml]
@@ -83,6 +85,191 @@ class `[[GPGSSavedGameCommitOptions]]` prototype Object
     [field] property cover_image_path : string { get; set; }
 }
 
+// Result classes for callback payloads.
+[global, bind = typed_gml]
+class `[[GPGSAuthResult]]` prototype Object
+{
+    [field] property success : bool { get; set; }
+    [field] property is_authenticated : bool { get; set; }
+    [field] property error : string { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSPlayerInfo]]` prototype Object
+{
+    [field] property player_id : string { get; set; }
+    [field] property display_name : string { get; set; }
+    [field] property title : string { get; set; }
+    [field] property icon_image_uri : string { get; set; }
+    [field] property hi_res_image_uri : string { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSPlayer]]` prototype Object
+{
+    [field] property success : bool { get; set; }
+    [field, type_hint=`GPGSPlayerInfo`] property player : gmval { get; set; }
+    [field] property error : string { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSPlayerStats]]` prototype Object
+{
+    [field] property success : bool { get; set; }
+    [field] property average_session_length : real { get; set; }
+    [field] property days_since_last_played : real { get; set; }
+    [field] property number_of_purchases : real { get; set; }
+    [field] property number_of_sessions : real { get; set; }
+    [field] property session_percentile : real { get; set; }
+    [field] property spend_percentile : real { get; set; }
+    [field] property churn_probability : real { get; set; }
+    [field] property high_spender_probability : real { get; set; }
+    [field] property spend_probability : real { get; set; }
+    [field] property total_spend_next_28_days : real { get; set; }
+    [field] property error : string { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSAchievement]]` prototype Object
+{
+    [field] property achievement_id : string { get; set; }
+    [field] property name : string { get; set; }
+    [field] property description : string { get; set; }
+    [field] property state : real { get; set; }
+    [field] property type : real { get; set; }
+    [field] property current_steps : real { get; set; }
+    [field] property total_steps : real { get; set; }
+    [field] property last_updated_timestamp : real { get; set; }
+    [field] property xp_value : real { get; set; }
+    [field] property revealed_image_uri : string { get; set; }
+    [field] property unlocked_image_uri : string { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSAchievementList]]` prototype Object
+{
+    [field] property success : bool { get; set; }
+    [field, type_hint=`GPGSAchievement[]`] property achievements : gmval { get; set; }
+    [field] property error : string { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSScoreResult]]` prototype Object
+{
+    [field] property raw_score : real { get; set; }
+    [field] property formatted_score : string { get; set; }
+    [field] property score_tag : string { get; set; }
+    [field] property new_best : bool { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSScoreReport]]` prototype Object
+{
+    [field] property success : bool { get; set; }
+    [field] property leaderboard_id : string { get; set; }
+    [field] property score : real { get; set; }
+    [field] property score_tag : string { get; set; }
+    [field, type_hint=`GPGSScoreResult`] property daily : gmval { get; set; }
+    [field, type_hint=`GPGSScoreResult`] property weekly : gmval { get; set; }
+    [field, type_hint=`GPGSScoreResult`] property all_time : gmval { get; set; }
+    [field] property error : string { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSLeaderboardVariant]]` prototype Object
+{
+    [field] property collection : real { get; set; }
+    [field] property time_span : real { get; set; }
+    [field] property has_player_info : bool { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSLeaderboard]]` prototype Object
+{
+    [field] property leaderboard_id : string { get; set; }
+    [field] property display_name : string { get; set; }
+    [field] property score_order : real { get; set; }
+    [field, type_hint=`GPGSLeaderboardVariant[]`] property variants : gmval { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSLeaderboardScore]]` prototype Object
+{
+    [field] property display_rank : string { get; set; }
+    [field] property display_score : string { get; set; }
+    [field] property raw_score : real { get; set; }
+    [field] property score_tag : string { get; set; }
+    [field] property timestamp_millis : real { get; set; }
+    [field, type_hint=`GPGSPlayerInfo`] property score_holder : gmval { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSLeaderboardScores]]` prototype Object
+{
+    [field] property success : bool { get; set; }
+    [field, type_hint=`GPGSLeaderboard`] property leaderboard : gmval { get; set; }
+    [field, type_hint=`GPGSLeaderboardScore[]`] property scores : gmval { get; set; }
+    [field] property error : string { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSSnapshotMetadata]]` prototype Object
+{
+    [field] property unique_name : string { get; set; }
+    [field] property description : string { get; set; }
+    [field] property device_name : string { get; set; }
+    [field] property last_modified_timestamp : real { get; set; }
+    [field] property played_time : real { get; set; }
+    [field] property progress_value : real { get; set; }
+    [field] property has_change_pending : bool { get; set; }
+    [field] property cover_image_uri : string { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSSnapshotMetadataList]]` prototype Object
+{
+    [field] property success : bool { get; set; }
+    [field, type_hint=`GPGSSnapshotMetadata[]`] property snapshots : gmval { get; set; }
+    [field] property error : string { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSSnapshotOpenResult]]` prototype Object
+{
+    [field] property is_conflict : bool { get; set; }
+    [field, type_hint=`GPGSSnapshotMetadata`] property snapshot_metadata : gmval { get; set; }
+    [field] property data : string { get; set; }
+    [field] property conflict_id : string { get; set; }
+    [field, type_hint=`GPGSSnapshotMetadata`] property snapshot_metadata_local : gmval { get; set; }
+    [field] property data_local : string { get; set; }
+    [field, type_hint=`GPGSSnapshotMetadata`] property snapshot_metadata_remote : gmval { get; set; }
+    [field] property data_remote : string { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSSnapshot]]` prototype Object
+{
+    [field] property success : bool { get; set; }
+    [field, type_hint=`GPGSSnapshotOpenResult`] property result : gmval { get; set; }
+    [field] property error : string { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSSavedGamesUIEvent]]` prototype Object
+{
+    [field] property result : real { get; set; }
+    [field, type_hint=`GPGSSnapshotMetadata`] property snapshot_metadata : gmval { get; set; }
+    [field] property error : string { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSTaskResult]]` prototype Object
+{
+    [field] property success : bool { get; set; }
+    [field] property value : string { get; set; }
+    [field] property error : string { get; set; }
+}
+
 // Enums
 [global, bind = typed_gml]
 enum GPGSAchievementState:int32 { Unlocked = 0, Revealed = 1, Hidden = 2, }
@@ -96,7 +283,5 @@ enum GPGSLeaderboardCollection:int32 { Public = 0, Friends = 3, }
 enum GPGSLeaderboardScoreOrder:int32 { SmallerIsBetter = 0, LargerIsBetter = 1, }
 [global, bind = typed_gml]
 enum GPGSSavedGamesConflictPolicy:int32 { Manual = -1, LongestPlaytime = 1, LastKnownGood = 2, MostRecentlyModified = 3, HighestProgress = 4, }
-[global, bind = typed_gml]
-enum GPGSSavedGamesDisplayLimit:int32 { None = -1, }
 [global, bind = typed_gml]
 enum GPGSSavedGamesUIResult:int32 { Cancelled = 0, Selected = 1, CreatedNew = 2, Deleted = 3, Error = -1, }

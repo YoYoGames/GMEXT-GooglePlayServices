@@ -7,7 +7,7 @@ gpgs_player_stats_load(true, function(_result)
 
     if (_result.success)
     {
-        player_stats = _result.stats;
+        player_stats = _result;
         show_debug_message(player_stats);
     }
     else

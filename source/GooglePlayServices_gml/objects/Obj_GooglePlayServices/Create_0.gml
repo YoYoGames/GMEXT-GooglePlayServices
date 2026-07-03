@@ -30,17 +30,21 @@ function setSignedInMode(enable)
 }
 
 setSignedInMode(false);
-gpgs_is_authenticated(function(success,authenticated,error){
-	show_debug_message($"is authenticated: {{success,authenticated,error}}")
-		if(success)
-		if(authenticated)
+gpgs_is_authenticated(function(_result){
+	show_debug_message(_result);
+	if(_result.success)
+	{
+		if(_result.is_authenticated)
 		{
-			setSignedInMode(true)
-			instance_create_depth(30,100,0,Obj_GooglePlayServices_PlayerStats)
-			instance_create_depth(450,110,0,Obj_GooglePlayServices_Player)
+			setSignedInMode(true);
+			instance_create_depth(30,100,0,Obj_GooglePlayServices_PlayerStats);
+			instance_create_depth(450,110,0,Obj_GooglePlayServices_Player);
 		}
-		else 
-			gpgs_sign_in(function(success,sign_in,error){
-					show_debug_message({success,sign_in,error})
-				});
-	})
+		else
+		{
+			gpgs_sign_in(function(_signin_result){
+				show_debug_message(_signin_result);
+			});
+		}
+	}
+});

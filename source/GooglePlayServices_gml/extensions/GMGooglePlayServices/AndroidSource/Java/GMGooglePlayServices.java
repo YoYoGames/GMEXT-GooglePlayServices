@@ -3,7 +3,7 @@ package ${YYAndroidPackageName};
 import ${YYAndroidPackageName}.R;
 
 import ${YYAndroidPackageName}.enums.*;
-import ${YYAndroidPackageName}.records.GPGSSavedGameCommitOptions;
+import ${YYAndroidPackageName}.records.*;
 import ${YYAndroidPackageName}.GMExtWire;
 import ${YYAndroidPackageName}.GMExtWire.GMFunction;
 import ${YYAndroidPackageName}.GMExtWire.GMValue;
@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -85,6 +86,28 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         PlayGamesSdk.initialize(activity());
     }
 
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        if (background != null && !background.isShutdown())
+        {
+            background.shutdown();
+            try
+            {
+                if (!background.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS))
+                {
+                    background.shutdownNow();
+                }
+            }
+            catch (InterruptedException e)
+            {
+                background.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
     private static Activity activity()
     {
         return RunnerActivity.CurrentActivity;
@@ -112,12 +135,12 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             + "gpgs_is_authenticated or gpgs_sign_in first.";
     }
 
-    private boolean requireAuthentication(GMFunction callback, Object... failureArguments)
+    private boolean requireAuthentication(GMFunction callback, boolean requireAuth, String value, String error)
     {
         if (authenticationKnown && authenticated)
             return true;
 
-        callback.call(failureArguments);
+        callback.call(new GPGSTaskResult(false, value, error));
         return false;
     }
 
@@ -153,7 +176,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         if (activity == null)
         {
             cacheAuthentication(false);
-            callback.call(false, false, "Activity is null.");
+            callback.call(new GPGSAuthResult(false, false, "Activity is null."));
             return;
         }
 
@@ -163,19 +186,19 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                 if (!task.isSuccessful())
                 {
                     cacheAuthentication(false);
-                    callback.call(false, false, error(task.getException()));
+                    callback.call(new GPGSAuthResult(false, false, error(task.getException())));
                     return;
                 }
 
                 AuthenticationResult result = task.getResult();
-                boolean value = result != null && result.isAuthenticated();
-                cacheAuthentication(value);
+                boolean isAuth = result != null && result.isAuthenticated();
+                cacheAuthentication(isAuth);
 
-                callback.call(
-                    value,
-                    value,
-                    value ? "" : "Sign-in completed but the user is not authenticated."
-                );
+                callback.call(new GPGSAuthResult(
+                    true,
+                    isAuth,
+                    isAuth ? "" : "Sign-in completed but the user is not authenticated."
+                ));
             }));
     }
 
@@ -185,7 +208,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         if (activity == null)
         {
             cacheAuthentication(false);
-            callback.call(false, false, "Activity is null.");
+            callback.call(new GPGSAuthResult(false, false, "Activity is null."));
             return;
         }
 
@@ -195,14 +218,14 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                 if (!task.isSuccessful())
                 {
                     cacheAuthentication(false);
-                    callback.call(false, false, error(task.getException()));
+                    callback.call(new GPGSAuthResult(false, false, error(task.getException())));
                     return;
                 }
 
                 AuthenticationResult result = task.getResult();
-                boolean value = result != null && result.isAuthenticated();
-                cacheAuthentication(value);
-                callback.call(true, value, "");
+                boolean isAuth = result != null && result.isAuthenticated();
+                cacheAuthentication(isAuth);
+                callback.call(new GPGSAuthResult(true, isAuth, ""));
             });
     }
 
@@ -211,18 +234,25 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         boolean forceRefreshToken,
         final GMFunction callback)
     {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSTaskResult(false, "", "Activity is null."));
+            return;
+        }
+
         if (!requireAuthentication(
             callback, false, "", authenticationError()))
             return;
 
-        PlayGames.getGamesSignInClient(activity())
+        PlayGames.getGamesSignInClient(activity)
             .requestServerSideAccess(serverClientId, forceRefreshToken)
             .addOnCompleteListener(task ->
             {
                 if (task.isSuccessful())
-                    callback.call(true, task.getResult(), "");
+                    callback.call(new GPGSTaskResult(true, safeString(task.getResult()), ""));
                 else
-                    callback.call(false, "", error(task.getException()));
+                    callback.call(new GPGSTaskResult(false, "", error(task.getException())));
             });
     }
 
@@ -232,51 +262,64 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
     public void gpgs_player_current(final GMFunction callback)
     {
-        if (!authenticationKnown || !authenticated)
+        Activity activity = activity();
+        if (activity == null)
         {
-            callback.call(playerResultStream(
-                false,
-                emptyPlayerStream(),
-                authenticationError()
-            ));
+            callback.call(new GPGSPlayer(false, new GPGSPlayerInfo("", "", "", "", ""), authenticationError()));
             return;
         }
 
-        PlayGames.getPlayersClient(activity()).getCurrentPlayer()
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(new GPGSPlayer(false, new GPGSPlayerInfo("", "", "", "", ""), authenticationError()));
+            return;
+        }
+
+        PlayGames.getPlayersClient(activity).getCurrentPlayer()
             .addOnCompleteListener(task ->
             {
                 if (task.isSuccessful() && task.getResult() != null)
                 {
-                    callback.call(playerResultStream(
+                    com.google.android.gms.games.Player p = task.getResult();
+                    callback.call(new GPGSPlayer(
                         true,
-                        playerToStream(task.getResult()),
+                        new GPGSPlayerInfo(
+                            safeString(p.getPlayerId()),
+                            safeString(p.getDisplayName()),
+                            safeString(p.getTitle()),
+                            p.getIconImageUri() != null ? p.getIconImageUri().toString() : "",
+                            p.getHiResImageUri() != null ? p.getHiResImageUri().toString() : ""
+                        ),
                         ""
                     ));
                 }
                 else
                 {
-                    callback.call(playerResultStream(
-                        false,
-                        emptyPlayerStream(),
-                        error(task.getException())
-                    ));
+                    callback.call(new GPGSPlayer(false, new GPGSPlayerInfo("", "", "", "", ""), error(task.getException())));
                 }
             });
     }
 
     public void gpgs_player_current_id(final GMFunction callback)
     {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSTaskResult(false, "", "Activity is null."));
+            return;
+        }
+
         if (!requireAuthentication(
             callback, false, "", authenticationError()))
             return;
 
-        PlayGames.getPlayersClient(activity()).getCurrentPlayerId()
+        PlayGames.getPlayersClient(activity).getCurrentPlayerId()
             .addOnCompleteListener(task ->
             {
                 if (task.isSuccessful())
-                    callback.call(true, task.getResult(), "");
+                    callback.call(new GPGSTaskResult(true, safeString(task.getResult()), ""));
                 else
-                    callback.call(false, "", error(task.getException()));
+                    callback.call(new GPGSTaskResult(false, "", error(task.getException())));
             });
     }
 
@@ -284,47 +327,50 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         boolean force_reload,
         final GMFunction callback)
     {
-        if (!authenticationKnown || !authenticated)
+        Activity activity = activity();
+        if (activity == null)
         {
-            callback.call(playerStatsResultStream(
-                false,
-                emptyPlayerStatsStream(),
-                authenticationError()
-            ));
+            callback.call(new GPGSPlayerStats(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "Activity is null."));
             return;
         }
 
-        PlayGames.getPlayerStatsClient(activity())
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(new GPGSPlayerStats(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, authenticationError()));
+            return;
+        }
+
+        PlayGames.getPlayerStatsClient(activity)
             .loadPlayerStats(force_reload)
             .addOnCompleteListener(task ->
             {
                 if (!task.isSuccessful())
                 {
-                    callback.call(playerStatsResultStream(
-                        false,
-                        emptyPlayerStatsStream(),
-                        error(task.getException())
-                    ));
+                    callback.call(new GPGSPlayerStats(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, error(task.getException())));
                     return;
                 }
 
                 AnnotatedData<PlayerStats> annotatedData = task.getResult();
-                PlayerStats stats =
-                    annotatedData != null ? annotatedData.get() : null;
+                PlayerStats stats = annotatedData != null ? annotatedData.get() : null;
 
                 if (stats == null)
                 {
-                    callback.call(playerStatsResultStream(
-                        false,
-                        emptyPlayerStatsStream(),
-                        "No player statistics were returned."
-                    ));
+                    callback.call(new GPGSPlayerStats(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "No player statistics were returned."));
                     return;
                 }
 
-                callback.call(playerStatsResultStream(
+                callback.call(new GPGSPlayerStats(
                     true,
-                    playerStatsToStream(stats),
+                    stats.getAverageSessionLength(),
+                    stats.getDaysSinceLastPlayed(),
+                    stats.getNumberOfPurchases(),
+                    stats.getNumberOfSessions(),
+                    stats.getSessionPercentile(),
+                    stats.getSpendPercentile(),
+                    stats.getChurnProbability(),
+                    stats.getHighSpenderProbability(),
+                    stats.getSpendProbability(),
+                    stats.getTotalSpendNext28Days(),
                     ""
                 ));
             });
@@ -354,11 +400,18 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         double steps,
         final GMFunction callback)
     {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSTaskResult(false, achievementId, "Activity is null."));
+            return;
+        }
+
         if (!requireAuthentication(
             callback, false, achievementId, authenticationError()))
             return;
 
-        PlayGames.getAchievementsClient(activity())
+        PlayGames.getAchievementsClient(activity)
             .incrementImmediate(achievementId, (int)steps)
             .addOnCompleteListener(task ->
                 completeAchievement(task, achievementId, callback));
@@ -368,11 +421,18 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         String achievementId,
         final GMFunction callback)
     {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSTaskResult(false, achievementId, "Activity is null."));
+            return;
+        }
+
         if (!requireAuthentication(
             callback, false, achievementId, authenticationError()))
             return;
 
-        PlayGames.getAchievementsClient(activity())
+        PlayGames.getAchievementsClient(activity)
             .revealImmediate(achievementId)
             .addOnCompleteListener(task ->
                 completeAchievement(task, achievementId, callback));
@@ -383,11 +443,18 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         double steps,
         final GMFunction callback)
     {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSTaskResult(false, achievementId, "Activity is null."));
+            return;
+        }
+
         if (!requireAuthentication(
             callback, false, achievementId, authenticationError()))
             return;
 
-        PlayGames.getAchievementsClient(activity())
+        PlayGames.getAchievementsClient(activity)
             .setStepsImmediate(achievementId, (int)steps)
             .addOnCompleteListener(task ->
                 completeAchievement(task, achievementId, callback));
@@ -397,11 +464,18 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         String achievementId,
         final GMFunction callback)
     {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSTaskResult(false, achievementId, "Activity is null."));
+            return;
+        }
+
         if (!requireAuthentication(
             callback, false, achievementId, authenticationError()))
             return;
 
-        PlayGames.getAchievementsClient(activity())
+        PlayGames.getAchievementsClient(activity)
             .unlockImmediate(achievementId)
             .addOnCompleteListener(task ->
                 completeAchievement(task, achievementId, callback));
@@ -413,15 +487,26 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         GMFunction callback)
     {
         if (task.isSuccessful())
-            callback.call(true, achievementId, "");
+            callback.call(new GPGSTaskResult(true, achievementId, ""));
         else
-            callback.call(false, achievementId, error(task.getException()));
+            callback.call(new GPGSTaskResult(false, achievementId, error(task.getException())));
     }
 
     public void gpgs_achievements_get_status(
         boolean force_reload,
         final GMFunction callback)
     {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(achievementsResultStream(
+                false,
+                streamArray(),
+                "Activity is null."
+            ));
+            return;
+        }
+
         if (!authenticationKnown || !authenticated)
         {
             callback.call(achievementsResultStream(
@@ -432,7 +517,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
-        PlayGames.getAchievementsClient(activity())
+        PlayGames.getAchievementsClient(activity)
             .load(force_reload)
             .addOnCompleteListener(task ->
             {
@@ -446,13 +531,8 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     return;
                 }
 
-                AchievementBuffer buffer =
-                    task.getResult() != null
-                        ? task.getResult().get()
-                        : null;
-
-                GMExtWire.ArrayStream achievements =
-                    streamArray();
+                AchievementBuffer buffer = task.getResult() != null ? task.getResult().get() : null;
+                GMExtWire.ArrayStream achievements = streamArray();
 
                 if (buffer != null)
                 {
@@ -525,44 +605,56 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         String scoreTag,
         final GMFunction callback)
     {
-        if (!authenticationKnown || !authenticated)
+        Activity activity = activity();
+        if (activity == null)
         {
-            callback.call(leaderboardSubmitResultStream(
-                false,
-                leaderboardId,
-                score,
-                safeString(scoreTag),
-                emptyScoreReportStream(),
-                authenticationError()
-            ));
+            callback.call(new GPGSScoreReport(false, leaderboardId, score, safeString(scoreTag),
+                new GPGSScoreResult(0.0, "", "", false),
+                new GPGSScoreResult(0.0, "", "", false),
+                new GPGSScoreResult(0.0, "", "", false),
+                "Activity is null."));
             return;
         }
 
-        PlayGames.getLeaderboardsClient(activity())
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(new GPGSScoreReport(false, leaderboardId, score, safeString(scoreTag),
+                new GPGSScoreResult(0.0, "", "", false),
+                new GPGSScoreResult(0.0, "", "", false),
+                new GPGSScoreResult(0.0, "", "", false),
+                authenticationError()));
+            return;
+        }
+
+        PlayGames.getLeaderboardsClient(activity)
             .submitScoreImmediate(leaderboardId, (long)score, scoreTag)
             .addOnCompleteListener(task ->
             {
                 if (task.isSuccessful())
                 {
-                    callback.call(leaderboardSubmitResultStream(
+                    ScoreSubmissionData report = task.getResult();
+                    ScoreSubmissionData.Result daily = report.getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY);
+                    ScoreSubmissionData.Result weekly = report.getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY);
+                    ScoreSubmissionData.Result all_time = report.getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME);
+
+                    callback.call(new GPGSScoreReport(
                         true,
                         leaderboardId,
                         score,
                         safeString(scoreTag),
-                        scoreReportToStream(task.getResult()),
+                        new GPGSScoreResult(daily.rawScore, safeString(daily.formattedScore), safeString(daily.scoreTag), daily.newBest),
+                        new GPGSScoreResult(weekly.rawScore, safeString(weekly.formattedScore), safeString(weekly.scoreTag), weekly.newBest),
+                        new GPGSScoreResult(all_time.rawScore, safeString(all_time.formattedScore), safeString(all_time.scoreTag), all_time.newBest),
                         ""
                     ));
                 }
                 else
                 {
-                    callback.call(leaderboardSubmitResultStream(
-                        false,
-                        leaderboardId,
-                        score,
-                        safeString(scoreTag),
-                        emptyScoreReportStream(),
-                        error(task.getException())
-                    ));
+                    callback.call(new GPGSScoreReport(false, leaderboardId, score, safeString(scoreTag),
+                        new GPGSScoreResult(0.0, "", "", false),
+                        new GPGSScoreResult(0.0, "", "", false),
+                        new GPGSScoreResult(0.0, "", "", false),
+                        error(task.getException())));
                 }
             });
     }
@@ -575,6 +667,18 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         boolean force_reload,
         GMFunction callback)
     {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(leaderboardScoresResultStream(
+                false,
+                emptyLeaderboardStream(),
+                streamArray(),
+                "Activity is null."
+            ));
+            return;
+        }
+
         if (!authenticationKnown || !authenticated)
         {
             callback.call(leaderboardScoresResultStream(
@@ -586,12 +690,16 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
-        PlayGames.getLeaderboardsClient(activity())
+        int clampedResults = (int) Math.max(1, Math.min(25, max_results));
+        if (clampedResults != (int)max_results)
+            Log.w(TAG, "gpgs_leaderboard_load_player_centered_scores: max_results " + (int)max_results + " clamped to [1, 25]");
+
+        PlayGames.getLeaderboardsClient(activity)
             .loadPlayerCenteredScores(
                 leaderboard_id,
                 (int)span.value(),
                 (int)leaderboard_collection.value(),
-                (int)max_results,
+                clampedResults,
                 force_reload)
             .addOnCompleteListener(task -> completeScores(task, callback));
     }
@@ -604,6 +712,18 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         boolean force_reload,
         GMFunction callback)
     {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(leaderboardScoresResultStream(
+                false,
+                emptyLeaderboardStream(),
+                streamArray(),
+                "Activity is null."
+            ));
+            return;
+        }
+
         if (!authenticationKnown || !authenticated)
         {
             callback.call(leaderboardScoresResultStream(
@@ -615,12 +735,16 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
-        PlayGames.getLeaderboardsClient(activity())
+        int clampedResults = (int) Math.max(1, Math.min(25, max_results));
+        if (clampedResults != (int)max_results)
+            Log.w(TAG, "gpgs_leaderboard_load_top_scores: max_results " + (int)max_results + " clamped to [1, 25]");
+
+        PlayGames.getLeaderboardsClient(activity)
             .loadTopScores(
                 leaderboard_id,
                 (int)span.value(),
                 (int)leaderboard_collection.value(),
-                (int)max_results,
+                clampedResults,
                 force_reload)
             .addOnCompleteListener(task -> completeScores(task, callback));
     }
@@ -640,11 +764,8 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
-        AnnotatedData<LeaderboardsClient.LeaderboardScores> annotatedData =
-            task.getResult();
-
-        LeaderboardsClient.LeaderboardScores scores =
-            annotatedData != null ? annotatedData.get() : null;
+        AnnotatedData<LeaderboardsClient.LeaderboardScores> annotatedData = task.getResult();
+        LeaderboardsClient.LeaderboardScores scores = annotatedData != null ? annotatedData.get() : null;
 
         if (scores == null)
         {
@@ -689,7 +810,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         final Activity activity = activity();
         if (activity == null)
         {
-            callback.call(false, "", "Activity is null.");
+            callback.call(new GPGSTaskResult(false, "", "Activity is null."));
             return;
         }
 
@@ -706,7 +827,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             }
             catch (Exception exception)
             {
-                callback.call(false, "", error(exception));
+                callback.call(new GPGSTaskResult(false, "", error(exception)));
             }
         });
     }
@@ -757,7 +878,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     if (!isRequestedDrawable
                         || !(drawable instanceof BitmapDrawable))
                     {
-                        callback.call(false, "", "The URI image could not be loaded.");
+                        callback.call(new GPGSTaskResult(false, "", "The URI image could not be loaded."));
                         return;
                     }
 
@@ -775,11 +896,11 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                     }
 
-                    callback.call(true, output.getAbsolutePath(), "");
+                    callback.call(new GPGSTaskResult(true, output.getAbsolutePath(), ""));
                 }
                 catch (Exception exception)
                 {
-                    callback.call(false, "", error(exception));
+                    callback.call(new GPGSTaskResult(false, "", error(exception)));
                 }
                 finally
                 {
@@ -800,26 +921,29 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         double max_results,
         final GMFunction callback)
     {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSSavedGamesUIEvent(GPGSSavedGamesUIResult.Error.value(), new GPGSSnapshotMetadata("", "", "", 0.0, 0.0, 0.0, false, ""), "Activity is null."));
+            return;
+        }
+
         if (!authenticationKnown || !authenticated)
         {
-            callback.call(savedGamesUIResultStream(
-                GPGSSavedGamesUIResult.Error.value(),
-                emptySnapshotMetadataStream(),
-                authenticationError()
-            ));
+            callback.call(new GPGSSavedGamesUIEvent(GPGSSavedGamesUIResult.Error.value(), new GPGSSnapshotMetadata("", "", "", 0.0, 0.0, 0.0, false, ""), authenticationError()));
             return;
         }
 
         savedGamesUiCallback = callback;
 
-        PlayGames.getSnapshotsClient(activity())
+        PlayGames.getSnapshotsClient(activity)
             .getSelectSnapshotIntent(
                 title,
                 buttonAdd,
                 buttonDelete,
                 (int)max_results)
             .addOnSuccessListener(intent ->
-                activity().startActivityForResult(intent, RC_SAVED_GAMES))
+                activity.startActivityForResult(intent, RC_SAVED_GAMES))
             .addOnFailureListener(exception ->
             {
                 GMFunction pending = savedGamesUiCallback;
@@ -827,11 +951,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
                 if (pending != null)
                 {
-                    pending.call(savedGamesUIResultStream(
-                        GPGSSavedGamesUIResult.Error.value(),
-                        emptySnapshotMetadataStream(),
-                        error(exception)
-                    ));
+                    pending.call(new GPGSSavedGamesUIEvent(GPGSSavedGamesUIResult.Error.value(), new GPGSSnapshotMetadata("", "", "", 0.0, 0.0, 0.0, false, ""), error(exception)));
                 }
             });
     }
@@ -852,9 +972,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (data == null || resultCode != Activity.RESULT_OK)
         {
-            callback.call(savedGamesUIResultStream(
+            callback.call(new GPGSSavedGamesUIEvent(
                 GPGSSavedGamesUIResult.Cancelled.value(),
-                emptySnapshotMetadataStream(),
+                new GPGSSnapshotMetadata("", "", "", 0.0, 0.0, 0.0, false, ""),
                 ""
             ));
             return;
@@ -866,9 +986,18 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                 data.getParcelableExtra(
                     SnapshotsClient.EXTRA_SNAPSHOT_METADATA);
 
-            callback.call(savedGamesUIResultStream(
+            callback.call(new GPGSSavedGamesUIEvent(
                 GPGSSavedGamesUIResult.Selected.value(),
-                snapshotMetadataToStream(metadata),
+                new GPGSSnapshotMetadata(
+                    safeString(metadata.getUniqueName()),
+                    safeString(metadata.getDescription()),
+                    safeString(metadata.getDeviceName()),
+                    metadata.getLastModifiedTimestamp(),
+                    metadata.getPlayedTime(),
+                    metadata.getProgressValue(),
+                    metadata.hasChangePending(),
+                    metadata.getCoverImageUri() != null ? metadata.getCoverImageUri().toString() : ""
+                ),
                 ""
             ));
             return;
@@ -876,9 +1005,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (data.hasExtra(SnapshotsClient.EXTRA_SNAPSHOT_NEW))
         {
-            callback.call(savedGamesUIResultStream(
+            callback.call(new GPGSSavedGamesUIEvent(
                 GPGSSavedGamesUIResult.CreatedNew.value(),
-                emptySnapshotMetadataStream(),
+                new GPGSSnapshotMetadata("", "", "", 0.0, 0.0, 0.0, false, ""),
                 ""
             ));
             return;
@@ -901,7 +1030,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (options == null)
         {
-            callback.call(false, "", "Commit options cannot be null.");
+            callback.call(new GPGSTaskResult(false, "", "Commit options cannot be null."));
             return;
         }
 
@@ -910,11 +1039,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (snapshot == null)
         {
-            callback.call(
-                false,
-                name,
-                "Snapshot is not opened or has already been closed."
-            );
+            callback.call(new GPGSTaskResult(false, name, "Snapshot is not opened or has already been closed."));
             return;
         }
 
@@ -931,7 +1056,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (options == null)
         {
-            callback.call(false, "", "Commit options cannot be null.");
+            callback.call(new GPGSTaskResult(false, "", "Commit options cannot be null."));
             return;
         }
 
@@ -946,14 +1071,14 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             {
                 if (!task.isSuccessful())
                 {
-                    callback.call(false, name, error(task.getException()));
+                    callback.call(new GPGSTaskResult(false, name, error(task.getException())));
                     return;
                 }
 
                 Snapshot snapshot = task.getResult().getData();
                 if (snapshot == null)
                 {
-                    callback.call(false, name, "No snapshot was returned.");
+                    callback.call(new GPGSTaskResult(false, name, "No snapshot was returned."));
                     return;
                 }
 
@@ -1003,25 +1128,25 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                 if (activity == null)
                 {
                     snapshots.remove(name);
-                    callback.call(false, name, "Activity is null.");
+                    callback.call(new GPGSTaskResult(false, name, "Activity is null."));
                     return;
                 }
 
-                activity.runOnUiThread(() -> PlayGames.getSnapshotsClient(activity)
+                activity.runOnUiThread(() -> PlayGames.getSnapshotsClient(activity())
                     .commitAndClose(snapshot, builder.build())
                     .addOnCompleteListener(task ->
                     {
                         snapshots.remove(name);
 
                         if (task.isSuccessful())
-                            callback.call(true, name, "");
+                            callback.call(new GPGSTaskResult(true, name, ""));
                         else
-                            callback.call(false, name, error(task.getException()));
+                            callback.call(new GPGSTaskResult(false, name, error(task.getException())));
                     }));
             }
             catch (Exception exception)
             {
-                callback.call(false, name, error(exception));
+                callback.call(new GPGSTaskResult(false, name, error(exception)));
             }
         });
     }
@@ -1030,6 +1155,17 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         boolean force_reload,
         final GMFunction callback)
     {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(savedGamesLoadResultStream(
+                false,
+                streamArray(),
+                "Activity is null."
+            ));
+            return;
+        }
+
         if (!authenticationKnown || !authenticated)
         {
             callback.call(savedGamesLoadResultStream(
@@ -1040,7 +1176,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
-        PlayGames.getSnapshotsClient(activity())
+        PlayGames.getSnapshotsClient(activity)
             .load(force_reload)
             .addOnCompleteListener(task ->
             {
@@ -1054,13 +1190,8 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     return;
                 }
 
-                SnapshotMetadataBuffer buffer =
-                    task.getResult() != null
-                        ? task.getResult().get()
-                        : null;
-
-                GMExtWire.ArrayStream snapshotArray =
-                    streamArray();
+                SnapshotMetadataBuffer buffer = task.getResult() != null ? task.getResult().get() : null;
+                GMExtWire.ArrayStream snapshotArray = streamArray();
 
                 if (buffer != null)
                 {
@@ -1247,6 +1378,13 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         String name,
         final GMFunction callback)
     {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSTaskResult(false, name, "Activity is null."));
+            return;
+        }
+
         if (!requireAuthentication(
             callback, false, name, authenticationError()))
             return;
@@ -1254,26 +1392,22 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         Snapshot snapshot = snapshots.get(name);
         if (snapshot == null)
         {
-            callback.call(
-                false,
-                name,
-                "Snapshot is not opened or has already been closed."
-            );
+            callback.call(new GPGSTaskResult(false, name, "Snapshot is not opened or has already been closed."));
             return;
         }
 
-        PlayGames.getSnapshotsClient(activity())
+        PlayGames.getSnapshotsClient(activity)
             .delete(snapshot.getMetadata())
             .addOnCompleteListener(task ->
             {
                 if (task.isSuccessful())
                 {
                     snapshots.remove(name);
-                    callback.call(true, name, "");
+                    callback.call(new GPGSTaskResult(true, name, ""));
                 }
                 else
                 {
-                    callback.call(false, name, error(task.getException()));
+                    callback.call(new GPGSTaskResult(false, name, error(task.getException())));
                 }
             });
     }
@@ -1283,6 +1417,13 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         boolean useLocal,
         final GMFunction callback)
     {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSTaskResult(false, conflictId, "Activity is null."));
+            return;
+        }
+
         if (!requireAuthentication(
             callback, false, conflictId, authenticationError()))
             return;
@@ -1290,27 +1431,23 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         Snapshot selected = useLocal ? conflictLocal : conflictRemote;
         if (selected == null)
         {
-            callback.call(false, conflictId, "There is no active conflict.");
+            callback.call(new GPGSTaskResult(false, conflictId, "There is no active conflict."));
             return;
         }
 
-        PlayGames.getSnapshotsClient(activity())
+        PlayGames.getSnapshotsClient(activity)
             .resolveConflict(conflictId, selected)
             .addOnCompleteListener(task ->
             {
                 if (!task.isSuccessful())
                 {
-                    callback.call(
-                        false,
-                        conflictId,
-                        error(task.getException())
-                    );
+                    callback.call(new GPGSTaskResult(false, conflictId, error(task.getException())));
                     return;
                 }
 
                 conflictLocal = null;
                 conflictRemote = null;
-                callback.call(true, conflictId, "");
+                callback.call(new GPGSTaskResult(true, conflictId, ""));
             });
     }
 
