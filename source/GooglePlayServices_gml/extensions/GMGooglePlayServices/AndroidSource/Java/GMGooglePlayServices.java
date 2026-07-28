@@ -56,6 +56,8 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Extension Generator conversion of YYGooglePlayServices.
@@ -72,6 +74,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     private static final int RC_SAVED_GAMES = 9009;
 
     private final ExecutorService background = Executors.newCachedThreadPool();
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final Map<String, Snapshot> snapshots = new ConcurrentHashMap<>();
 
     private volatile Snapshot conflictLocal;
@@ -90,12 +93,28 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     public void onDestroy()
     {
         super.onDestroy();
+        if (scheduler != null && !scheduler.isShutdown())
+        {
+            scheduler.shutdown();
+            try
+            {
+                if (!scheduler.awaitTermination(5, TimeUnit.SECONDS))
+                {
+                    scheduler.shutdownNow();
+                }
+            }
+            catch (InterruptedException e)
+            {
+                scheduler.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
         if (background != null && !background.isShutdown())
         {
             background.shutdown();
             try
             {
-                if (!background.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS))
+                if (!background.awaitTermination(5, TimeUnit.SECONDS))
                 {
                     background.shutdownNow();
                 }
@@ -847,7 +866,8 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     activity,
                     Uri.parse(uriString),
                     callback,
-                    background
+                    background,
+                    scheduler
                 );
             }
             catch (Exception exception)
@@ -862,19 +882,23 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     {
         private static final Map<UriImageListener, UriImageListener> LIVE =
             new ConcurrentHashMap<>();
+        private static final long TIMEOUT_MILLIS = 30000;
 
         private final WeakReference<Activity> activity;
         private final GMFunction callback;
         private final ExecutorService background;
+        private final java.util.concurrent.ScheduledFuture<?> timeoutTask;
+        private volatile boolean completed = false;
 
         static void register(
             Activity activity,
             Uri uri,
             GMFunction callback,
-            ExecutorService background)
+            ExecutorService background,
+            ScheduledExecutorService scheduler)
         {
             UriImageListener listener =
-                new UriImageListener(activity, callback, background);
+                new UriImageListener(activity, callback, background, scheduler);
 
             LIVE.put(listener, listener);
             ImageManager.create(activity).loadImage(listener, uri);
@@ -883,11 +907,17 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         private UriImageListener(
             Activity activity,
             GMFunction callback,
-            ExecutorService background)
+            ExecutorService background,
+            ScheduledExecutorService scheduler)
         {
             this.activity = new WeakReference<>(activity);
             this.callback = callback;
             this.background = background;
+            this.timeoutTask = scheduler.schedule(
+                this::onTimeout,
+                TIMEOUT_MILLIS,
+                TimeUnit.MILLISECONDS
+            );
         }
 
         @Override
@@ -898,40 +928,54 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         {
             background.execute(() ->
             {
-                try
+                if (!completed && timeoutTask.cancel(false))
                 {
-                    if (!isRequestedDrawable
-                        || !(drawable instanceof BitmapDrawable))
+                    completed = true;
+                    try
                     {
-                        callback.call(new GPGSTaskResult(false, "", "The URI image could not be loaded."));
-                        return;
+                        if (!isRequestedDrawable
+                            || !(drawable instanceof BitmapDrawable))
+                        {
+                            callback.call(new GPGSTaskResult(false, "", "The URI image could not be loaded."));
+                            return;
+                        }
+
+                        Activity activity = Objects.requireNonNull(this.activity.get());
+                        Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
+
+                        File output = File.createTempFile(
+                            "gpgs_",
+                            ".png",
+                            activity.getCacheDir()
+                        );
+
+                        try (FileOutputStream stream = new FileOutputStream(output))
+                        {
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        }
+
+                        callback.call(new GPGSTaskResult(true, output.getAbsolutePath(), ""));
                     }
-
-                    Activity activity = Objects.requireNonNull(this.activity.get());
-                    Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
-
-                    File output = File.createTempFile(
-                        "gpgs_",
-                        ".png",
-                        activity.getCacheDir()
-                    );
-
-                    try (FileOutputStream stream = new FileOutputStream(output))
+                    catch (Exception exception)
                     {
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        callback.call(new GPGSTaskResult(false, "", error(exception)));
                     }
-
-                    callback.call(new GPGSTaskResult(true, output.getAbsolutePath(), ""));
-                }
-                catch (Exception exception)
-                {
-                    callback.call(new GPGSTaskResult(false, "", error(exception)));
-                }
-                finally
-                {
-                    LIVE.remove(this);
+                    finally
+                    {
+                        LIVE.remove(this);
+                    }
                 }
             });
+        }
+
+        private void onTimeout()
+        {
+            if (completed)
+                return;
+
+            completed = true;
+            callback.call(new GPGSTaskResult(false, "", "Image loading timed out."));
+            LIVE.remove(this);
         }
     }
 
@@ -1114,7 +1158,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     return;
                 }
 
-                snapshots.put(snapshot.getMetadata().getUniqueName(), snapshot);
+                String snapshotName = snapshot.getMetadata().getUniqueName();
+                snapshots.remove(snapshotName);
+                snapshots.put(snapshotName, snapshot);
                 commitSnapshot(snapshot, options, callback);
             });
     }
@@ -1324,10 +1370,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                             );
                         }
 
-                        snapshots.put(
-                            snapshot.getMetadata().getUniqueName(),
-                            snapshot
-                        );
+                        String snapshotName = snapshot.getMetadata().getUniqueName();
+                        snapshots.remove(snapshotName);
+                        snapshots.put(snapshotName, snapshot);
 
                         response = new GPGSSnapshotOpenResult(
                             false,
