@@ -499,9 +499,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         Activity activity = activity();
         if (activity == null)
         {
-            callback.call(achievementsResultStream(
+            callback.call(new GPGSAchievementList(
                 false,
-                streamArray(),
+                new java.util.ArrayList<>(),
                 "Activity is null."
             ));
             return;
@@ -509,9 +509,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (!authenticationKnown || !authenticated)
         {
-            callback.call(achievementsResultStream(
+            callback.call(new GPGSAchievementList(
                 false,
-                streamArray(),
+                new java.util.ArrayList<>(),
                 authenticationError()
             ));
             return;
@@ -523,29 +523,29 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             {
                 if (!task.isSuccessful())
                 {
-                    callback.call(achievementsResultStream(
+                    callback.call(new GPGSAchievementList(
                         false,
-                        streamArray(),
+                        new java.util.ArrayList<>(),
                         error(task.getException())
                     ));
                     return;
                 }
 
                 AchievementBuffer buffer = task.getResult() != null ? task.getResult().get() : null;
-                GMExtWire.ArrayStream achievements = streamArray();
+                java.util.List<GPGSAchievement> achievements = new java.util.ArrayList<>();
 
                 if (buffer != null)
                 {
                     try
                     {
                         for (Achievement achievement : buffer)
-                            achievements.add(achievementToStream(achievement));
+                            achievements.add(achievementToRecord(achievement));
                     }
                     catch (Exception exception)
                     {
-                        callback.call(achievementsResultStream(
+                        callback.call(new GPGSAchievementList(
                             false,
-                            streamArray(),
+                            new java.util.ArrayList<>(),
                             error(exception)
                         ));
                         return;
@@ -556,7 +556,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     }
                 }
 
-                callback.call(achievementsResultStream(
+                callback.call(new GPGSAchievementList(
                     true,
                     achievements,
                     ""
@@ -670,10 +670,10 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         Activity activity = activity();
         if (activity == null)
         {
-            callback.call(leaderboardScoresResultStream(
+            callback.call(new GPGSLeaderboardScores(
                 false,
-                emptyLeaderboardStream(),
-                streamArray(),
+                emptyLeaderboardRecord(),
+                new java.util.ArrayList<>(),
                 "Activity is null."
             ));
             return;
@@ -681,10 +681,10 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (!authenticationKnown || !authenticated)
         {
-            callback.call(leaderboardScoresResultStream(
+            callback.call(new GPGSLeaderboardScores(
                 false,
-                emptyLeaderboardStream(),
-                streamArray(),
+                emptyLeaderboardRecord(),
+                new java.util.ArrayList<>(),
                 authenticationError()
             ));
             return;
@@ -715,10 +715,10 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         Activity activity = activity();
         if (activity == null)
         {
-            callback.call(leaderboardScoresResultStream(
+            callback.call(new GPGSLeaderboardScores(
                 false,
-                emptyLeaderboardStream(),
-                streamArray(),
+                emptyLeaderboardRecord(),
+                new java.util.ArrayList<>(),
                 "Activity is null."
             ));
             return;
@@ -726,10 +726,10 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (!authenticationKnown || !authenticated)
         {
-            callback.call(leaderboardScoresResultStream(
+            callback.call(new GPGSLeaderboardScores(
                 false,
-                emptyLeaderboardStream(),
-                streamArray(),
+                emptyLeaderboardRecord(),
+                new java.util.ArrayList<>(),
                 authenticationError()
             ));
             return;
@@ -755,10 +755,10 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     {
         if (!task.isSuccessful())
         {
-            callback.call(leaderboardScoresResultStream(
+            callback.call(new GPGSLeaderboardScores(
                 false,
-                emptyLeaderboardStream(),
-                streamArray(),
+                emptyLeaderboardRecord(),
+                new java.util.ArrayList<>(),
                 error(task.getException())
             ));
             return;
@@ -769,21 +769,25 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (scores == null)
         {
-            callback.call(leaderboardScoresResultStream(
+            callback.call(new GPGSLeaderboardScores(
                 false,
-                emptyLeaderboardStream(),
-                streamArray(),
+                emptyLeaderboardRecord(),
+                new java.util.ArrayList<>(),
                 "No leaderboard score data."
             ));
             return;
         }
 
         LeaderboardScoreBuffer buffer = scores.getScores();
-        GMExtWire.ArrayStream scoreArray;
+        java.util.List<GPGSLeaderboardScore> scoreList = new java.util.ArrayList<>();
 
         try
         {
-            scoreArray = leaderboardScoresToStream(buffer);
+            if (buffer != null)
+            {
+                for (LeaderboardScore score : buffer)
+                    scoreList.add(leaderboardScoreToRecord(score));
+            }
         }
         finally
         {
@@ -791,10 +795,10 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                 buffer.release();
         }
 
-        callback.call(leaderboardScoresResultStream(
+        callback.call(new GPGSLeaderboardScores(
             true,
-            leaderboardToStream(scores.getLeaderboard()),
-            scoreArray,
+            leaderboardToRecord(scores.getLeaderboard()),
+            scoreList,
             ""
         ));
     }
@@ -1013,9 +1017,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
-        callback.call(savedGamesUIResultStream(
+        callback.call(new GPGSSavedGamesUIEvent(
             GPGSSavedGamesUIResult.Cancelled.value(),
-            emptySnapshotMetadataStream(),
+            new GPGSSnapshotMetadata("", "", "", 0.0, 0.0, 0.0, false, ""),
             ""
         ));
     }
@@ -1158,9 +1162,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         Activity activity = activity();
         if (activity == null)
         {
-            callback.call(savedGamesLoadResultStream(
+            callback.call(new GPGSSnapshotMetadataList(
                 false,
-                streamArray(),
+                new java.util.ArrayList<>(),
                 "Activity is null."
             ));
             return;
@@ -1168,9 +1172,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (!authenticationKnown || !authenticated)
         {
-            callback.call(savedGamesLoadResultStream(
+            callback.call(new GPGSSnapshotMetadataList(
                 false,
-                streamArray(),
+                new java.util.ArrayList<>(),
                 authenticationError()
             ));
             return;
@@ -1182,23 +1186,23 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             {
                 if (!task.isSuccessful())
                 {
-                    callback.call(savedGamesLoadResultStream(
+                    callback.call(new GPGSSnapshotMetadataList(
                         false,
-                        streamArray(),
+                        new java.util.ArrayList<>(),
                         error(task.getException())
                     ));
                     return;
                 }
 
                 SnapshotMetadataBuffer buffer = task.getResult() != null ? task.getResult().get() : null;
-                GMExtWire.ArrayStream snapshotArray = streamArray();
+                java.util.List<GPGSSnapshotMetadata> snapshotList = new java.util.ArrayList<>();
 
                 if (buffer != null)
                 {
                     try
                     {
                         for (SnapshotMetadata metadata : buffer)
-                            snapshotArray.add(snapshotMetadataToStream(metadata));
+                            snapshotList.add(snapshotMetadataToRecord(metadata));
                     }
                     finally
                     {
@@ -1206,9 +1210,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     }
                 }
 
-                callback.call(savedGamesLoadResultStream(
+                callback.call(new GPGSSnapshotMetadataList(
                     true,
-                    snapshotArray,
+                    snapshotList,
                     ""
                 ));
             });
@@ -1239,9 +1243,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     {
         if (!authenticationKnown || !authenticated)
         {
-            callback.call(savedGameOpenCallbackResultStream(
+            callback.call(new GPGSSnapshot(
                 false,
-                emptySavedGameOpenResultStream(),
+                emptySnapshotOpenResult(),
                 authenticationError()
             ));
             return;
@@ -1256,9 +1260,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             {
                 if (!task.isSuccessful())
                 {
-                    callback.call(savedGameOpenCallbackResultStream(
+                    callback.call(new GPGSSnapshot(
                         false,
-                        emptySavedGameOpenResultStream(),
+                        emptySnapshotOpenResult(),
                         error(task.getException())
                     ));
                     return;
@@ -1268,7 +1272,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
                 try
                 {
-                    GMExtWire.StructStream response;
+                    GPGSSnapshotOpenResult response;
 
                     if (!result.isConflict())
                     {
@@ -1286,26 +1290,16 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                             snapshot
                         );
 
-                        response = new GMExtWire.StructStream()
-                            .kv("is_conflict", false)
-                            .kv(
-                                "snapshot_metadata",
-                                snapshotMetadataToStream(
-                                    snapshot.getMetadata()
-                                )
-                            )
-                            .kv("data", readSnapshot(snapshot))
-                            .kv("conflict_id", "")
-                            .kv(
-                                "snapshot_metadata_local",
-                                emptySnapshotMetadataStream()
-                            )
-                            .kv("data_local", "")
-                            .kv(
-                                "snapshot_metadata_remote",
-                                emptySnapshotMetadataStream()
-                            )
-                            .kv("data_remote", "");
+                        response = new GPGSSnapshotOpenResult(
+                            false,
+                            snapshotMetadataToRecord(snapshot.getMetadata()),
+                            readSnapshot(snapshot),
+                            "",
+                            emptySnapshotMetadata(),
+                            "",
+                            emptySnapshotMetadata(),
+                            ""
+                        );
                     }
                     else
                     {
@@ -1322,42 +1316,19 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                         conflictRemote =
                             result.getConflict().getSnapshot();
 
-                        response = new GMExtWire.StructStream()
-                            .kv("is_conflict", true)
-                            .kv(
-                                "snapshot_metadata",
-                                emptySnapshotMetadataStream()
-                            )
-                            .kv("data", "")
-                            .kv(
-                                "conflict_id",
-                                safeString(
-                                    result.getConflict().getConflictId()
-                                )
-                            )
-                            .kv(
-                                "snapshot_metadata_local",
-                                snapshotMetadataToStream(
-                                    conflictLocal.getMetadata()
-                                )
-                            )
-                            .kv(
-                                "data_local",
-                                readSnapshot(conflictLocal)
-                            )
-                            .kv(
-                                "snapshot_metadata_remote",
-                                snapshotMetadataToStream(
-                                    conflictRemote.getMetadata()
-                                )
-                            )
-                            .kv(
-                                "data_remote",
-                                readSnapshot(conflictRemote)
-                            );
+                        response = new GPGSSnapshotOpenResult(
+                            true,
+                            emptySnapshotMetadata(),
+                            "",
+                            safeString(result.getConflict().getConflictId()),
+                            snapshotMetadataToRecord(conflictLocal.getMetadata()),
+                            readSnapshot(conflictLocal),
+                            snapshotMetadataToRecord(conflictRemote.getMetadata()),
+                            readSnapshot(conflictRemote)
+                        );
                     }
 
-                    callback.call(savedGameOpenCallbackResultStream(
+                    callback.call(new GPGSSnapshot(
                         true,
                         response,
                         ""
@@ -1365,9 +1336,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                 }
                 catch (Exception exception)
                 {
-                    callback.call(savedGameOpenCallbackResultStream(
+                    callback.call(new GPGSSnapshot(
                         false,
-                        emptySavedGameOpenResultStream(),
+                        emptySnapshotOpenResult(),
                         error(exception)
                     ));
                 }
@@ -1469,102 +1440,6 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     private static GMExtWire.ArrayStream streamArray()
     {
         return new GMExtWire.ArrayStream(32768);
-    }
-
-    private static GMExtWire.StructStream playerResultStream(
-        boolean success,
-        GMExtWire.StructStream player,
-        String error)
-    {
-        return streamStruct()
-            .kv("success", success)
-            .kv("player", player)
-            .kv("error", safeString(error));
-    }
-
-    private static GMExtWire.StructStream playerStatsResultStream(
-        boolean success,
-        GMExtWire.StructStream stats,
-        String error)
-    {
-        return streamStruct()
-            .kv("success", success)
-            .kv("stats", stats)
-            .kv("error", safeString(error));
-    }
-
-    private static GMExtWire.StructStream achievementsResultStream(
-        boolean success,
-        GMExtWire.ArrayStream achievements,
-        String error)
-    {
-        return streamStruct()
-            .kv("success", success)
-            .kv("achievements", achievements)
-            .kv("error", safeString(error));
-    }
-
-    private static GMExtWire.StructStream leaderboardSubmitResultStream(
-        boolean success,
-        String leaderboardId,
-        double score,
-        String scoreTag,
-        GMExtWire.StructStream report,
-        String error)
-    {
-        return streamStruct()
-            .kv("success", success)
-            .kv("leaderboard_id", safeString(leaderboardId))
-            .kv("score", score)
-            .kv("score_tag", safeString(scoreTag))
-            .kv("report", report)
-            .kv("error", safeString(error));
-    }
-
-    private static GMExtWire.StructStream leaderboardScoresResultStream(
-        boolean success,
-        GMExtWire.StructStream leaderboard,
-        GMExtWire.ArrayStream scores,
-        String error)
-    {
-        return streamStruct()
-            .kv("success", success)
-            .kv("leaderboard", leaderboard)
-            .kv("scores", scores)
-            .kv("error", safeString(error));
-    }
-
-    private static GMExtWire.StructStream savedGamesUIResultStream(
-        double result,
-        GMExtWire.StructStream snapshotMetadata,
-        String error)
-    {
-        return streamStruct()
-            .kv("result", result)
-            .kv("snapshot_metadata", snapshotMetadata)
-            .kv("error", safeString(error));
-    }
-
-    private static GMExtWire.StructStream savedGamesLoadResultStream(
-        boolean success,
-        GMExtWire.ArrayStream snapshots,
-        String error)
-    {
-        return streamStruct()
-            .kv("success", success)
-            .kv("snapshots", snapshots)
-            .kv("error", safeString(error));
-    }
-
-    private static GMExtWire.StructStream savedGameOpenCallbackResultStream(
-        boolean success,
-        GMExtWire.StructStream result,
-        String error)
-    {
-        return streamStruct()
-            .kv("success", success)
-            .kv("result", result)
-            .kv("error", safeString(error));
     }
 
     private static GMExtWire.StructStream playerToStream(
@@ -1844,6 +1719,130 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     ? metadata.getCoverImageUri().toString()
                     : ""
             );
+    }
+
+    private static GPGSAchievement achievementToRecord(Achievement achievement)
+    {
+        int type = achievement.getType();
+        boolean incremental = type == Achievement.TYPE_INCREMENTAL;
+
+        int currentSteps = incremental ? achievement.getCurrentSteps() : 0;
+        int totalSteps = incremental ? achievement.getTotalSteps() : 0;
+
+        return new GPGSAchievement(
+            safeString(achievement.getAchievementId()),
+            safeString(achievement.getName()),
+            safeString(achievement.getDescription()),
+            achievement.getState(),
+            type,
+            currentSteps,
+            totalSteps,
+            achievement.getLastUpdatedTimestamp(),
+            achievement.getXpValue(),
+            achievement.getRevealedImageUri() != null ? achievement.getRevealedImageUri().toString() : "",
+            achievement.getUnlockedImageUri() != null ? achievement.getUnlockedImageUri().toString() : ""
+        );
+    }
+
+    private static GPGSLeaderboard leaderboardToRecord(Leaderboard leaderboard)
+    {
+        if (leaderboard == null)
+            return emptyLeaderboardRecord();
+
+        java.util.List<GPGSLeaderboardVariant> variants = new java.util.ArrayList<>();
+
+        for (LeaderboardVariant variant : leaderboard.getVariants())
+        {
+            variants.add(new GPGSLeaderboardVariant(
+                variant.getCollection(),
+                variant.getTimeSpan(),
+                variant.hasPlayerInfo()
+            ));
+        }
+
+        return new GPGSLeaderboard(
+            safeString(leaderboard.getLeaderboardId()),
+            safeString(leaderboard.getDisplayName()),
+            leaderboard.getScoreOrder(),
+            variants
+        );
+    }
+
+    private static GPGSLeaderboardScore leaderboardScoreToRecord(LeaderboardScore score)
+    {
+        return new GPGSLeaderboardScore(
+            safeString(score.getDisplayRank()),
+            safeString(score.getDisplayScore()),
+            score.getRawScore(),
+            safeString(score.getScoreTag()),
+            score.getTimestampMillis(),
+            playerInfoFromScoreHolder(score.getScoreHolder())
+        );
+    }
+
+    private static GPGSPlayerInfo playerInfoFromScoreHolder(com.google.android.gms.games.Player player)
+    {
+        if (player == null)
+            return emptyPlayerInfo();
+
+        return new GPGSPlayerInfo(
+            safeString(player.getPlayerId()),
+            safeString(player.getDisplayName()),
+            safeString(player.getTitle()),
+            player.getIconImageUri() != null ? player.getIconImageUri().toString() : "",
+            player.getHiResImageUri() != null ? player.getHiResImageUri().toString() : ""
+        );
+    }
+
+    private static GPGSSnapshotMetadata snapshotMetadataToRecord(SnapshotMetadata metadata)
+    {
+        if (metadata == null)
+            return emptySnapshotMetadata();
+
+        return new GPGSSnapshotMetadata(
+            safeString(metadata.getUniqueName()),
+            safeString(metadata.getDescription()),
+            safeString(metadata.getDeviceName()),
+            metadata.getLastModifiedTimestamp(),
+            metadata.getPlayedTime(),
+            metadata.getProgressValue(),
+            metadata.hasChangePending(),
+            metadata.getCoverImageUri() != null ? metadata.getCoverImageUri().toString() : ""
+        );
+    }
+
+    private static GPGSLeaderboard emptyLeaderboardRecord()
+    {
+        return new GPGSLeaderboard(
+            "",
+            "",
+            GPGSLeaderboardScoreOrder.SmallerIsBetter.value(),
+            new java.util.ArrayList<>()
+        );
+    }
+
+    private static GPGSSnapshotMetadata emptySnapshotMetadata()
+    {
+        return new GPGSSnapshotMetadata("", "", "", 0.0, 0.0, 0.0, false, "");
+    }
+
+    private static GPGSSnapshotOpenResult emptySnapshotOpenResult()
+    {
+        return new GPGSSnapshotOpenResult(
+            false,
+            emptySnapshotMetadata(),
+            "",
+            "",
+            emptySnapshotMetadata(),
+            "",
+            emptySnapshotMetadata(),
+            ""
+        );
+    }
+
+    private static GPGSPlayerInfo emptyPlayerInfo()
+    {
+        return new GPGSPlayerInfo("", "", "", "", "");
     }
 
     private static GMExtWire.StructStream emptyPlayerStream()
