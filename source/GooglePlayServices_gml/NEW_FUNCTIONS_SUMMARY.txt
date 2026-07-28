@@ -1,0 +1,323 @@
+================================================================================
+GOOGLE PLAY SERVICES - NEW FUNCTIONS SUMMARY
+GameMaker GML Extension for Friends & Players
+================================================================================
+
+TOTAL NEW FUNCTIONS: 6
+
+================================================================================
+1. gpgs_player_load(player_id, force_reload, callback)
+================================================================================
+Loads a specific player's information by their ID.
+
+Parameters:
+  - player_id (string)      : Target player's unique ID
+  - force_reload (bool)     : true = refresh from server, false = use cache
+  - callback (function)     : Receives GPGSPlayer result
+
+Returns via callback:
+  {
+    success: bool,
+    player: {
+      player_id: string,
+      display_name: string,
+      title: string,
+      icon_image_uri: string,
+      hi_res_image_uri: string
+    },
+    error: string
+  }
+
+Example:
+  gpgs_player_load("player_123", true, function(result) {
+    if (result.success) {
+      show_debug_message(result.player.display_name);
+    }
+  });
+
+================================================================================
+2. gpgs_friends_load(force_reload, max_results, callback)
+================================================================================
+Loads the current player's friends list with pagination support.
+
+Parameters:
+  - force_reload (bool)     : true = refresh, false = use cache
+  - max_results (real)      : Number of friends per page (1-25, auto-clamped)
+  - callback (function)     : Receives GPGSPlayerList result
+
+Returns via callback:
+  {
+    success: bool,
+    players: [GPGSPlayerInfo[]],
+    has_more: bool,
+    error: string
+  }
+
+Example:
+  gpgs_friends_load(true, 20, function(result) {
+    if (result.success) {
+      for (var i = 0; i < array_length(result.players); i++) {
+        show_debug_message(result.players[i].display_name);
+      }
+    }
+  });
+
+================================================================================
+3. gpgs_friends_load_more(callback)
+================================================================================
+Loads the next page of friends (continues pagination).
+
+Parameters:
+  - callback (function)     : Receives GPGSPlayerList result
+
+Important:
+  - Must call gpgs_friends_load() first
+  - Uses same page size as initial load
+  - Returns next set of friends in same format
+
+Returns via callback:
+  {
+    success: bool,
+    players: [GPGSPlayerInfo[]],
+    has_more: bool,
+    error: string
+  }
+
+Example:
+  gpgs_friends_load_more(function(result) {
+    if (result.success) {
+      // Append result.players to existing list
+    }
+  });
+
+================================================================================
+4. gpgs_friends_load_with_consent(force_reload, max_results, callback)
+================================================================================
+Loads friends with automatic permission handling.
+
+Parameters:
+  - force_reload (bool)     : true = refresh, false = use cache
+  - max_results (real)      : Number of friends per page (1-25, auto-clamped)
+  - callback (function)     : Receives GPGSPlayerList result
+
+Behavior:
+  - Attempts to load friends immediately
+  - If permission not granted, shows native Google consent dialog
+  - After user response, callback is invoked
+  - On permission granted, automatically retries load
+
+Returns via callback:
+  {
+    success: bool,
+    players: [GPGSPlayerInfo[]],
+    has_more: bool,
+    error: string
+  }
+
+Example:
+  gpgs_friends_load_with_consent(true, 20, function(result) {
+    if (result.success) {
+      show_debug_message("Friends: " + string(array_length(result.players)));
+    } else if (string_pos("permission", result.error) > 0) {
+      show_debug_message("Permission denied");
+    }
+  });
+
+================================================================================
+5. gpgs_player_profile_show(player_id)
+================================================================================
+Opens native Google Play Games player profile UI.
+
+Parameters:
+  - player_id (string)      : Target player's unique ID
+
+Behavior:
+  - Opens native Google Play Games profile UI
+  - Shows player stats, achievements, friend options
+  - No callback - just opens the UI
+  - User can manage friend status from UI
+
+Example:
+  gpgs_player_profile_show("friend_id_123");
+  // Native Google Play Games profile UI opens
+
+Note:
+  - Requires authentication
+  - No return value or callback
+  - Manual UI verification only
+
+================================================================================
+6. gpgs_player_search_show(callback)
+================================================================================
+Opens native Google Play Games player search UI.
+
+Parameters:
+  - callback (function)     : Receives search result
+
+Behavior:
+  - Opens native Google Play Games player search dialog
+  - User can search for and select a player
+  - Callback invoked when user selects player or cancels
+
+Returns via callback:
+  {
+    status: real (1 = success, 0 = canceled/failed),
+    player_id: string,
+    display_name: string,
+    icon_image_url: string,
+    hi_res_image_url: string
+  }
+
+Example:
+  gpgs_player_search_show(function(result) {
+    if (result.status == 1) {
+      show_debug_message("Selected: " + result.display_name);
+      // Use result.player_id for next action
+    }
+  });
+
+================================================================================
+DATA STRUCTURES
+================================================================================
+
+GPGSPlayerInfo:
+  {
+    player_id: string,
+    display_name: string,
+    title: string,
+    icon_image_uri: string,
+    hi_res_image_uri: string
+  }
+
+GPGSPlayer (single player result):
+  {
+    success: bool,
+    player: GPGSPlayerInfo,
+    error: string
+  }
+
+GPGSPlayerList (friends list result):
+  {
+    success: bool,
+    players: [GPGSPlayerInfo[]],
+    has_more: bool,
+    error: string
+  }
+
+================================================================================
+AUTHENTICATION REQUIREMENT
+================================================================================
+
+All functions require user to be authenticated:
+
+// Check authentication
+gpgs_is_authenticated(function(result) {
+  if (result.is_authenticated) {
+    // Can use functions
+  }
+});
+
+// Sign in if needed
+gpgs_sign_in(function(result) {
+  if (result.is_authenticated) {
+    // Can now use functions
+  }
+});
+
+================================================================================
+COMMON ERROR MESSAGES
+================================================================================
+
+"Google Play Games user is not authenticated."
+  → User not signed in, call gpgs_sign_in() first
+
+"Activity is null."
+  → Game activity not initialized (shouldn't happen normally)
+
+"User denied friends access permission."
+  → User declined consent in gpgs_friends_load_with_consent()
+
+"User canceled player search."
+  → User closed search UI without selecting anyone
+
+Network errors:
+  → No internet connection or server issues
+
+================================================================================
+USAGE PATTERNS
+================================================================================
+
+Pattern 1: Load Friends and Display
+  gpgs_friends_load(true, 20, function(result) {
+    if (result.success) {
+      global.friends = result.players;
+      global.has_more = result.has_more;
+    }
+  });
+
+Pattern 2: Pagination
+  if (global.has_more) {
+    gpgs_friends_load_more(function(result) {
+      if (result.success) {
+        // Append to existing list
+        for (var i = 0; i < array_length(result.players); i++) {
+          global.friends[array_length(global.friends)] = result.players[i];
+        }
+      }
+    });
+  }
+
+Pattern 3: Get Opponent Selection
+  gpgs_player_search_show(function(result) {
+    if (result.status == 1) {
+      start_match_with(result.player_id);
+    }
+  });
+
+Pattern 4: Show Friend Profile
+  var friend = global.friends[index];
+  gpgs_player_profile_show(friend.player_id);
+
+================================================================================
+FILES PROVIDED
+================================================================================
+
+NEW_FUNCTIONS_REFERENCE.md
+  → Complete function documentation with examples
+
+NEW_FUNCTIONS_SUMMARY.txt (this file)
+  → Quick reference of all functions
+
+TEST_NEW_FUNCTIONS.gml
+  → Complete test suite with 8 test cases
+
+TEST_SETUP_INSTRUCTIONS.md
+  → Instructions for running the test suite
+
+FRIENDS_PLAYERS_EXAMPLES.gml
+  → 10 example implementations
+
+FRIENDS_UI_PATTERNS.gml
+  → Reusable UI components
+
+PROFILE_SEARCH_EXAMPLES.gml
+  → Profile and search UI examples
+
+QUICK_REFERENCE.md
+  → Cheat sheet for common patterns
+
+================================================================================
+READY TO USE
+================================================================================
+
+All functions are implemented on both:
+  ✓ Java side (Android)
+  ✓ GML side (wrapper functions)
+
+After running extgen:
+  1. Test with TEST_NEW_FUNCTIONS.gml
+  2. Review examples in provided files
+  3. Integrate into your game using patterns above
+  4. Reference NEW_FUNCTIONS_REFERENCE.md for details
+
+================================================================================
