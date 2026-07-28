@@ -1159,8 +1159,11 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                 }
 
                 String snapshotName = snapshot.getMetadata().getUniqueName();
-                snapshots.remove(snapshotName);
-                snapshots.put(snapshotName, snapshot);
+                Snapshot prior = snapshots.put(snapshotName, snapshot);
+                if (prior != null)
+                {
+                    prior.close();
+                }
                 commitSnapshot(snapshot, options, callback);
             });
     }
@@ -1371,8 +1374,11 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                         }
 
                         String snapshotName = snapshot.getMetadata().getUniqueName();
-                        snapshots.remove(snapshotName);
-                        snapshots.put(snapshotName, snapshot);
+                        Snapshot prior = snapshots.put(snapshotName, snapshot);
+                        if (prior != null)
+                        {
+                            prior.close();
+                        }
 
                         response = new GPGSSnapshotOpenResult(
                             false,
