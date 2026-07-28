@@ -1,9 +1,13 @@
-/// @description Increment achievement
 
-// This function will work for incremental achievements and allows the developer to 
-// increase the user progression on a given achievement.
-// It requires you to use the unique achievement id string.
-play_services_achievements_increment(Achievement1, 1, function(_result)
-{
-	show_debug_message(_result);
+play_services_player_load("player_id_123", true, function(result) {
+    if (result.success) {
+        show_debug_message("Player: " + result.player.display_name);
+    } else {
+        show_debug_message("Error: " + result.error);
+    }
 });
+
+
+
+play_services_player_profile_show("friend_id_123");
+
