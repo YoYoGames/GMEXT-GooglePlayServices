@@ -388,9 +388,16 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
-        PlayGames.getAchievementsClient(activity()).getAchievementsIntent()
+        Activity activity = activity();
+        if (activity == null)
+        {
+            Log.w(TAG, "Achievements_Show blocked: Activity is null.");
+            return;
+        }
+
+        PlayGames.getAchievementsClient(activity).getAchievementsIntent()
             .addOnSuccessListener(intent ->
-                activity().startActivityForResult(intent, RC_ACHIEVEMENT_UI))
+                activity.startActivityForResult(intent, RC_ACHIEVEMENT_UI))
             .addOnFailureListener(exception ->
                 Log.e(TAG, "Could not show achievements UI.", exception));
     }
@@ -576,9 +583,16 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
-        PlayGames.getLeaderboardsClient(activity()).getAllLeaderboardsIntent()
+        Activity activity = activity();
+        if (activity == null)
+        {
+            Log.w(TAG, "Leaderboard_ShowAll blocked: Activity is null.");
+            return;
+        }
+
+        PlayGames.getLeaderboardsClient(activity).getAllLeaderboardsIntent()
             .addOnSuccessListener(intent ->
-                activity().startActivityForResult(intent, RC_LEADERBOARD_UI))
+                activity.startActivityForResult(intent, RC_LEADERBOARD_UI))
             .addOnFailureListener(exception ->
                 Log.e(TAG, "Could not show leaderboards UI.", exception));
     }
@@ -591,10 +605,17 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
-        PlayGames.getLeaderboardsClient(activity())
+        Activity activity = activity();
+        if (activity == null)
+        {
+            Log.w(TAG, "Leaderboard_Show blocked: Activity is null.");
+            return;
+        }
+
+        PlayGames.getLeaderboardsClient(activity)
             .getLeaderboardIntent(leaderboardId)
             .addOnSuccessListener(intent ->
-                activity().startActivityForResult(intent, RC_LEADERBOARD_UI))
+                activity.startActivityForResult(intent, RC_LEADERBOARD_UI))
             .addOnFailureListener(exception ->
                 Log.e(TAG, "Could not show leaderboard UI.", exception));
     }
@@ -1064,9 +1085,16 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSTaskResult(false, options.name(), "Activity is null."));
+            return;
+        }
+
         String name = options.name();
 
-        PlayGames.getSnapshotsClient(activity())
+        PlayGames.getSnapshotsClient(activity)
             .open(
                 name,
                 true,
@@ -1136,7 +1164,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     return;
                 }
 
-                activity.runOnUiThread(() -> PlayGames.getSnapshotsClient(activity())
+                activity.runOnUiThread(() -> PlayGames.getSnapshotsClient(activity)
                     .commitAndClose(snapshot, builder.build())
                     .addOnCompleteListener(task ->
                     {
@@ -1251,10 +1279,21 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSSnapshot(
+                false,
+                emptySnapshotOpenResult(),
+                "Activity is null."
+            ));
+            return;
+        }
+
         // Run the completion on the background executor: the success path calls
         // Snapshot.readFully() (synchronous disk I/O) which must not run on the UI
         // thread. Callback delivery is thread-agnostic (marshalled via DispatchQueue).
-        PlayGames.getSnapshotsClient(activity())
+        PlayGames.getSnapshotsClient(activity)
             .open(name, false, policy)
             .addOnCompleteListener(background, task ->
             {
