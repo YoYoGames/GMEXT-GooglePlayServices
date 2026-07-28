@@ -4,6 +4,12 @@
 // # Macros
 // #####################################################################
 
+#macro PlayServicesMaxFriendsPageSize 25
+
+#macro PlayServicesMaxLeaderboardResults 25
+
+#macro PlayServicesMinPageSize 1
+
 // #####################################################################
 // # Enums
 // #####################################################################
@@ -2105,6 +2111,7 @@ function play_services_request_server_side_access(_server_client_id, _force_refr
 
 /**
  * @param {Function} _callback
+ * @returns {Bool}
  */
 function play_services_player_current(_callback)
 {
@@ -2127,6 +2134,7 @@ function play_services_player_current(_callback)
 
 /**
  * @param {Function} _callback
+ * @returns {Bool}
  */
 function play_services_player_current_id(_callback)
 {
@@ -2150,6 +2158,7 @@ function play_services_player_current_id(_callback)
 /**
  * @param {Bool} _force_reload
  * @param {Function} _callback
+ * @returns {Bool}
  */
 function play_services_player_stats_load(_force_reload, _callback)
 {
@@ -2178,6 +2187,7 @@ function play_services_player_stats_load(_force_reload, _callback)
  * @param {String} _player_id
  * @param {Bool} _force_reload
  * @param {Function} _callback
+ * @returns {Bool}
  */
 function play_services_player_load(_player_id, _force_reload, _callback)
 {
@@ -2211,6 +2221,7 @@ function play_services_player_load(_player_id, _force_reload, _callback)
  * @param {Bool} _force_reload
  * @param {Real} _max_results
  * @param {Function} _callback
+ * @returns {Bool}
  */
 function play_services_friends_load(_force_reload, _max_results, _callback)
 {
@@ -2240,9 +2251,11 @@ function play_services_friends_load(_force_reload, _max_results, _callback)
 }
 
 /**
+ * @param {Real} _page_size
  * @param {Function} _callback
+ * @returns {Bool}
  */
-function play_services_friends_load_more(_callback)
+function play_services_friends_load_more(_page_size, _callback)
 {
     var __available__ = __GMGooglePlayServices_is_available();
     if (!__available__) return;
@@ -2250,6 +2263,10 @@ function play_services_friends_load_more(_callback)
     var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
+
+    // param: _page_size, type: Float64
+    if (!is_numeric(_page_size)) show_error($"{_GMFUNCTION_} :: _page_size expected number", true);
+    buffer_write(__args_buffer, buffer_f64, _page_size);
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
@@ -2265,6 +2282,7 @@ function play_services_friends_load_more(_callback)
  * @param {Bool} _force_reload
  * @param {Real} _max_results
  * @param {Function} _callback
+ * @returns {Bool}
  */
 function play_services_friends_load_with_consent(_force_reload, _max_results, _callback)
 {
@@ -2298,6 +2316,7 @@ function play_services_friends_load_with_consent(_force_reload, _max_results, _c
 
 /**
  * @param {Function} _callback
+ * @returns {Bool}
  */
 function play_services_player_search_show(_callback)
 {

@@ -27,6 +27,7 @@
     {"name":"changelog","order":7,"path":"notes/changelog/changelog.yy",},
     {"name":"obj_googlePlayServices_friends","order":1,"path":"objects/obj_googlePlayServices_friends/obj_googlePlayServices_friends.yy",},
     {"name":"obj_play_services_achievement_entry","order":1,"path":"objects/obj_play_services_achievement_entry/obj_play_services_achievement_entry.yy",},
+    {"name":"obj_play_services_achievements_get_status_1","order":2,"path":"objects/obj_play_services_achievements_get_status_1/obj_play_services_achievements_get_status_1.yy",},
     {"name":"obj_play_services_achievements_incremental","order":3,"path":"objects/obj_play_services_achievements_incremental/obj_play_services_achievements_incremental.yy",},
     {"name":"obj_play_services_achievements_reveal","order":4,"path":"objects/obj_play_services_achievements_reveal/obj_play_services_achievements_reveal.yy",},
     {"name":"obj_play_services_achievements_show","order":1,"path":"objects/obj_play_services_achievements_show/obj_play_services_achievements_show.yy",},

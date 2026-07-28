@@ -2,24 +2,11 @@
 
 if (sprite_exists(player_sprite))
 {
-    draw_sprite_stretched(
-        player_sprite,
-        0,
-        x,
-        y,
-        150,
-        150
-    );
+    draw_sprite_stretched(player_sprite,0,x,y,150,150);
 }
 else
 {
-    draw_rectangle(
-        x,
-        y,
-        x + 150,
-        y + 150,
-        true
-    );
+    draw_rectangle(x,y,x + 150,y + 150,true);
 }
 
 draw_set_font(Font_YoYo_20);
@@ -41,9 +28,5 @@ for (var i = 0; i < array_length(_properties); ++i)
     var _property = _properties[i];
     var _value = variable_struct_get(player_info, _property);
 
-    draw_text(
-        x + 160,
-        y + (i + 1) * 30,
-        _property + ": " + string(_value)
-    );
+    draw_text(x + 160,y + (i + 1) * 30,_property + ": " + string(_value));
 }

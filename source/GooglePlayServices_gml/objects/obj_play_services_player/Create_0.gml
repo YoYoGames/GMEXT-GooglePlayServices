@@ -23,19 +23,9 @@ play_services_uri_to_path_callback = function(_result)
         if (sprite_exists(player_sprite))
             sprite_delete(player_sprite);
 
-        player_sprite = sprite_add(
-            _result.value,
-            1,
-            false,
-            false,
-            0,
-            0
-        );
+        player_sprite = sprite_add(_result.value,1,false,false,0,0);
 
-        show_debug_message({
-            player_sprite: player_sprite,
-            sprite_exists: sprite_exists(player_sprite)
-        });
+        show_debug_message({player_sprite: player_sprite,sprite_exists: sprite_exists(player_sprite)});
     }
 };
 
@@ -84,10 +74,7 @@ play_services_player_current(function(_result)
 
     if (_image_uri != "")
     {
-        play_services_uri_to_path(
-            _image_uri,
-            play_services_uri_to_path_callback
-        );
+        play_services_uri_to_path(_image_uri,play_services_uri_to_path_callback);
     }
     else
     {

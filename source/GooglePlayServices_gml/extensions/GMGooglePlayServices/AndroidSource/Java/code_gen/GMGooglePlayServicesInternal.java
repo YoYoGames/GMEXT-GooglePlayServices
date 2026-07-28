@@ -71,8 +71,8 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        play_services_player_current(callback);
-        return 0;
+        boolean __result = play_services_player_current(callback);
+        return __result ? 1.0 : 0.0;
     }
 
     public double __EXT_NATIVE__play_services_player_current_id(ByteBuffer __arg_buffer, double __arg_buffer_length)
@@ -82,8 +82,8 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        play_services_player_current_id(callback);
-        return 0;
+        boolean __result = play_services_player_current_id(callback);
+        return __result ? 1.0 : 0.0;
     }
 
     public double __EXT_NATIVE__play_services_player_stats_load(ByteBuffer __arg_buffer, double __arg_buffer_length)
@@ -96,8 +96,8 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        play_services_player_stats_load(force_reload, callback);
-        return 0;
+        boolean __result = play_services_player_stats_load(force_reload, callback);
+        return __result ? 1.0 : 0.0;
     }
 
     public double __EXT_NATIVE__play_services_player_load(ByteBuffer __arg_buffer, double __arg_buffer_length)
@@ -113,8 +113,8 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        play_services_player_load(player_id, force_reload, callback);
-        return 0;
+        boolean __result = play_services_player_load(player_id, force_reload, callback);
+        return __result ? 1.0 : 0.0;
     }
 
     public double __EXT_NATIVE__play_services_friends_load(ByteBuffer __arg_buffer, double __arg_buffer_length)
@@ -130,19 +130,22 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        play_services_friends_load(force_reload, max_results, callback);
-        return 0;
+        boolean __result = play_services_friends_load(force_reload, max_results, callback);
+        return __result ? 1.0 : 0.0;
     }
 
     public double __EXT_NATIVE__play_services_friends_load_more(ByteBuffer __arg_buffer, double __arg_buffer_length)
     {
         GMExtWire.order(__arg_buffer);
 
+        // field: page_size, type: Float64
+        double page_size = GMExtWire.readF64(__arg_buffer);
+
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        play_services_friends_load_more(callback);
-        return 0;
+        boolean __result = play_services_friends_load_more(page_size, callback);
+        return __result ? 1.0 : 0.0;
     }
 
     public double __EXT_NATIVE__play_services_friends_load_with_consent(ByteBuffer __arg_buffer, double __arg_buffer_length)
@@ -158,8 +161,8 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        play_services_friends_load_with_consent(force_reload, max_results, callback);
-        return 0;
+        boolean __result = play_services_friends_load_with_consent(force_reload, max_results, callback);
+        return __result ? 1.0 : 0.0;
     }
 
     public double __EXT_NATIVE__play_services_player_profile_show(String player_id)
@@ -175,8 +178,8 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        play_services_player_search_show(callback);
-        return 0;
+        boolean __result = play_services_player_search_show(callback);
+        return __result ? 1.0 : 0.0;
     }
 
     public double __EXT_NATIVE__play_services_achievements_show()
@@ -486,4 +489,7 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         return 0;
     }
 
+    public static final int PlayServicesMaxFriendsPageSize = 25;
+    public static final int PlayServicesMaxLeaderboardResults = 25;
+    public static final int PlayServicesMinPageSize = 1;
 }

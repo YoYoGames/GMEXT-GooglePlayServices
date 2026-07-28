@@ -27,12 +27,14 @@
 /**
  * @function_partial play_services_player_current
  * @param {Function} callback
+ * @returns {Bool}
  * @function_end
  */
 
 /**
  * @function_partial play_services_player_current_id
  * @param {Function} callback
+ * @returns {Bool}
  * @function_end
  */
 
@@ -40,6 +42,7 @@
  * @function_partial play_services_player_stats_load
  * @param {Bool} force_reload
  * @param {Function} callback
+ * @returns {Bool}
  * @function_end
  */
 
@@ -48,6 +51,7 @@
  * @param {String} player_id
  * @param {Bool} force_reload
  * @param {Function} callback
+ * @returns {Bool}
  * @function_end
  */
 
@@ -56,12 +60,15 @@
  * @param {Bool} force_reload
  * @param {Real} max_results
  * @param {Function} callback
+ * @returns {Bool}
  * @function_end
  */
 
 /**
  * @function_partial play_services_friends_load_more
+ * @param {Real} page_size
  * @param {Function} callback
+ * @returns {Bool}
  * @function_end
  */
 
@@ -70,6 +77,7 @@
  * @param {Bool} force_reload
  * @param {Real} max_results
  * @param {Function} callback
+ * @returns {Bool}
  * @function_end
  */
 
@@ -82,6 +90,7 @@
 /**
  * @function_partial play_services_player_search_show
  * @param {Function} callback
+ * @returns {Bool}
  * @function_end
  */
 
@@ -500,6 +509,9 @@
 
 /**
  * @const_partial macros
+ * @member PlayServicesMaxFriendsPageSize (value: '25')
+ * @member PlayServicesMaxLeaderboardResults (value: '25')
+ * @member PlayServicesMinPageSize (value: '1')
  * @const_end
  */
 

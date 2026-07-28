@@ -80,6 +80,11 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     private static final int RC_FRIENDS_CONSENT = 9013;
     private static final int RC_SHOW_PROFILE = 9014;
 
+    // Google Play Services API constraints
+    private static final int MAX_FRIENDS_PAGE_SIZE = 25;     // API limit
+    private static final int MAX_LEADERBOARD_RESULTS = 25;   // API limit
+    private static final int MIN_PAGE_SIZE = 1;              // Minimum page size
+
     private final ExecutorService background = Executors.newCachedThreadPool();
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final Map<String, Snapshot> snapshots = new ConcurrentHashMap<>();
@@ -89,6 +94,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     private volatile GMFunction savedGamesUiCallback;
 
     private volatile PlayerBuffer friendsBuffer;
+    private volatile int friendsPageSize = MAX_FRIENDS_PAGE_SIZE;
     private volatile GMFunction playerSearchCallback;
     private volatile GMFunction friendsConsentCallback;
     private volatile int friendsConsentPageSize;
@@ -293,19 +299,19 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     // Player
     // -------------------------------------------------------------------------
 
-    public void play_services_player_current(final GMFunction callback)
+    public boolean play_services_player_current(final GMFunction callback)
     {
         Activity activity = activity();
         if (activity == null)
         {
             callback.call(new PlayServicesPlayer(false, new PlayServicesPlayerInfo("", "", "", "", ""), authenticationError()));
-            return;
+            return true;
         }
 
         if (!authenticationKnown || !authenticated)
         {
             callback.call(new PlayServicesPlayer(false, new PlayServicesPlayerInfo("", "", "", "", ""), authenticationError()));
-            return;
+            return true;
         }
 
         PlayGames.getPlayersClient(activity).getCurrentPlayer()
@@ -331,20 +337,22 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     callback.call(new PlayServicesPlayer(false, new PlayServicesPlayerInfo("", "", "", "", ""), error(task.getException())));
                 }
             });
+
+        return true;
     }
 
-    public void play_services_player_current_id(final GMFunction callback)
+    public boolean play_services_player_current_id(final GMFunction callback)
     {
         Activity activity = activity();
         if (activity == null)
         {
             callback.call(new PlayServicesTaskResult(false, "", "Activity is null."));
-            return;
+            return true;
         }
 
         if (!requireAuthentication(
             callback, false, "", authenticationError()))
-            return;
+            return true;
 
         PlayGames.getPlayersClient(activity).getCurrentPlayerId()
             .addOnCompleteListener(task ->
@@ -354,9 +362,11 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                 else
                     callback.call(new PlayServicesTaskResult(false, "", error(task.getException())));
             });
+
+        return true;
     }
 
-    public void play_services_player_stats_load(
+    public boolean play_services_player_stats_load(
         boolean force_reload,
         final GMFunction callback)
     {
@@ -364,13 +374,13 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         if (activity == null)
         {
             callback.call(new PlayServicesPlayerStats(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "Activity is null."));
-            return;
+            return true;
         }
 
         if (!authenticationKnown || !authenticated)
         {
             callback.call(new PlayServicesPlayerStats(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, authenticationError()));
-            return;
+            return true;
         }
 
         PlayGames.getPlayerStatsClient(activity)
@@ -407,9 +417,11 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     ""
                 ));
             });
+
+        return true;
     }
 
-    public void play_services_player_load(
+    public boolean play_services_player_load(
         String player_id,
         boolean force_reload,
         final GMFunction callback)
@@ -418,13 +430,13 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         if (activity == null)
         {
             callback.call(new PlayServicesPlayer(false, new PlayServicesPlayerInfo("", "", "", "", ""), "Activity is null."));
-            return;
+            return true;
         }
 
         if (!authenticationKnown || !authenticated)
         {
             callback.call(new PlayServicesPlayer(false, new PlayServicesPlayerInfo("", "", "", "", ""), authenticationError()));
-            return;
+            return true;
         }
 
         PlayGames.getPlayersClient(activity)
@@ -458,9 +470,11 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     ""
                 ));
             });
+
+        return true;
     }
 
-    public void play_services_friends_load(
+    public boolean play_services_friends_load(
         boolean force_reload,
         double max_results,
         final GMFunction callback)
@@ -469,18 +483,20 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         if (activity == null)
         {
             callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, "Activity is null."));
-            return;
+            return true;
         }
 
         if (!authenticationKnown || !authenticated)
         {
             callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, authenticationError()));
-            return;
+            return true;
         }
 
-        int clampedResults = (int) Math.max(1, Math.min(25, max_results));
+        int clampedResults = (int) Math.max(MIN_PAGE_SIZE, Math.min(MAX_FRIENDS_PAGE_SIZE, max_results));
         if (clampedResults != (int)max_results)
-            Log.w(TAG, "play_services_friends_load: max_results " + (int)max_results + " clamped to [1, 25]");
+            Log.w(TAG, "play_services_friends_load: max_results " + (int)max_results + " clamped to [" + MIN_PAGE_SIZE + ", " + MAX_FRIENDS_PAGE_SIZE + "]");
+
+        friendsPageSize = clampedResults;
 
         PlayGames.getPlayersClient(activity)
             .loadFriends(clampedResults, force_reload)
@@ -525,31 +541,39 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     ""
                 ));
             });
+
+        return true;
     }
 
-    public void play_services_friends_load_more(final GMFunction callback)
+    public boolean play_services_friends_load_more(
+        double page_size,
+        final GMFunction callback)
     {
         Activity activity = activity();
         if (activity == null)
         {
             callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, "Activity is null."));
-            return;
+            return true;
         }
 
         if (!authenticationKnown || !authenticated)
         {
             callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, authenticationError()));
-            return;
+            return true;
         }
 
         if (friendsBuffer == null)
         {
             callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, "No friends buffer available. Call play_services_friends_load first."));
-            return;
+            return true;
         }
 
+        int clampedPageSize = (int) Math.max(MIN_PAGE_SIZE, Math.min(MAX_FRIENDS_PAGE_SIZE, page_size));
+        if (clampedPageSize != (int)page_size)
+            Log.w(TAG, "play_services_friends_load_more: page_size " + (int)page_size + " clamped to [" + MIN_PAGE_SIZE + ", " + MAX_FRIENDS_PAGE_SIZE + "]");
+
         PlayGames.getPlayersClient(activity)
-            .loadMoreFriends(25)
+            .loadMoreFriends(clampedPageSize)
             .addOnCompleteListener(task ->
             {
                 if (!task.isSuccessful())
@@ -591,6 +615,8 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     ""
                 ));
             });
+
+        return true;
     }
 
 
@@ -635,19 +661,19 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     // Player Search UI
     // -------------------------------------------------------------------------
 
-    public void play_services_player_search_show(final GMFunction callback)
+    public boolean play_services_player_search_show(final GMFunction callback)
     {
         if (!authenticationKnown || !authenticated)
         {
             callback.call(playerSearchResultError("Google Play Games user is not authenticated."));
-            return;
+            return true;
         }
 
         Activity activity = activity();
         if (activity == null)
         {
             callback.call(playerSearchResultError("Activity is null."));
-            return;
+            return true;
         }
 
         playerSearchCallback = callback;
@@ -661,13 +687,15 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                 playerSearchCallback = null;
                 callback.call(playerSearchResultError(error(exception)));
             });
+
+        return true;
     }
 
     // -------------------------------------------------------------------------
     // Friends Load with Consent
     // -------------------------------------------------------------------------
 
-    public void play_services_friends_load_with_consent(
+    public boolean play_services_friends_load_with_consent(
         boolean force_reload,
         double max_results,
         final GMFunction callback)
@@ -676,20 +704,22 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         if (activity == null)
         {
             callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, "Activity is null."));
-            return;
+            return true;
         }
 
         if (!authenticationKnown || !authenticated)
         {
             callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, authenticationError()));
-            return;
+            return true;
         }
 
-        int clampedResults = (int) Math.max(1, Math.min(25, max_results));
+        int clampedResults = (int) Math.max(MIN_PAGE_SIZE, Math.min(MAX_FRIENDS_PAGE_SIZE, max_results));
         if (clampedResults != (int)max_results)
-            Log.w(TAG, "play_services_friends_load_with_consent: max_results " + (int)max_results + " clamped to [1, 25]");
+            Log.w(TAG, "play_services_friends_load_with_consent: max_results " + (int)max_results + " clamped to [" + MIN_PAGE_SIZE + ", " + MAX_FRIENDS_PAGE_SIZE + "]");
 
         loadFriendsWithConsentHandling(activity, clampedResults, force_reload, callback);
+
+        return true;
     }
 
     private void loadFriendsWithConsentHandling(
@@ -1111,9 +1141,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
-        int clampedResults = (int) Math.max(1, Math.min(25, max_results));
+        int clampedResults = (int) Math.max(MIN_PAGE_SIZE, Math.min(MAX_LEADERBOARD_RESULTS, max_results));
         if (clampedResults != (int)max_results)
-            Log.w(TAG, "play_services_leaderboard_load_player_centered_scores: max_results " + (int)max_results + " clamped to [1, 25]");
+            Log.w(TAG, "play_services_leaderboard_load_player_centered_scores: max_results " + (int)max_results + " clamped to [" + MIN_PAGE_SIZE + ", " + MAX_LEADERBOARD_RESULTS + "]");
 
         PlayGames.getLeaderboardsClient(activity)
             .loadPlayerCenteredScores(
@@ -1156,9 +1186,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
-        int clampedResults = (int) Math.max(1, Math.min(25, max_results));
+        int clampedResults = (int) Math.max(MIN_PAGE_SIZE, Math.min(MAX_LEADERBOARD_RESULTS, max_results));
         if (clampedResults != (int)max_results)
-            Log.w(TAG, "play_services_leaderboard_load_top_scores: max_results " + (int)max_results + " clamped to [1, 25]");
+            Log.w(TAG, "play_services_leaderboard_load_top_scores: max_results " + (int)max_results + " clamped to [" + MIN_PAGE_SIZE + ", " + MAX_LEADERBOARD_RESULTS + "]");
 
         PlayGames.getLeaderboardsClient(activity)
             .loadTopScores(

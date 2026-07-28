@@ -1,6 +1,12 @@
 [gml_api]
 module GMGooglePlayServices;
 
+// Google Play Services API constants
+// These represent limitations and constraints from the Google Play Games API
+const PlayServicesMaxFriendsPageSize : int32 = 25;      // Maximum friends per page (API limit)
+const PlayServicesMaxLeaderboardResults : int32 = 25;   // Maximum leaderboard results per page (API limit)
+const PlayServicesMinPageSize : int32 = 1;              // Minimum page size
+
 // Structured callback results are defined as GMIDL classes and automatically
 // marshaled by the code generator into typed GML structs that callers receive
 // as instances (e.g. new PlayServicesAuthResult(...)). This unifies the callback convention:
@@ -19,23 +25,23 @@ function play_services_request_server_side_access(server_client_id: string, forc
 
 // Player
 [global, bind = typed_gml]
-function play_services_player_current(callback: func): unit;
+function play_services_player_current(callback: func): bool;
 [global, bind = typed_gml]
-function play_services_player_current_id(callback: func): unit;
+function play_services_player_current_id(callback: func): bool;
 [global, bind = typed_gml]
-function play_services_player_stats_load(force_reload: bool, callback: func): unit;
+function play_services_player_stats_load(force_reload: bool, callback: func): bool;
 [global, bind = typed_gml]
-function play_services_player_load(player_id: string, force_reload: bool, callback: func): unit;
+function play_services_player_load(player_id: string, force_reload: bool, callback: func): bool;
 [global, bind = typed_gml]
-function play_services_friends_load(force_reload: bool, max_results: real, callback: func): unit;
+function play_services_friends_load(force_reload: bool, max_results: real, callback: func): bool;
 [global, bind = typed_gml]
-function play_services_friends_load_more(callback: func): unit;
+function play_services_friends_load_more(page_size: real, callback: func): bool;
 [global, bind = typed_gml]
-function play_services_friends_load_with_consent(force_reload: bool, max_results: real, callback: func): unit;
+function play_services_friends_load_with_consent(force_reload: bool, max_results: real, callback: func): bool;
 [global, bind = typed_gml]
 function play_services_player_profile_show(player_id: string): unit;
 [global, bind = typed_gml]
-function play_services_player_search_show(callback: func): unit;
+function play_services_player_search_show(callback: func): bool;
 
 // Achievements
 [global, bind = typed_gml]
