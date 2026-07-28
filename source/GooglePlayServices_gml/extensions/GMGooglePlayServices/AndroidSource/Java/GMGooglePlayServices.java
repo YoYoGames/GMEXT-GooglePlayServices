@@ -29,6 +29,10 @@ import com.google.android.gms.games.PlayGames;
 import com.google.android.gms.games.PlayGamesSdk;
 import com.google.android.gms.games.SnapshotsClient;
 import com.google.android.gms.games.SnapshotsClient.DataOrConflict;
+import com.google.android.gms.games.Player;
+import com.google.android.gms.games.PlayerBuffer;
+import com.google.android.gms.games.PlayersClient;
+import com.google.android.gms.games.FriendsResolutionRequiredException;
 import com.google.android.gms.games.achievement.Achievement;
 import com.google.android.gms.games.achievement.AchievementBuffer;
 import com.google.android.gms.games.leaderboard.Leaderboard;
@@ -72,6 +76,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     private static final int RC_ACHIEVEMENT_UI = 9003;
     private static final int RC_LEADERBOARD_UI = 9004;
     private static final int RC_SAVED_GAMES = 9009;
+    private static final int RC_PLAYER_SEARCH = 9012;
+    private static final int RC_FRIENDS_CONSENT = 9013;
+    private static final int RC_SHOW_PROFILE = 9014;
 
     private final ExecutorService background = Executors.newCachedThreadPool();
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -80,6 +87,12 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     private volatile Snapshot conflictLocal;
     private volatile Snapshot conflictRemote;
     private volatile GMFunction savedGamesUiCallback;
+
+    private volatile PlayerBuffer friendsBuffer;
+    private volatile GMFunction playerSearchCallback;
+    private volatile GMFunction friendsConsentCallback;
+    private volatile int friendsConsentPageSize;
+    private volatile boolean friendsConsentForceReload;
 
     private volatile boolean authenticationKnown = false;
     private volatile boolean authenticated = false;
@@ -93,6 +106,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     public void onDestroy()
     {
         super.onDestroy();
+        releaseFriendsBuffer();
         if (scheduler != null && !scheduler.isShutdown())
         {
             scheduler.shutdown();
@@ -393,6 +407,373 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     ""
                 ));
             });
+    }
+
+    public void gpgs_player_load(
+        String player_id,
+        boolean force_reload,
+        final GMFunction callback)
+    {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSPlayer(false, new GPGSPlayerInfo("", "", "", "", ""), "Activity is null."));
+            return;
+        }
+
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(new GPGSPlayer(false, new GPGSPlayerInfo("", "", "", "", ""), authenticationError()));
+            return;
+        }
+
+        PlayGames.getPlayersClient(activity)
+            .loadPlayer(player_id, force_reload)
+            .addOnCompleteListener(task ->
+            {
+                if (!task.isSuccessful())
+                {
+                    callback.call(new GPGSPlayer(false, new GPGSPlayerInfo("", "", "", "", ""), error(task.getException())));
+                    return;
+                }
+
+                AnnotatedData<Player> annotatedData = task.getResult();
+                Player player = annotatedData != null ? annotatedData.get() : null;
+
+                if (player == null)
+                {
+                    callback.call(new GPGSPlayer(false, new GPGSPlayerInfo("", "", "", "", ""), "No player data was returned."));
+                    return;
+                }
+
+                callback.call(new GPGSPlayer(
+                    true,
+                    new GPGSPlayerInfo(
+                        safeString(player.getPlayerId()),
+                        safeString(player.getDisplayName()),
+                        safeString(player.getTitle()),
+                        player.getIconImageUri() != null ? player.getIconImageUri().toString() : "",
+                        player.getHiResImageUri() != null ? player.getHiResImageUri().toString() : ""
+                    ),
+                    ""
+                ));
+            });
+    }
+
+    public void gpgs_friends_load(
+        boolean force_reload,
+        double max_results,
+        final GMFunction callback)
+    {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, "Activity is null."));
+            return;
+        }
+
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, authenticationError()));
+            return;
+        }
+
+        int clampedResults = (int) Math.max(1, Math.min(25, max_results));
+        if (clampedResults != (int)max_results)
+            Log.w(TAG, "gpgs_friends_load: max_results " + (int)max_results + " clamped to [1, 25]");
+
+        PlayGames.getPlayersClient(activity)
+            .loadFriends(clampedResults, force_reload)
+            .addOnCompleteListener(task ->
+            {
+                if (!task.isSuccessful())
+                {
+                    releaseFriendsBuffer();
+                    callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, error(task.getException())));
+                    return;
+                }
+
+                AnnotatedData<PlayerBuffer> annotatedData = task.getResult();
+                PlayerBuffer buffer = annotatedData != null ? annotatedData.get() : null;
+
+                releaseFriendsBuffer();
+                friendsBuffer = buffer;
+
+                java.util.List<GPGSPlayerInfo> players = new java.util.ArrayList<>();
+
+                if (buffer != null)
+                {
+                    try
+                    {
+                        for (Player player : buffer)
+                            players.add(playerToInfo(player));
+                    }
+                    catch (Exception exception)
+                    {
+                        releaseFriendsBuffer();
+                        callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, error(exception)));
+                        return;
+                    }
+                }
+
+                boolean hasMore = buffer != null && buffer.getCount() > 0;
+
+                callback.call(new GPGSPlayerList(
+                    true,
+                    players,
+                    hasMore,
+                    ""
+                ));
+            });
+    }
+
+    public void gpgs_friends_load_more(final GMFunction callback)
+    {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, "Activity is null."));
+            return;
+        }
+
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, authenticationError()));
+            return;
+        }
+
+        if (friendsBuffer == null)
+        {
+            callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, "No friends buffer available. Call gpgs_friends_load first."));
+            return;
+        }
+
+        PlayGames.getPlayersClient(activity)
+            .loadMoreFriends(25)
+            .addOnCompleteListener(task ->
+            {
+                if (!task.isSuccessful())
+                {
+                    releaseFriendsBuffer();
+                    callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, error(task.getException())));
+                    return;
+                }
+
+                AnnotatedData<PlayerBuffer> annotatedData = task.getResult();
+                PlayerBuffer buffer = annotatedData != null ? annotatedData.get() : null;
+
+                releaseFriendsBuffer();
+                friendsBuffer = buffer;
+
+                java.util.List<GPGSPlayerInfo> players = new java.util.ArrayList<>();
+
+                if (buffer != null)
+                {
+                    try
+                    {
+                        for (Player player : buffer)
+                            players.add(playerToInfo(player));
+                    }
+                    catch (Exception exception)
+                    {
+                        releaseFriendsBuffer();
+                        callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, error(exception)));
+                        return;
+                    }
+                }
+
+                boolean hasMore = buffer != null && buffer.getCount() > 0;
+
+                callback.call(new GPGSPlayerList(
+                    true,
+                    players,
+                    hasMore,
+                    ""
+                ));
+            });
+    }
+
+
+    private void releaseFriendsBuffer()
+    {
+        PlayerBuffer buffer = friendsBuffer;
+        if (buffer != null)
+        {
+            friendsBuffer = null;
+            buffer.release();
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Player Profile UI
+    // -------------------------------------------------------------------------
+
+    public void gpgs_player_profile_show(String player_id)
+    {
+        if (!authenticationKnown || !authenticated)
+        {
+            Log.w(TAG, "Player_Profile_Show blocked: " + authenticationError());
+            return;
+        }
+
+        Activity activity = activity();
+        if (activity == null)
+        {
+            Log.w(TAG, "Player_Profile_Show blocked: Activity is null.");
+            return;
+        }
+
+        PlayGames.getPlayersClient(activity)
+            .getCompareProfileIntent(player_id)
+            .addOnSuccessListener(intent ->
+                activity.startActivityForResult(intent, RC_SHOW_PROFILE))
+            .addOnFailureListener(exception ->
+                Log.e(TAG, "Could not show player profile UI.", exception));
+    }
+
+    // -------------------------------------------------------------------------
+    // Player Search UI
+    // -------------------------------------------------------------------------
+
+    public void gpgs_player_search_show(final GMFunction callback)
+    {
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(playerSearchResultError("Google Play Games user is not authenticated."));
+            return;
+        }
+
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(playerSearchResultError("Activity is null."));
+            return;
+        }
+
+        playerSearchCallback = callback;
+
+        PlayGames.getPlayersClient(activity)
+            .getPlayerSearchIntent()
+            .addOnSuccessListener(intent ->
+                activity.startActivityForResult(intent, RC_PLAYER_SEARCH))
+            .addOnFailureListener(exception ->
+            {
+                playerSearchCallback = null;
+                callback.call(playerSearchResultError(error(exception)));
+            });
+    }
+
+    // -------------------------------------------------------------------------
+    // Friends Load with Consent
+    // -------------------------------------------------------------------------
+
+    public void gpgs_friends_load_with_consent(
+        boolean force_reload,
+        double max_results,
+        final GMFunction callback)
+    {
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, "Activity is null."));
+            return;
+        }
+
+        if (!authenticationKnown || !authenticated)
+        {
+            callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, authenticationError()));
+            return;
+        }
+
+        int clampedResults = (int) Math.max(1, Math.min(25, max_results));
+        if (clampedResults != (int)max_results)
+            Log.w(TAG, "gpgs_friends_load_with_consent: max_results " + (int)max_results + " clamped to [1, 25]");
+
+        loadFriendsWithConsentHandling(activity, clampedResults, force_reload, callback);
+    }
+
+    private void loadFriendsWithConsentHandling(
+        Activity activity,
+        int pageSize,
+        boolean forceReload,
+        GMFunction callback)
+    {
+        PlayGames.getPlayersClient(activity)
+            .loadFriends(pageSize, forceReload)
+            .addOnSuccessListener(task ->
+            {
+                AnnotatedData<PlayerBuffer> annotatedData = task;
+                PlayerBuffer buffer = annotatedData != null ? annotatedData.get() : null;
+
+                releaseFriendsBuffer();
+                friendsBuffer = buffer;
+
+                java.util.List<GPGSPlayerInfo> players = new java.util.ArrayList<>();
+
+                if (buffer != null)
+                {
+                    try
+                    {
+                        for (Player player : buffer)
+                            players.add(playerToInfo(player));
+                    }
+                    catch (Exception exception)
+                    {
+                        releaseFriendsBuffer();
+                        callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, error(exception)));
+                        return;
+                    }
+                }
+
+                boolean hasMore = buffer != null && buffer.getCount() > 0;
+
+                callback.call(new GPGSPlayerList(
+                    true,
+                    players,
+                    hasMore,
+                    ""
+                ));
+            })
+            .addOnFailureListener(exception ->
+            {
+                if (exception instanceof FriendsResolutionRequiredException)
+                {
+                    FriendsResolutionRequiredException friendsException =
+                        (FriendsResolutionRequiredException) exception;
+
+                    friendsConsentCallback = callback;
+                    friendsConsentPageSize = pageSize;
+                    friendsConsentForceReload = forceReload;
+
+                    try
+                    {
+                        friendsException.startResolutionForResult(activity, RC_FRIENDS_CONSENT);
+                    }
+                    catch (Exception e)
+                    {
+                        friendsConsentCallback = null;
+                        callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, error(e)));
+                    }
+                }
+                else
+                {
+                    callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, error(exception)));
+                }
+            });
+    }
+
+    private static GPGSPlayerInfo playerToInfo(Player player)
+    {
+        if (player == null)
+            return emptyPlayerInfo();
+
+        return new GPGSPlayerInfo(
+            safeString(player.getPlayerId()),
+            safeString(player.getDisplayName()),
+            safeString(player.getTitle()),
+            player.getIconImageUri() != null ? player.getIconImageUri().toString() : "",
+            player.getHiResImageUri() != null ? player.getHiResImageUri().toString() : ""
+        );
     }
 
     // -------------------------------------------------------------------------
@@ -1030,6 +1411,23 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         int resultCode,
         Intent data)
     {
+        if (requestCode == RC_PLAYER_SEARCH)
+        {
+            handlePlayerSearchResult(resultCode, data);
+            return;
+        }
+
+        if (requestCode == RC_FRIENDS_CONSENT)
+        {
+            handleFriendsConsentResult(resultCode);
+            return;
+        }
+
+        if (requestCode == RC_SHOW_PROFILE)
+        {
+            return;
+        }
+
         if (requestCode != RC_SAVED_GAMES)
             return;
 
@@ -1159,11 +1557,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                 }
 
                 String snapshotName = snapshot.getMetadata().getUniqueName();
-                Snapshot prior = snapshots.put(snapshotName, snapshot);
-                if (prior != null)
-                {
-                    prior.close();
-                }
+                snapshots.put(snapshotName, snapshot);
                 commitSnapshot(snapshot, options, callback);
             });
     }
@@ -1374,11 +1768,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                         }
 
                         String snapshotName = snapshot.getMetadata().getUniqueName();
-                        Snapshot prior = snapshots.put(snapshotName, snapshot);
-                        if (prior != null)
-                        {
-                            prior.close();
-                        }
+                        snapshots.put(snapshotName, snapshot);
 
                         response = new GPGSSnapshotOpenResult(
                             false,
@@ -1516,6 +1906,95 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     {
         SnapshotContents contents = snapshot.getSnapshotContents();
         return new String(contents.readFully(), StandardCharsets.UTF_8);
+    }
+
+    // -------------------------------------------------------------------------
+    // Activity Result Handlers
+    // -------------------------------------------------------------------------
+
+    private void handlePlayerSearchResult(int resultCode, Intent data)
+    {
+        GMFunction callback = playerSearchCallback;
+        playerSearchCallback = null;
+
+        if (callback == null)
+            return;
+
+        if (resultCode == Activity.RESULT_CANCELED)
+        {
+            callback.call(playerSearchResultError("User canceled player search."));
+            return;
+        }
+
+        if (resultCode != Activity.RESULT_OK)
+        {
+            callback.call(playerSearchResultError("Player search failed with result code: " + resultCode));
+            return;
+        }
+
+        if (data == null)
+        {
+            callback.call(playerSearchResultError("No data returned from player search."));
+            return;
+        }
+
+        try
+        {
+            java.util.ArrayList<Player> results = data.getParcelableArrayListExtra(
+                PlayersClient.EXTRA_PLAYER_SEARCH_RESULTS);
+
+            if (results == null || results.size() == 0)
+            {
+                callback.call(playerSearchResultError("No players found in search results."));
+                return;
+            }
+
+            // Google typically returns at most one player from search UI
+            Player selected = results.get(0);
+
+            GMExtWire.StructStream stream = streamStruct()
+                .kv("status", 1)
+                .kv("player_id", safeString(selected.getPlayerId()))
+                .kv("display_name", safeString(selected.getDisplayName()))
+                .kv("icon_image_url", selected.getIconImageUri() != null ? selected.getIconImageUri().toString() : "")
+                .kv("hi_res_image_url", selected.getHiResImageUri() != null ? selected.getHiResImageUri().toString() : "");
+
+            callback.call(stream);
+        }
+        catch (Exception exception)
+        {
+            callback.call(playerSearchResultError(error(exception)));
+        }
+    }
+
+    private void handleFriendsConsentResult(int resultCode)
+    {
+        GMFunction callback = friendsConsentCallback;
+        friendsConsentCallback = null;
+
+        if (callback == null)
+            return;
+
+        if (resultCode == Activity.RESULT_CANCELED)
+        {
+            callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, "User denied friends access permission."));
+            return;
+        }
+
+        if (resultCode != Activity.RESULT_OK)
+        {
+            callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, "Friends permission result: " + resultCode));
+            return;
+        }
+
+        Activity activity = activity();
+        if (activity == null)
+        {
+            callback.call(new GPGSPlayerList(false, new java.util.ArrayList<>(), false, "Activity is null."));
+            return;
+        }
+
+        loadFriendsWithConsentHandling(activity, friendsConsentPageSize, friendsConsentForceReload, callback);
     }
 
     // -------------------------------------------------------------------------
@@ -1933,6 +2412,16 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     private static GPGSPlayerInfo emptyPlayerInfo()
     {
         return new GPGSPlayerInfo("", "", "", "", "");
+    }
+
+    private static GMExtWire.StructStream playerSearchResultError(String errorMessage)
+    {
+        return streamStruct()
+            .kv("status", 0)
+            .kv("player_id", "")
+            .kv("display_name", "")
+            .kv("icon_image_url", "")
+            .kv("hi_res_image_url", "");
     }
 
     private static GMExtWire.StructStream emptyPlayerStream()

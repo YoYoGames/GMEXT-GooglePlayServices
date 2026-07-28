@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 
 public record GPGSSnapshot(boolean success, GPGSSnapshotOpenResult result, String error) implements GMExtWire.ITypedStruct
 {
-    public static final int CODEC_ID = 18;
+    public static final int CODEC_ID = 19;
     @Override
     public void encode(ByteBuffer b)
     {

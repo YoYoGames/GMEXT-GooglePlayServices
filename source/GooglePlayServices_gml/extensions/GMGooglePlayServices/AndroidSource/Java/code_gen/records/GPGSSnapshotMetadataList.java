@@ -10,7 +10,7 @@ import java.util.List;
 
 public record GPGSSnapshotMetadataList(boolean success, java.util.List<GPGSSnapshotMetadata> snapshots, String error) implements GMExtWire.ITypedStruct
 {
-    public static final int CODEC_ID = 14;
+    public static final int CODEC_ID = 15;
     @Override
     public void encode(ByteBuffer b)
     {

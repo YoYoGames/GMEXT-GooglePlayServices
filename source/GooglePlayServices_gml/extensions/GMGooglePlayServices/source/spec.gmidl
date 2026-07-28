@@ -24,6 +24,18 @@ function gpgs_player_current(callback: func): unit;
 function gpgs_player_current_id(callback: func): unit;
 [global, bind = typed_gml]
 function gpgs_player_stats_load(force_reload: bool, callback: func): unit;
+[global, bind = typed_gml]
+function gpgs_player_load(player_id: string, force_reload: bool, callback: func): unit;
+[global, bind = typed_gml]
+function gpgs_friends_load(force_reload: bool, max_results: real, callback: func): unit;
+[global, bind = typed_gml]
+function gpgs_friends_load_more(callback: func): unit;
+[global, bind = typed_gml]
+function gpgs_friends_load_with_consent(force_reload: bool, max_results: real, callback: func): unit;
+[global, bind = typed_gml]
+function gpgs_player_profile_show(player_id: string): unit;
+[global, bind = typed_gml]
+function gpgs_player_search_show(callback: func): unit;
 
 // Achievements
 [global, bind = typed_gml]
@@ -126,6 +138,15 @@ class `[[GPGSPlayerStats]]` prototype Object
     [field] property high_spender_probability : real { get; set; }
     [field] property spend_probability : real { get; set; }
     [field] property total_spend_next_28_days : real { get; set; }
+    [field] property error : string { get; set; }
+}
+
+[global, bind = typed_gml]
+class `[[GPGSPlayerList]]` prototype Object
+{
+    [field] property success : bool { get; set; }
+    [field, type_hint=`GPGSPlayerInfo[]`] property players : gmval { get; set; }
+    [field] property has_more : bool { get; set; }
     [field] property error : string { get; set; }
 }
 

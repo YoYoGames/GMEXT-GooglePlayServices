@@ -100,6 +100,85 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         return 0;
     }
 
+    public double __EXT_NATIVE__gpgs_player_load(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    {
+        GMExtWire.order(__arg_buffer);
+
+        // field: player_id, type: String
+        String player_id = GMExtWire.readString(__arg_buffer);
+
+        // field: force_reload, type: Bool
+        boolean force_reload = GMExtWire.readBool(__arg_buffer);
+
+        // field: callback, type: Function
+        GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
+
+        gpgs_player_load(player_id, force_reload, callback);
+        return 0;
+    }
+
+    public double __EXT_NATIVE__gpgs_friends_load(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    {
+        GMExtWire.order(__arg_buffer);
+
+        // field: force_reload, type: Bool
+        boolean force_reload = GMExtWire.readBool(__arg_buffer);
+
+        // field: max_results, type: Float64
+        double max_results = GMExtWire.readF64(__arg_buffer);
+
+        // field: callback, type: Function
+        GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
+
+        gpgs_friends_load(force_reload, max_results, callback);
+        return 0;
+    }
+
+    public double __EXT_NATIVE__gpgs_friends_load_more(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    {
+        GMExtWire.order(__arg_buffer);
+
+        // field: callback, type: Function
+        GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
+
+        gpgs_friends_load_more(callback);
+        return 0;
+    }
+
+    public double __EXT_NATIVE__gpgs_friends_load_with_consent(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    {
+        GMExtWire.order(__arg_buffer);
+
+        // field: force_reload, type: Bool
+        boolean force_reload = GMExtWire.readBool(__arg_buffer);
+
+        // field: max_results, type: Float64
+        double max_results = GMExtWire.readF64(__arg_buffer);
+
+        // field: callback, type: Function
+        GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
+
+        gpgs_friends_load_with_consent(force_reload, max_results, callback);
+        return 0;
+    }
+
+    public double __EXT_NATIVE__gpgs_player_profile_show(String player_id)
+    {
+        gpgs_player_profile_show(player_id);
+        return 0;
+    }
+
+    public double __EXT_NATIVE__gpgs_player_search_show(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    {
+        GMExtWire.order(__arg_buffer);
+
+        // field: callback, type: Function
+        GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
+
+        gpgs_player_search_show(callback);
+        return 0;
+    }
+
     public double __EXT_NATIVE__gpgs_achievements_show()
     {
         gpgs_achievements_show();

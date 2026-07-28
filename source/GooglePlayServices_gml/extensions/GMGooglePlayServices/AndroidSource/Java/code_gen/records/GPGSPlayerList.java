@@ -6,13 +6,14 @@ import ${YYAndroidPackageName}.GMExtWire;
 import ${YYAndroidPackageName}.codecs.*;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
-public record GPGSSavedGamesUIEvent(double result, GPGSSnapshotMetadata snapshot_metadata, String error) implements GMExtWire.ITypedStruct
+public record GPGSPlayerList(boolean success, java.util.List<GPGSPlayerInfo> players, boolean has_more, String error) implements GMExtWire.ITypedStruct
 {
-    public static final int CODEC_ID = 17;
+    public static final int CODEC_ID = 10;
     @Override
     public void encode(ByteBuffer b)
     {
-        GPGSSavedGamesUIEventCodec.write(b, this);
+        GPGSPlayerListCodec.write(b, this);
     }
 }

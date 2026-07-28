@@ -63,13 +63,13 @@ enum GPGSSavedGamesUIResult
 // #####################################################################
 
 /**
- * @returns {Struct.GPGSSavedGameCommitOptions} 
+ * @returns {Struct.GPGSSavedGameCommitOptions}
  */
 function GPGSSavedGameCommitOptions() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 2822368498;
 
@@ -83,13 +83,13 @@ function GPGSSavedGameCommitOptions() constructor
 }
 
 /**
- * @returns {Struct.GPGSAuthResult} 
+ * @returns {Struct.GPGSAuthResult}
  */
 function GPGSAuthResult() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 1752374075;
 
@@ -100,13 +100,13 @@ function GPGSAuthResult() constructor
 }
 
 /**
- * @returns {Struct.GPGSPlayerInfo} 
+ * @returns {Struct.GPGSPlayerInfo}
  */
 function GPGSPlayerInfo() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 1960719841;
 
@@ -119,13 +119,13 @@ function GPGSPlayerInfo() constructor
 }
 
 /**
- * @returns {Struct.GPGSPlayerStats} 
+ * @returns {Struct.GPGSPlayerStats}
  */
 function GPGSPlayerStats() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 2590306968;
 
@@ -145,13 +145,13 @@ function GPGSPlayerStats() constructor
 }
 
 /**
- * @returns {Struct.GPGSAchievement} 
+ * @returns {Struct.GPGSAchievement}
  */
 function GPGSAchievement() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 649865523;
 
@@ -170,13 +170,13 @@ function GPGSAchievement() constructor
 }
 
 /**
- * @returns {Struct.GPGSScoreResult} 
+ * @returns {Struct.GPGSScoreResult}
  */
 function GPGSScoreResult() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 4103454823;
 
@@ -188,13 +188,13 @@ function GPGSScoreResult() constructor
 }
 
 /**
- * @returns {Struct.GPGSLeaderboardVariant} 
+ * @returns {Struct.GPGSLeaderboardVariant}
  */
 function GPGSLeaderboardVariant() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 4077043484;
 
@@ -205,13 +205,13 @@ function GPGSLeaderboardVariant() constructor
 }
 
 /**
- * @returns {Struct.GPGSSnapshotMetadata} 
+ * @returns {Struct.GPGSSnapshotMetadata}
  */
 function GPGSSnapshotMetadata() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 2582870709;
 
@@ -227,13 +227,13 @@ function GPGSSnapshotMetadata() constructor
 }
 
 /**
- * @returns {Struct.GPGSTaskResult} 
+ * @returns {Struct.GPGSTaskResult}
  */
 function GPGSTaskResult() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 1050131728;
 
@@ -244,13 +244,13 @@ function GPGSTaskResult() constructor
 }
 
 /**
- * @returns {Struct.GPGSPlayer} 
+ * @returns {Struct.GPGSPlayer}
  */
 function GPGSPlayer() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 1590072345;
 
@@ -261,13 +261,31 @@ function GPGSPlayer() constructor
 }
 
 /**
- * @returns {Struct.GPGSLeaderboardScore} 
+ * @returns {Struct.GPGSPlayerList}
+ */
+function GPGSPlayerList() constructor
+{
+    /**
+     * Internally generated hash for quick validation
+     * @ignore
+     */
+    static __uid = 1927280005;
+
+    self.success = undefined;
+    self.players = undefined;
+    self.has_more = undefined;
+    self.error = undefined;
+
+}
+
+/**
+ * @returns {Struct.GPGSLeaderboardScore}
  */
 function GPGSLeaderboardScore() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 627234391;
 
@@ -281,13 +299,13 @@ function GPGSLeaderboardScore() constructor
 }
 
 /**
- * @returns {Struct.GPGSAchievementList} 
+ * @returns {Struct.GPGSAchievementList}
  */
 function GPGSAchievementList() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 600409755;
 
@@ -298,13 +316,13 @@ function GPGSAchievementList() constructor
 }
 
 /**
- * @returns {Struct.GPGSScoreReport} 
+ * @returns {Struct.GPGSScoreReport}
  */
 function GPGSScoreReport() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 3963189564;
 
@@ -320,13 +338,13 @@ function GPGSScoreReport() constructor
 }
 
 /**
- * @returns {Struct.GPGSLeaderboard} 
+ * @returns {Struct.GPGSLeaderboard}
  */
 function GPGSLeaderboard() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 3807895483;
 
@@ -338,13 +356,13 @@ function GPGSLeaderboard() constructor
 }
 
 /**
- * @returns {Struct.GPGSSnapshotMetadataList} 
+ * @returns {Struct.GPGSSnapshotMetadataList}
  */
 function GPGSSnapshotMetadataList() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 270634129;
 
@@ -355,13 +373,13 @@ function GPGSSnapshotMetadataList() constructor
 }
 
 /**
- * @returns {Struct.GPGSSnapshotOpenResult} 
+ * @returns {Struct.GPGSSnapshotOpenResult}
  */
 function GPGSSnapshotOpenResult() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 639618593;
 
@@ -377,13 +395,13 @@ function GPGSSnapshotOpenResult() constructor
 }
 
 /**
- * @returns {Struct.GPGSSavedGamesUIEvent} 
+ * @returns {Struct.GPGSSavedGamesUIEvent}
  */
 function GPGSSavedGamesUIEvent() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 1789697340;
 
@@ -394,13 +412,13 @@ function GPGSSavedGamesUIEvent() constructor
 }
 
 /**
- * @returns {Struct.GPGSLeaderboardScores} 
+ * @returns {Struct.GPGSLeaderboardScores}
  */
 function GPGSLeaderboardScores() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 4271315628;
 
@@ -412,13 +430,13 @@ function GPGSLeaderboardScores() constructor
 }
 
 /**
- * @returns {Struct.GPGSSnapshot} 
+ * @returns {Struct.GPGSSnapshot}
  */
 function GPGSSnapshot() constructor
 {
     /**
      * Internally generated hash for quick validation
-     * @ignore 
+     * @ignore
      */
     static __uid = 3110322928;
 
@@ -438,7 +456,7 @@ function GPGSSnapshot() constructor
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSSavedGameCommitOptions_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -480,8 +498,8 @@ function __GPGSSavedGameCommitOptions_encode(_inst, _buffer, _offset, _where = _
  * @func __GPGSSavedGameCommitOptions_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSSavedGameCommitOptions} 
- * @ignore 
+ * @returns {Struct.GPGSSavedGameCommitOptions}
+ * @ignore
  */
 function __GPGSSavedGameCommitOptions_decode(_buffer, _offset)
 {
@@ -523,7 +541,7 @@ function __GPGSSavedGameCommitOptions_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSAuthResult_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -550,8 +568,8 @@ function __GPGSAuthResult_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
  * @func __GPGSAuthResult_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSAuthResult} 
- * @ignore 
+ * @returns {Struct.GPGSAuthResult}
+ * @ignore
  */
 function __GPGSAuthResult_decode(_buffer, _offset)
 {
@@ -581,7 +599,7 @@ function __GPGSAuthResult_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSPlayerInfo_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -620,8 +638,8 @@ function __GPGSPlayerInfo_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
  * @func __GPGSPlayerInfo_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSPlayerInfo} 
- * @ignore 
+ * @returns {Struct.GPGSPlayerInfo}
+ * @ignore
  */
 function __GPGSPlayerInfo_decode(_buffer, _offset)
 {
@@ -661,7 +679,7 @@ function __GPGSPlayerInfo_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSPlayerStats_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -724,8 +742,8 @@ function __GPGSPlayerStats_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_
  * @func __GPGSPlayerStats_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSPlayerStats} 
- * @ignore 
+ * @returns {Struct.GPGSPlayerStats}
+ * @ignore
  */
 function __GPGSPlayerStats_decode(_buffer, _offset)
 {
@@ -782,7 +800,7 @@ function __GPGSPlayerStats_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSAchievement_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -845,8 +863,8 @@ function __GPGSAchievement_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_
  * @func __GPGSAchievement_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSAchievement} 
- * @ignore 
+ * @returns {Struct.GPGSAchievement}
+ * @ignore
  */
 function __GPGSAchievement_decode(_buffer, _offset)
 {
@@ -904,7 +922,7 @@ function __GPGSAchievement_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSScoreResult_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -936,8 +954,8 @@ function __GPGSScoreResult_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_
  * @func __GPGSScoreResult_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSScoreResult} 
- * @ignore 
+ * @returns {Struct.GPGSScoreResult}
+ * @ignore
  */
 function __GPGSScoreResult_decode(_buffer, _offset)
 {
@@ -971,7 +989,7 @@ function __GPGSScoreResult_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSLeaderboardVariant_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -997,8 +1015,8 @@ function __GPGSLeaderboardVariant_encode(_inst, _buffer, _offset, _where = _GMFU
  * @func __GPGSLeaderboardVariant_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSLeaderboardVariant} 
- * @ignore 
+ * @returns {Struct.GPGSLeaderboardVariant}
+ * @ignore
  */
 function __GPGSLeaderboardVariant_decode(_buffer, _offset)
 {
@@ -1027,7 +1045,7 @@ function __GPGSLeaderboardVariant_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSSnapshotMetadata_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -1077,8 +1095,8 @@ function __GPGSSnapshotMetadata_encode(_inst, _buffer, _offset, _where = _GMFUNC
  * @func __GPGSSnapshotMetadata_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSSnapshotMetadata} 
- * @ignore 
+ * @returns {Struct.GPGSSnapshotMetadata}
+ * @ignore
  */
 function __GPGSSnapshotMetadata_decode(_buffer, _offset)
 {
@@ -1126,7 +1144,7 @@ function __GPGSSnapshotMetadata_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSTaskResult_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -1154,8 +1172,8 @@ function __GPGSTaskResult_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
  * @func __GPGSTaskResult_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSTaskResult} 
- * @ignore 
+ * @returns {Struct.GPGSTaskResult}
+ * @ignore
  */
 function __GPGSTaskResult_decode(_buffer, _offset)
 {
@@ -1186,7 +1204,7 @@ function __GPGSTaskResult_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSPlayer_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -1213,8 +1231,8 @@ function __GPGSPlayer_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
  * @func __GPGSPlayer_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSPlayer} 
- * @ignore 
+ * @returns {Struct.GPGSPlayer}
+ * @ignore
  */
 function __GPGSPlayer_decode(_buffer, _offset)
 {
@@ -1239,12 +1257,88 @@ function __GPGSPlayer_decode(_buffer, _offset)
 }
 
 /**
+ * @func __GPGSPlayerList_encode(_inst, _buffer, _offset, _where)
+ * @param {Struct.GPGSPlayerList} _inst
+ * @param {Id.Buffer} _buffer
+ * @param {Real} _offset
+ * @param {String} _where
+ * @ignore
+ */
+function __GPGSPlayerList_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
+{
+    buffer_seek(_buffer, buffer_seek_start, _offset);
+    with (_inst)
+    {
+        // field: success, type: Bool
+        if (!is_bool(self.success)) show_error($"{_where} :: self.success expected bool", true);
+        buffer_write(_buffer, buffer_bool, self.success);
+
+        // field: players, type: struct GPGSPlayerInfo[]
+        if (!is_array(self.players)) show_error($"{_where} :: self.players expected array", true);
+        var __length__ = array_length(self.players);
+        buffer_write(_buffer, buffer_u32, __length__);
+        for (var _i = 0; _i < __length__; ++_i)
+        {
+            if (self.players[_i].__uid != 1960719841) show_error($"{_where} :: self.players[_i] expected GPGSPlayerInfo", true);
+            __GPGSPlayerInfo_encode(self.players[_i], _buffer, buffer_tell(_buffer), _where);
+        }
+
+        // field: has_more, type: Bool
+        if (!is_bool(self.has_more)) show_error($"{_where} :: self.has_more expected bool", true);
+        buffer_write(_buffer, buffer_bool, self.has_more);
+
+        // field: error, type: String
+        if (!is_string(self.error)) show_error($"{_where} :: self.error expected string", true);
+        buffer_write(_buffer, buffer_u32, string_byte_length(self.error));
+        buffer_write(_buffer, buffer_string, self.error);
+
+    }
+}
+
+/**
+ * @func __GPGSPlayerList_decode(_buffer, _offset)
+ * @param {Id.Buffer} _buffer
+ * @param {Real} _offset
+ * @returns {Struct.GPGSPlayerList}
+ * @ignore
+ */
+function __GPGSPlayerList_decode(_buffer, _offset)
+{
+    buffer_seek(_buffer, buffer_seek_start, _offset);
+
+    _inst = new GPGSPlayerList();
+    with (_inst)
+    {
+        // field: success, type: Bool
+        self.success = buffer_read(_buffer, buffer_bool);
+
+        // field: players, type: struct GPGSPlayerInfo[]
+        var __length__ = buffer_read(_buffer, buffer_u32);
+        self.players = array_create(__length__);
+        for (var _i = 0; _i < __length__; ++_i)
+        {
+            self.players[_i] = __GPGSPlayerInfo_decode(_buffer, buffer_tell(_buffer));
+        }
+
+        // field: has_more, type: Bool
+        self.has_more = buffer_read(_buffer, buffer_bool);
+
+        // field: error, type: String
+        buffer_read(_buffer, buffer_u32);
+        self.error = buffer_read(_buffer, buffer_string);
+
+    }
+
+    return _inst;
+}
+
+/**
  * @func __GPGSLeaderboardScore_encode(_inst, _buffer, _offset, _where)
  * @param {Struct.GPGSLeaderboardScore} _inst
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSLeaderboardScore_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -1285,8 +1379,8 @@ function __GPGSLeaderboardScore_encode(_inst, _buffer, _offset, _where = _GMFUNC
  * @func __GPGSLeaderboardScore_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSLeaderboardScore} 
- * @ignore 
+ * @returns {Struct.GPGSLeaderboardScore}
+ * @ignore
  */
 function __GPGSLeaderboardScore_decode(_buffer, _offset)
 {
@@ -1327,7 +1421,7 @@ function __GPGSLeaderboardScore_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSAchievementList_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -1340,9 +1434,9 @@ function __GPGSAchievementList_encode(_inst, _buffer, _offset, _where = _GMFUNCT
 
         // field: achievements, type: struct GPGSAchievement[]
         if (!is_array(self.achievements)) show_error($"{_where} :: self.achievements expected array", true);
-        var _length = array_length(self.achievements);
-        buffer_write(_buffer, buffer_u32, _length);
-        for (var _i = 0; _i < _length; ++_i)
+        var __length__ = array_length(self.achievements);
+        buffer_write(_buffer, buffer_u32, __length__);
+        for (var _i = 0; _i < __length__; ++_i)
         {
             if (self.achievements[_i].__uid != 649865523) show_error($"{_where} :: self.achievements[_i] expected GPGSAchievement", true);
             __GPGSAchievement_encode(self.achievements[_i], _buffer, buffer_tell(_buffer), _where);
@@ -1360,8 +1454,8 @@ function __GPGSAchievementList_encode(_inst, _buffer, _offset, _where = _GMFUNCT
  * @func __GPGSAchievementList_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSAchievementList} 
- * @ignore 
+ * @returns {Struct.GPGSAchievementList}
+ * @ignore
  */
 function __GPGSAchievementList_decode(_buffer, _offset)
 {
@@ -1374,9 +1468,9 @@ function __GPGSAchievementList_decode(_buffer, _offset)
         self.success = buffer_read(_buffer, buffer_bool);
 
         // field: achievements, type: struct GPGSAchievement[]
-        var _length = buffer_read(_buffer, buffer_u32);
-        self.achievements = array_create(_length);
-        for (var _i = 0; _i < _length; ++_i)
+        var __length__ = buffer_read(_buffer, buffer_u32);
+        self.achievements = array_create(__length__);
+        for (var _i = 0; _i < __length__; ++_i)
         {
             self.achievements[_i] = __GPGSAchievement_decode(_buffer, buffer_tell(_buffer));
         }
@@ -1396,7 +1490,7 @@ function __GPGSAchievementList_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSScoreReport_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -1445,8 +1539,8 @@ function __GPGSScoreReport_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_
  * @func __GPGSScoreReport_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSScoreReport} 
- * @ignore 
+ * @returns {Struct.GPGSScoreReport}
+ * @ignore
  */
 function __GPGSScoreReport_decode(_buffer, _offset)
 {
@@ -1493,7 +1587,7 @@ function __GPGSScoreReport_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSLeaderboard_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -1516,9 +1610,9 @@ function __GPGSLeaderboard_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_
 
         // field: variants, type: struct GPGSLeaderboardVariant[]
         if (!is_array(self.variants)) show_error($"{_where} :: self.variants expected array", true);
-        var _length = array_length(self.variants);
-        buffer_write(_buffer, buffer_u32, _length);
-        for (var _i = 0; _i < _length; ++_i)
+        var __length__ = array_length(self.variants);
+        buffer_write(_buffer, buffer_u32, __length__);
+        for (var _i = 0; _i < __length__; ++_i)
         {
             if (self.variants[_i].__uid != 4077043484) show_error($"{_where} :: self.variants[_i] expected GPGSLeaderboardVariant", true);
             __GPGSLeaderboardVariant_encode(self.variants[_i], _buffer, buffer_tell(_buffer), _where);
@@ -1531,8 +1625,8 @@ function __GPGSLeaderboard_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_
  * @func __GPGSLeaderboard_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSLeaderboard} 
- * @ignore 
+ * @returns {Struct.GPGSLeaderboard}
+ * @ignore
  */
 function __GPGSLeaderboard_decode(_buffer, _offset)
 {
@@ -1553,9 +1647,9 @@ function __GPGSLeaderboard_decode(_buffer, _offset)
         self.score_order = buffer_read(_buffer, buffer_f64);
 
         // field: variants, type: struct GPGSLeaderboardVariant[]
-        var _length = buffer_read(_buffer, buffer_u32);
-        self.variants = array_create(_length);
-        for (var _i = 0; _i < _length; ++_i)
+        var __length__ = buffer_read(_buffer, buffer_u32);
+        self.variants = array_create(__length__);
+        for (var _i = 0; _i < __length__; ++_i)
         {
             self.variants[_i] = __GPGSLeaderboardVariant_decode(_buffer, buffer_tell(_buffer));
         }
@@ -1571,7 +1665,7 @@ function __GPGSLeaderboard_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSSnapshotMetadataList_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -1584,9 +1678,9 @@ function __GPGSSnapshotMetadataList_encode(_inst, _buffer, _offset, _where = _GM
 
         // field: snapshots, type: struct GPGSSnapshotMetadata[]
         if (!is_array(self.snapshots)) show_error($"{_where} :: self.snapshots expected array", true);
-        var _length = array_length(self.snapshots);
-        buffer_write(_buffer, buffer_u32, _length);
-        for (var _i = 0; _i < _length; ++_i)
+        var __length__ = array_length(self.snapshots);
+        buffer_write(_buffer, buffer_u32, __length__);
+        for (var _i = 0; _i < __length__; ++_i)
         {
             if (self.snapshots[_i].__uid != 2582870709) show_error($"{_where} :: self.snapshots[_i] expected GPGSSnapshotMetadata", true);
             __GPGSSnapshotMetadata_encode(self.snapshots[_i], _buffer, buffer_tell(_buffer), _where);
@@ -1604,8 +1698,8 @@ function __GPGSSnapshotMetadataList_encode(_inst, _buffer, _offset, _where = _GM
  * @func __GPGSSnapshotMetadataList_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSSnapshotMetadataList} 
- * @ignore 
+ * @returns {Struct.GPGSSnapshotMetadataList}
+ * @ignore
  */
 function __GPGSSnapshotMetadataList_decode(_buffer, _offset)
 {
@@ -1618,9 +1712,9 @@ function __GPGSSnapshotMetadataList_decode(_buffer, _offset)
         self.success = buffer_read(_buffer, buffer_bool);
 
         // field: snapshots, type: struct GPGSSnapshotMetadata[]
-        var _length = buffer_read(_buffer, buffer_u32);
-        self.snapshots = array_create(_length);
-        for (var _i = 0; _i < _length; ++_i)
+        var __length__ = buffer_read(_buffer, buffer_u32);
+        self.snapshots = array_create(__length__);
+        for (var _i = 0; _i < __length__; ++_i)
         {
             self.snapshots[_i] = __GPGSSnapshotMetadata_decode(_buffer, buffer_tell(_buffer));
         }
@@ -1640,7 +1734,7 @@ function __GPGSSnapshotMetadataList_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSSnapshotOpenResult_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -1690,8 +1784,8 @@ function __GPGSSnapshotOpenResult_encode(_inst, _buffer, _offset, _where = _GMFU
  * @func __GPGSSnapshotOpenResult_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSSnapshotOpenResult} 
- * @ignore 
+ * @returns {Struct.GPGSSnapshotOpenResult}
+ * @ignore
  */
 function __GPGSSnapshotOpenResult_decode(_buffer, _offset)
 {
@@ -1739,7 +1833,7 @@ function __GPGSSnapshotOpenResult_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSSavedGamesUIEvent_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -1766,8 +1860,8 @@ function __GPGSSavedGamesUIEvent_encode(_inst, _buffer, _offset, _where = _GMFUN
  * @func __GPGSSavedGamesUIEvent_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSSavedGamesUIEvent} 
- * @ignore 
+ * @returns {Struct.GPGSSavedGamesUIEvent}
+ * @ignore
  */
 function __GPGSSavedGamesUIEvent_decode(_buffer, _offset)
 {
@@ -1797,7 +1891,7 @@ function __GPGSSavedGamesUIEvent_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSLeaderboardScores_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -1814,9 +1908,9 @@ function __GPGSLeaderboardScores_encode(_inst, _buffer, _offset, _where = _GMFUN
 
         // field: scores, type: struct GPGSLeaderboardScore[]
         if (!is_array(self.scores)) show_error($"{_where} :: self.scores expected array", true);
-        var _length = array_length(self.scores);
-        buffer_write(_buffer, buffer_u32, _length);
-        for (var _i = 0; _i < _length; ++_i)
+        var __length__ = array_length(self.scores);
+        buffer_write(_buffer, buffer_u32, __length__);
+        for (var _i = 0; _i < __length__; ++_i)
         {
             if (self.scores[_i].__uid != 627234391) show_error($"{_where} :: self.scores[_i] expected GPGSLeaderboardScore", true);
             __GPGSLeaderboardScore_encode(self.scores[_i], _buffer, buffer_tell(_buffer), _where);
@@ -1834,8 +1928,8 @@ function __GPGSLeaderboardScores_encode(_inst, _buffer, _offset, _where = _GMFUN
  * @func __GPGSLeaderboardScores_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSLeaderboardScores} 
- * @ignore 
+ * @returns {Struct.GPGSLeaderboardScores}
+ * @ignore
  */
 function __GPGSLeaderboardScores_decode(_buffer, _offset)
 {
@@ -1851,9 +1945,9 @@ function __GPGSLeaderboardScores_decode(_buffer, _offset)
         self.leaderboard = __GPGSLeaderboard_decode(_buffer, buffer_tell(_buffer));
 
         // field: scores, type: struct GPGSLeaderboardScore[]
-        var _length = buffer_read(_buffer, buffer_u32);
-        self.scores = array_create(_length);
-        for (var _i = 0; _i < _length; ++_i)
+        var __length__ = buffer_read(_buffer, buffer_u32);
+        self.scores = array_create(__length__);
+        for (var _i = 0; _i < __length__; ++_i)
         {
             self.scores[_i] = __GPGSLeaderboardScore_decode(_buffer, buffer_tell(_buffer));
         }
@@ -1873,7 +1967,7 @@ function __GPGSLeaderboardScores_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
- * @ignore 
+ * @ignore
  */
 function __GPGSSnapshot_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
@@ -1900,8 +1994,8 @@ function __GPGSSnapshot_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
  * @func __GPGSSnapshot_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.GPGSSnapshot} 
- * @ignore 
+ * @returns {Struct.GPGSSnapshot}
+ * @ignore
  */
 function __GPGSSnapshot_decode(_buffer, _offset)
 {
@@ -1937,18 +2031,21 @@ function __GPGSSnapshot_decode(_buffer, _offset)
  */
 function gpgs_sign_in(_callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_sign_in(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_sign_in(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -1956,18 +2053,21 @@ function gpgs_sign_in(_callback)
  */
 function gpgs_is_authenticated(_callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_is_authenticated(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_is_authenticated(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -1977,7 +2077,10 @@ function gpgs_is_authenticated(_callback)
  */
 function gpgs_request_server_side_access(_server_client_id, _force_refresh_token, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -1992,12 +2095,12 @@ function gpgs_request_server_side_access(_server_client_id, _force_refresh_token
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_request_server_side_access(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_request_server_side_access(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2005,18 +2108,21 @@ function gpgs_request_server_side_access(_server_client_id, _force_refresh_token
  */
 function gpgs_player_current(_callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_player_current(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_player_current(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2024,18 +2130,21 @@ function gpgs_player_current(_callback)
  */
 function gpgs_player_current_id(_callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_player_current_id(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_player_current_id(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2044,7 +2153,10 @@ function gpgs_player_current_id(_callback)
  */
 function gpgs_player_stats_load(_force_reload, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2054,12 +2166,156 @@ function gpgs_player_stats_load(_force_reload, _callback)
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_player_stats_load(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_player_stats_load(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
+}
+
+/**
+ * @param {String} _player_id
+ * @param {Bool} _force_reload
+ * @param {Function} _callback
+ */
+function gpgs_player_load(_player_id, _force_reload, _callback)
+{
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
+
+    var __args_buffer = __ext_core_get_args_buffer();
+
+    // param: _player_id, type: String
+    if (!is_string(_player_id)) show_error($"{_GMFUNCTION_} :: _player_id expected string", true);
+    buffer_write(__args_buffer, buffer_u32, string_byte_length(_player_id));
+    buffer_write(__args_buffer, buffer_string, _player_id);
+
+    // param: _force_reload, type: Bool
+    if (!is_bool(_force_reload)) show_error($"{_GMFUNCTION_} :: _force_reload expected bool", true);
+    buffer_write(__args_buffer, buffer_bool, _force_reload);
+
+    // param: _callback, type: Function
+    if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
+    buffer_write(__args_buffer, buffer_u64, _callback_handle);
+
+    var __return_value__ = __gpgs_player_load(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+
+    return __return_value__;
+}
+
+/**
+ * @param {Bool} _force_reload
+ * @param {Real} _max_results
+ * @param {Function} _callback
+ */
+function gpgs_friends_load(_force_reload, _max_results, _callback)
+{
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
+
+    var __args_buffer = __ext_core_get_args_buffer();
+
+    // param: _force_reload, type: Bool
+    if (!is_bool(_force_reload)) show_error($"{_GMFUNCTION_} :: _force_reload expected bool", true);
+    buffer_write(__args_buffer, buffer_bool, _force_reload);
+
+    // param: _max_results, type: Float64
+    if (!is_numeric(_max_results)) show_error($"{_GMFUNCTION_} :: _max_results expected number", true);
+    buffer_write(__args_buffer, buffer_f64, _max_results);
+
+    // param: _callback, type: Function
+    if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
+    buffer_write(__args_buffer, buffer_u64, _callback_handle);
+
+    var __return_value__ = __gpgs_friends_load(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+
+    return __return_value__;
+}
+
+/**
+ * @param {Function} _callback
+ */
+function gpgs_friends_load_more(_callback)
+{
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
+
+    var __args_buffer = __ext_core_get_args_buffer();
+
+    // param: _callback, type: Function
+    if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
+    buffer_write(__args_buffer, buffer_u64, _callback_handle);
+
+    var __return_value__ = __gpgs_friends_load_more(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+
+    return __return_value__;
+}
+
+/**
+ * @param {Bool} _force_reload
+ * @param {Real} _max_results
+ * @param {Function} _callback
+ */
+function gpgs_friends_load_with_consent(_force_reload, _max_results, _callback)
+{
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
+
+    var __args_buffer = __ext_core_get_args_buffer();
+
+    // param: _force_reload, type: Bool
+    if (!is_bool(_force_reload)) show_error($"{_GMFUNCTION_} :: _force_reload expected bool", true);
+    buffer_write(__args_buffer, buffer_bool, _force_reload);
+
+    // param: _max_results, type: Float64
+    if (!is_numeric(_max_results)) show_error($"{_GMFUNCTION_} :: _max_results expected number", true);
+    buffer_write(__args_buffer, buffer_f64, _max_results);
+
+    // param: _callback, type: Function
+    if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
+    buffer_write(__args_buffer, buffer_u64, _callback_handle);
+
+    var __return_value__ = __gpgs_friends_load_with_consent(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+
+    return __return_value__;
+}
+
+// Skipping function gpgs_player_profile_show (no wrapper is required)
+
+
+/**
+ * @param {Function} _callback
+ */
+function gpgs_player_search_show(_callback)
+{
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
+
+    var __args_buffer = __ext_core_get_args_buffer();
+
+    // param: _callback, type: Function
+    if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
+    buffer_write(__args_buffer, buffer_u64, _callback_handle);
+
+    var __return_value__ = __gpgs_player_search_show(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+
+    return __return_value__;
 }
 
 // Skipping function gpgs_achievements_show (no wrapper is required)
@@ -2072,7 +2328,10 @@ function gpgs_player_stats_load(_force_reload, _callback)
  */
 function gpgs_achievements_increment(_achievement_id, _steps, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2087,12 +2346,12 @@ function gpgs_achievements_increment(_achievement_id, _steps, _callback)
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_achievements_increment(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_achievements_increment(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2101,7 +2360,10 @@ function gpgs_achievements_increment(_achievement_id, _steps, _callback)
  */
 function gpgs_achievements_reveal(_achievement_id, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2112,12 +2374,12 @@ function gpgs_achievements_reveal(_achievement_id, _callback)
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_achievements_reveal(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_achievements_reveal(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2127,7 +2389,10 @@ function gpgs_achievements_reveal(_achievement_id, _callback)
  */
 function gpgs_achievements_set_steps(_achievement_id, _steps, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2142,12 +2407,12 @@ function gpgs_achievements_set_steps(_achievement_id, _steps, _callback)
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_achievements_set_steps(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_achievements_set_steps(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2156,7 +2421,10 @@ function gpgs_achievements_set_steps(_achievement_id, _steps, _callback)
  */
 function gpgs_achievements_unlock(_achievement_id, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2167,12 +2435,12 @@ function gpgs_achievements_unlock(_achievement_id, _callback)
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_achievements_unlock(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_achievements_unlock(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2181,7 +2449,10 @@ function gpgs_achievements_unlock(_achievement_id, _callback)
  */
 function gpgs_achievements_get_status(_force_reload, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2191,12 +2462,12 @@ function gpgs_achievements_get_status(_force_reload, _callback)
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_achievements_get_status(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_achievements_get_status(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 // Skipping function gpgs_leaderboard_show_all (no wrapper is required)
@@ -2213,7 +2484,10 @@ function gpgs_achievements_get_status(_force_reload, _callback)
  */
 function gpgs_leaderboard_submit_score(_leaderboard_id, _score, _score_tag, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2233,12 +2507,12 @@ function gpgs_leaderboard_submit_score(_leaderboard_id, _score, _score_tag, _cal
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_leaderboard_submit_score(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_leaderboard_submit_score(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2251,7 +2525,10 @@ function gpgs_leaderboard_submit_score(_leaderboard_id, _score, _score_tag, _cal
  */
 function gpgs_leaderboard_load_player_centered_scores(_leaderboard_id, _span, _leaderboard_collection, _max_results, _force_reload, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2280,12 +2557,12 @@ function gpgs_leaderboard_load_player_centered_scores(_leaderboard_id, _span, _l
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_leaderboard_load_player_centered_scores(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_leaderboard_load_player_centered_scores(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2298,7 +2575,10 @@ function gpgs_leaderboard_load_player_centered_scores(_leaderboard_id, _span, _l
  */
 function gpgs_leaderboard_load_top_scores(_leaderboard_id, _span, _leaderboard_collection, _max_results, _force_reload, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2327,12 +2607,12 @@ function gpgs_leaderboard_load_top_scores(_leaderboard_id, _span, _leaderboard_c
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_leaderboard_load_top_scores(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_leaderboard_load_top_scores(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2341,7 +2621,10 @@ function gpgs_leaderboard_load_top_scores(_leaderboard_id, _span, _leaderboard_c
  */
 function gpgs_uri_to_path(_uri, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2352,12 +2635,12 @@ function gpgs_uri_to_path(_uri, _callback)
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_uri_to_path(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_uri_to_path(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2369,7 +2652,10 @@ function gpgs_uri_to_path(_uri, _callback)
  */
 function gpgs_saved_games_show_saved_games_ui(_title, _button_add, _button_delete, _max_results, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2392,12 +2678,12 @@ function gpgs_saved_games_show_saved_games_ui(_title, _button_add, _button_delet
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_saved_games_show_saved_games_ui(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_saved_games_show_saved_games_ui(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2406,7 +2692,10 @@ function gpgs_saved_games_show_saved_games_ui(_title, _button_add, _button_delet
  */
 function gpgs_saved_games_commit_and_close(_options, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2416,12 +2705,12 @@ function gpgs_saved_games_commit_and_close(_options, _callback)
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_saved_games_commit_and_close(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_saved_games_commit_and_close(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2430,7 +2719,10 @@ function gpgs_saved_games_commit_and_close(_options, _callback)
  */
 function gpgs_saved_games_commit_new(_options, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2440,12 +2732,12 @@ function gpgs_saved_games_commit_new(_options, _callback)
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_saved_games_commit_new(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_saved_games_commit_new(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2454,7 +2746,10 @@ function gpgs_saved_games_commit_new(_options, _callback)
  */
 function gpgs_saved_games_load(_force_reload, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2464,12 +2759,12 @@ function gpgs_saved_games_load(_force_reload, _callback)
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_saved_games_load(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_saved_games_load(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2478,7 +2773,10 @@ function gpgs_saved_games_load(_force_reload, _callback)
  */
 function gpgs_saved_games_open(_name, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2489,12 +2787,12 @@ function gpgs_saved_games_open(_name, _callback)
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_saved_games_open(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_saved_games_open(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2504,7 +2802,10 @@ function gpgs_saved_games_open(_name, _callback)
  */
 function gpgs_saved_games_open_conflict(_name, _conflict_policy, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2520,12 +2821,12 @@ function gpgs_saved_games_open_conflict(_name, _conflict_policy, _callback)
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_saved_games_open_conflict(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_saved_games_open_conflict(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2534,7 +2835,10 @@ function gpgs_saved_games_open_conflict(_name, _conflict_policy, _callback)
  */
 function gpgs_saved_games_delete(_name, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2545,12 +2849,12 @@ function gpgs_saved_games_delete(_name, _callback)
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_saved_games_delete(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_saved_games_delete(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /**
@@ -2560,7 +2864,10 @@ function gpgs_saved_games_delete(_name, _callback)
  */
 function gpgs_saved_games_resolve_conflict(_conflict_id, _use_local, _callback)
 {
-    static __dispatcher = __GMGooglePlayServices_get_dispatcher();
+    var __available__ = __GMGooglePlayServices_is_available();
+    if (!__available__) return;
+
+    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
 
     var __args_buffer = __ext_core_get_args_buffer();
 
@@ -2575,18 +2882,18 @@ function gpgs_saved_games_resolve_conflict(_conflict_id, _use_local, _callback)
 
     // param: _callback, type: Function
     if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher);
+    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var _return_value = __gpgs_saved_games_resolve_conflict(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __return_value__ = __gpgs_saved_games_resolve_conflict(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
 
-    return _return_value;
+    return __return_value__;
 }
 
 /// @ignore
 function __GMGooglePlayServices_get_decoders()
 {
-    static __decoders = [
+    static __decoders__ = [
         __GPGSSavedGameCommitOptions_decode,
         __GPGSAuthResult_decode,
         __GPGSPlayerInfo_decode,
@@ -2597,6 +2904,7 @@ function __GMGooglePlayServices_get_decoders()
         __GPGSSnapshotMetadata_decode,
         __GPGSTaskResult_decode,
         __GPGSPlayer_decode,
+        __GPGSPlayerList_decode,
         __GPGSLeaderboardScore_decode,
         __GPGSAchievementList_decode,
         __GPGSScoreReport_decode,
@@ -2607,11 +2915,17 @@ function __GMGooglePlayServices_get_decoders()
         __GPGSLeaderboardScores_decode,
         __GPGSSnapshot_decode
     ];
-    return __decoders;
+    return __decoders__;
 }
 /// @ignore
 function __GMGooglePlayServices_get_dispatcher()
 {
-    static __dispatcher = new __GMNativeFunctionDispatcher(__GMGooglePlayServices_invocation_handler, __GMGooglePlayServices_get_decoders());
-    return __dispatcher;
+    static __dispatcher__ = new __GMNativeFunctionDispatcher(__GMGooglePlayServices_invocation_handler, __GMGooglePlayServices_get_decoders());
+    return __dispatcher__;
+}
+/// @ignore
+function __GMGooglePlayServices_is_available()
+{
+    static __available__ = extension_exists("GMGooglePlayServices");
+    return __available__;
 }

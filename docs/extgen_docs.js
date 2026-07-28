@@ -1,19 +1,19 @@
 /**
  * @function_partial gpgs_is_available
- * @returns {Bool} 
- * @function_end 
+ * @returns {Bool}
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_sign_in
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_is_authenticated
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
@@ -21,31 +21,73 @@
  * @param {String} server_client_id
  * @param {Bool} force_refresh_token
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_player_current
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_player_current_id
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_player_stats_load
  * @param {Bool} force_reload
  * @param {Function} callback
- * @function_end 
+ * @function_end
+ */
+
+/**
+ * @function_partial gpgs_player_load
+ * @param {String} player_id
+ * @param {Bool} force_reload
+ * @param {Function} callback
+ * @function_end
+ */
+
+/**
+ * @function_partial gpgs_friends_load
+ * @param {Bool} force_reload
+ * @param {Real} max_results
+ * @param {Function} callback
+ * @function_end
+ */
+
+/**
+ * @function_partial gpgs_friends_load_more
+ * @param {Function} callback
+ * @function_end
+ */
+
+/**
+ * @function_partial gpgs_friends_load_with_consent
+ * @param {Bool} force_reload
+ * @param {Real} max_results
+ * @param {Function} callback
+ * @function_end
+ */
+
+/**
+ * @function_partial gpgs_player_profile_show
+ * @param {String} player_id
+ * @function_end
+ */
+
+/**
+ * @function_partial gpgs_player_search_show
+ * @param {Function} callback
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_achievements_show
- * @function_end 
+ * @function_end
  */
 
 /**
@@ -53,14 +95,14 @@
  * @param {String} achievement_id
  * @param {Real} steps
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_achievements_reveal
  * @param {String} achievement_id
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
@@ -68,32 +110,32 @@
  * @param {String} achievement_id
  * @param {Real} steps
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_achievements_unlock
  * @param {String} achievement_id
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_achievements_get_status
  * @param {Bool} force_reload
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_leaderboard_show_all
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_leaderboard_show
  * @param {String} leaderboard_id
- * @function_end 
+ * @function_end
  */
 
 /**
@@ -102,7 +144,7 @@
  * @param {Real} score
  * @param {String} score_tag
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
@@ -113,7 +155,7 @@
  * @param {Real} max_results
  * @param {Bool} force_reload
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
@@ -124,14 +166,14 @@
  * @param {Real} max_results
  * @param {Bool} force_reload
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_uri_to_path
  * @param {String} uri
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
@@ -141,35 +183,35 @@
  * @param {Bool} button_delete
  * @param {Real} max_results
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_saved_games_commit_and_close
  * @param {Struct.GPGSSavedGameCommitOptions} options
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_saved_games_commit_new
  * @param {Struct.GPGSSavedGameCommitOptions} options
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_saved_games_load
  * @param {Bool} force_reload
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_saved_games_open
  * @param {String} name
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
@@ -177,14 +219,14 @@
  * @param {String} name
  * @param {Enum.GPGSSavedGamesConflictPolicy} conflict_policy
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
  * @function_partial gpgs_saved_games_delete
  * @param {String} name
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
@@ -192,7 +234,7 @@
  * @param {String} conflict_id
  * @param {Bool} use_local
  * @param {Function} callback
- * @function_end 
+ * @function_end
  */
 
 /**
@@ -203,7 +245,7 @@
  * @member {Real} played_time_millis
  * @member {Real} progress_value
  * @member {String} cover_image_path
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -211,7 +253,7 @@
  * @member {Bool} success
  * @member {Bool} is_authenticated
  * @member {String} error
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -221,7 +263,7 @@
  * @member {String} title
  * @member {String} icon_image_uri
  * @member {String} hi_res_image_uri
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -238,7 +280,7 @@
  * @member {Real} spend_probability
  * @member {Real} total_spend_next_28_days
  * @member {String} error
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -254,7 +296,7 @@
  * @member {Real} xp_value
  * @member {String} revealed_image_uri
  * @member {String} unlocked_image_uri
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -263,7 +305,7 @@
  * @member {String} formatted_score
  * @member {String} score_tag
  * @member {Bool} new_best
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -271,7 +313,7 @@
  * @member {Real} collection
  * @member {Real} time_span
  * @member {Bool} has_player_info
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -284,7 +326,7 @@
  * @member {Real} progress_value
  * @member {Bool} has_change_pending
  * @member {String} cover_image_uri
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -292,7 +334,7 @@
  * @member {Bool} success
  * @member {String} value
  * @member {String} error
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -300,7 +342,16 @@
  * @member {Bool} success
  * @member {Struct.GPGSPlayerInfo} player
  * @member {String} error
- * @struct_end 
+ * @struct_end
+ */
+
+/**
+ * @struct_partial GPGSPlayerList
+ * @member {Bool} success
+ * @member {Array[Struct.GPGSPlayerInfo]} players
+ * @member {Bool} has_more
+ * @member {String} error
+ * @struct_end
  */
 
 /**
@@ -311,7 +362,7 @@
  * @member {String} score_tag
  * @member {Real} timestamp_millis
  * @member {Struct.GPGSPlayerInfo} score_holder
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -319,7 +370,7 @@
  * @member {Bool} success
  * @member {Array[Struct.GPGSAchievement]} achievements
  * @member {String} error
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -332,7 +383,7 @@
  * @member {Struct.GPGSScoreResult} weekly
  * @member {Struct.GPGSScoreResult} all_time
  * @member {String} error
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -341,7 +392,7 @@
  * @member {String} display_name
  * @member {Real} score_order
  * @member {Array[Struct.GPGSLeaderboardVariant]} variants
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -349,7 +400,7 @@
  * @member {Bool} success
  * @member {Array[Struct.GPGSSnapshotMetadata]} snapshots
  * @member {String} error
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -362,7 +413,7 @@
  * @member {String} data_local
  * @member {Struct.GPGSSnapshotMetadata} snapshot_metadata_remote
  * @member {String} data_remote
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -370,7 +421,7 @@
  * @member {Real} result
  * @member {Struct.GPGSSnapshotMetadata} snapshot_metadata
  * @member {String} error
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -379,7 +430,7 @@
  * @member {Struct.GPGSLeaderboard} leaderboard
  * @member {Array[Struct.GPGSLeaderboardScore]} scores
  * @member {String} error
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -387,7 +438,7 @@
  * @member {Bool} success
  * @member {Struct.GPGSSnapshotOpenResult} result
  * @member {String} error
- * @struct_end 
+ * @struct_end
  */
 
 /**
@@ -395,14 +446,14 @@
  * @member Unlocked
  * @member Revealed
  * @member Hidden
- * @enum_end 
+ * @enum_end
  */
 
 /**
  * @enum_partial GPGSAchievementType
  * @member Standard
  * @member Incremental
- * @enum_end 
+ * @enum_end
  */
 
 /**
@@ -410,21 +461,21 @@
  * @member Daily
  * @member Weekly
  * @member AllTime
- * @enum_end 
+ * @enum_end
  */
 
 /**
  * @enum_partial GPGSLeaderboardCollection
  * @member Public
  * @member Friends
- * @enum_end 
+ * @enum_end
  */
 
 /**
  * @enum_partial GPGSLeaderboardScoreOrder
  * @member SmallerIsBetter
  * @member LargerIsBetter
- * @enum_end 
+ * @enum_end
  */
 
 /**
@@ -434,7 +485,7 @@
  * @member LastKnownGood
  * @member MostRecentlyModified
  * @member HighestProgress
- * @enum_end 
+ * @enum_end
  */
 
 /**
@@ -444,11 +495,11 @@
  * @member CreatedNew
  * @member Deleted
  * @member Error
- * @enum_end 
+ * @enum_end
  */
 
 /**
  * @const_partial macros
- * @const_end 
+ * @const_end
  */
 
