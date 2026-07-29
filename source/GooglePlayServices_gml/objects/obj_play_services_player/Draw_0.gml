@@ -9,7 +9,7 @@ else
     draw_rectangle(x,y,x + 150,y + 150,true);
 }
 
-draw_set_font(Font_YoYo_20);
+draw_set_font(fnt_gm_20);
 draw_set_halign(fa_left);
 draw_set_valign(fa_top);
 

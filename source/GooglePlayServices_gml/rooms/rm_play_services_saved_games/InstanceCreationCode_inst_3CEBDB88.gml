@@ -1,2 +1,2 @@
 
-font = Font_YoYo_30;
+font = fnt_gm_30;
