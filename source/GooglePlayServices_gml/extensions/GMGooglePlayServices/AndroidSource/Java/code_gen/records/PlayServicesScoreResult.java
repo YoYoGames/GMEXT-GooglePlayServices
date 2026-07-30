@@ -11,7 +11,7 @@ public record PlayServicesScoreResult(double raw_score, String formatted_score, 
 {
     public static final int CODEC_ID = 5;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesScoreResultCodec.write(b, this);
     }

@@ -22,7 +22,7 @@ public final class PlayServicesPlayerCodec {
         return new PlayServicesPlayer(success, player, error);
     }
 
-    public static void write(ByteBuffer b, PlayServicesPlayer obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesPlayer obj)
     {
         GMExtWire.writeBool(b, obj.success());
 

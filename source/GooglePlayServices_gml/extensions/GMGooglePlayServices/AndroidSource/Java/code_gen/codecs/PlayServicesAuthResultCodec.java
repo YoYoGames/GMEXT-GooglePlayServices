@@ -22,7 +22,7 @@ public final class PlayServicesAuthResultCodec {
         return new PlayServicesAuthResult(success, is_authenticated, error);
     }
 
-    public static void write(ByteBuffer b, PlayServicesAuthResult obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesAuthResult obj)
     {
         GMExtWire.writeBool(b, obj.success());
 

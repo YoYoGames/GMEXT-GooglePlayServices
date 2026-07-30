@@ -28,7 +28,7 @@ public final class PlayServicesLeaderboardScoreCodec {
         return new PlayServicesLeaderboardScore(display_rank, display_score, raw_score, score_tag, timestamp_millis, score_holder);
     }
 
-    public static void write(ByteBuffer b, PlayServicesLeaderboardScore obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesLeaderboardScore obj)
     {
         GMExtWire.writeString(b, obj.display_rank());
 

@@ -25,7 +25,7 @@ public final class PlayServicesPlayerListCodec {
         return new PlayServicesPlayerList(success, players, has_more, error);
     }
 
-    public static void write(ByteBuffer b, PlayServicesPlayerList obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesPlayerList obj)
     {
         GMExtWire.writeBool(b, obj.success());
 

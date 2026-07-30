@@ -11,7 +11,7 @@ public record PlayServicesAuthResult(boolean success, boolean is_authenticated, 
 {
     public static final int CODEC_ID = 1;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesAuthResultCodec.write(b, this);
     }

@@ -32,7 +32,7 @@ public final class PlayServicesSnapshotMetadataCodec {
         return new PlayServicesSnapshotMetadata(unique_name, description, device_name, last_modified_timestamp, played_time, progress_value, has_change_pending, cover_image_uri);
     }
 
-    public static void write(ByteBuffer b, PlayServicesSnapshotMetadata obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesSnapshotMetadata obj)
     {
         GMExtWire.writeString(b, obj.unique_name());
 

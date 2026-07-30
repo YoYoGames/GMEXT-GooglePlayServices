@@ -22,7 +22,7 @@ public final class PlayServicesSnapshotCodec {
         return new PlayServicesSnapshot(success, result, error);
     }
 
-    public static void write(ByteBuffer b, PlayServicesSnapshot obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesSnapshot obj)
     {
         GMExtWire.writeBool(b, obj.success());
 

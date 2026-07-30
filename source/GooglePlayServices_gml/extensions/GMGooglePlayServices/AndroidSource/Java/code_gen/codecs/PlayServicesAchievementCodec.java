@@ -38,7 +38,7 @@ public final class PlayServicesAchievementCodec {
         return new PlayServicesAchievement(achievement_id, name, description, state, type, current_steps, total_steps, last_updated_timestamp, xp_value, revealed_image_uri, unlocked_image_uri);
     }
 
-    public static void write(ByteBuffer b, PlayServicesAchievement obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesAchievement obj)
     {
         GMExtWire.writeString(b, obj.achievement_id());
 

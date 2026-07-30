@@ -26,7 +26,7 @@ public final class PlayServicesPlayerInfoCodec {
         return new PlayServicesPlayerInfo(player_id, display_name, title, icon_image_uri, hi_res_image_uri);
     }
 
-    public static void write(ByteBuffer b, PlayServicesPlayerInfo obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesPlayerInfo obj)
     {
         GMExtWire.writeString(b, obj.player_id());
 

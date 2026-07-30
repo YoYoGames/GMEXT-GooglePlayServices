@@ -11,7 +11,7 @@ public record PlayServicesSnapshotMetadata(String unique_name, String descriptio
 {
     public static final int CODEC_ID = 7;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesSnapshotMetadataCodec.write(b, this);
     }

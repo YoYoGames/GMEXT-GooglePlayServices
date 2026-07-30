@@ -22,7 +22,7 @@ public final class PlayServicesLeaderboardVariantCodec {
         return new PlayServicesLeaderboardVariant(collection, time_span, has_player_info);
     }
 
-    public static void write(ByteBuffer b, PlayServicesLeaderboardVariant obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesLeaderboardVariant obj)
     {
         GMExtWire.writeF64(b, obj.collection());
 

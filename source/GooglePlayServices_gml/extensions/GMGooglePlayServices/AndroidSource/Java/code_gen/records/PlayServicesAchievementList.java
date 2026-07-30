@@ -12,7 +12,7 @@ public record PlayServicesAchievementList(boolean success, java.util.List<PlaySe
 {
     public static final int CODEC_ID = 12;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesAchievementListCodec.write(b, this);
     }

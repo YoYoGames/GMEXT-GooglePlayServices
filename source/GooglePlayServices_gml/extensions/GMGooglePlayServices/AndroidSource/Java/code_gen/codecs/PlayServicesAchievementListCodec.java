@@ -23,7 +23,7 @@ public final class PlayServicesAchievementListCodec {
         return new PlayServicesAchievementList(success, achievements, error);
     }
 
-    public static void write(ByteBuffer b, PlayServicesAchievementList obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesAchievementList obj)
     {
         GMExtWire.writeBool(b, obj.success());
 

@@ -22,7 +22,7 @@ public final class PlayServicesSavedGamesUIEventCodec {
         return new PlayServicesSavedGamesUIEvent(result, snapshot_metadata, error);
     }
 
-    public static void write(ByteBuffer b, PlayServicesSavedGamesUIEvent obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesSavedGamesUIEvent obj)
     {
         GMExtWire.writeF64(b, obj.result());
 

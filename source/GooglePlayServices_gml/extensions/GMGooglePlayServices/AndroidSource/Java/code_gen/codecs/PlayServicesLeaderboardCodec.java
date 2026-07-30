@@ -25,7 +25,7 @@ public final class PlayServicesLeaderboardCodec {
         return new PlayServicesLeaderboard(leaderboard_id, display_name, score_order, variants);
     }
 
-    public static void write(ByteBuffer b, PlayServicesLeaderboard obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesLeaderboard obj)
     {
         GMExtWire.writeString(b, obj.leaderboard_id());
 

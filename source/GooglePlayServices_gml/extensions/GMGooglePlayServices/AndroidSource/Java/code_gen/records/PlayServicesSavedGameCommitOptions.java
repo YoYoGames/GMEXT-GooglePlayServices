@@ -11,7 +11,7 @@ public record PlayServicesSavedGameCommitOptions(String name, String data, Strin
 {
     public static final int CODEC_ID = 0;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesSavedGameCommitOptionsCodec.write(b, this);
     }

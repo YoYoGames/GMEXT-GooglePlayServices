@@ -12,7 +12,7 @@ public record PlayServicesLeaderboard(String leaderboard_id, String display_name
 {
     public static final int CODEC_ID = 14;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesLeaderboardCodec.write(b, this);
     }

@@ -32,7 +32,7 @@ public final class PlayServicesScoreReportCodec {
         return new PlayServicesScoreReport(success, leaderboard_id, score, score_tag, daily, weekly, all_time, error);
     }
 
-    public static void write(ByteBuffer b, PlayServicesScoreReport obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesScoreReport obj)
     {
         GMExtWire.writeBool(b, obj.success());
 

@@ -11,7 +11,7 @@ public record PlayServicesAchievement(String achievement_id, String name, String
 {
     public static final int CODEC_ID = 4;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesAchievementCodec.write(b, this);
     }

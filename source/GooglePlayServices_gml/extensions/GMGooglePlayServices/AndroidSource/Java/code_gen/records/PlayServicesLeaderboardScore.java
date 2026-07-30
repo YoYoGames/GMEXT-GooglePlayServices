@@ -11,7 +11,7 @@ public record PlayServicesLeaderboardScore(String display_rank, String display_s
 {
     public static final int CODEC_ID = 11;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesLeaderboardScoreCodec.write(b, this);
     }

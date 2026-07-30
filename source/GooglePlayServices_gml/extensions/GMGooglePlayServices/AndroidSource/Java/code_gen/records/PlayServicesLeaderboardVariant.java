@@ -11,7 +11,7 @@ public record PlayServicesLeaderboardVariant(double collection, double time_span
 {
     public static final int CODEC_ID = 6;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesLeaderboardVariantCodec.write(b, this);
     }

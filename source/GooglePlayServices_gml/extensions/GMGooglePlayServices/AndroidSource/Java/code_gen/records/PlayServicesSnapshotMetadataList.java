@@ -12,7 +12,7 @@ public record PlayServicesSnapshotMetadataList(boolean success, java.util.List<P
 {
     public static final int CODEC_ID = 15;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesSnapshotMetadataListCodec.write(b, this);
     }

@@ -11,7 +11,7 @@ public record PlayServicesTaskResult(boolean success, String value, String error
 {
     public static final int CODEC_ID = 8;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesTaskResultCodec.write(b, this);
     }

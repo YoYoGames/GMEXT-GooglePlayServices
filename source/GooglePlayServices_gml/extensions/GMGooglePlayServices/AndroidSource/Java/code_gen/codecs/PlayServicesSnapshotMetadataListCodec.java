@@ -23,7 +23,7 @@ public final class PlayServicesSnapshotMetadataListCodec {
         return new PlayServicesSnapshotMetadataList(success, snapshots, error);
     }
 
-    public static void write(ByteBuffer b, PlayServicesSnapshotMetadataList obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesSnapshotMetadataList obj)
     {
         GMExtWire.writeBool(b, obj.success());
 

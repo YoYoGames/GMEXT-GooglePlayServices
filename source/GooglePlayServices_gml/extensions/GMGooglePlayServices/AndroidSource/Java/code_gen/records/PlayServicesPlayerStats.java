@@ -11,7 +11,7 @@ public record PlayServicesPlayerStats(boolean success, double average_session_le
 {
     public static final int CODEC_ID = 3;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesPlayerStatsCodec.write(b, this);
     }

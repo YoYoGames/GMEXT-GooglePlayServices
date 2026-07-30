@@ -11,7 +11,7 @@ public record PlayServicesSnapshotOpenResult(boolean is_conflict, PlayServicesSn
 {
     public static final int CODEC_ID = 16;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesSnapshotOpenResultCodec.write(b, this);
     }

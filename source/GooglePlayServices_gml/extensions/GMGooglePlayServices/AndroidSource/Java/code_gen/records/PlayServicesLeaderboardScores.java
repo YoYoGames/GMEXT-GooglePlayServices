@@ -12,7 +12,7 @@ public record PlayServicesLeaderboardScores(boolean success, PlayServicesLeaderb
 {
     public static final int CODEC_ID = 18;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesLeaderboardScoresCodec.write(b, this);
     }

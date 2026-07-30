@@ -11,7 +11,7 @@ public record PlayServicesPlayer(boolean success, PlayServicesPlayerInfo player,
 {
     public static final int CODEC_ID = 9;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesPlayerCodec.write(b, this);
     }

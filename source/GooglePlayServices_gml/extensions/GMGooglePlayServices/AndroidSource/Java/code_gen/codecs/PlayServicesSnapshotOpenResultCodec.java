@@ -32,7 +32,7 @@ public final class PlayServicesSnapshotOpenResultCodec {
         return new PlayServicesSnapshotOpenResult(is_conflict, snapshot_metadata, data, conflict_id, snapshot_metadata_local, data_local, snapshot_metadata_remote, data_remote);
     }
 
-    public static void write(ByteBuffer b, PlayServicesSnapshotOpenResult obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesSnapshotOpenResult obj)
     {
         GMExtWire.writeBool(b, obj.is_conflict());
 

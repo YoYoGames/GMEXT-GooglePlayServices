@@ -25,7 +25,7 @@ public final class PlayServicesLeaderboardScoresCodec {
         return new PlayServicesLeaderboardScores(success, leaderboard, scores, error);
     }
 
-    public static void write(ByteBuffer b, PlayServicesLeaderboardScores obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesLeaderboardScores obj)
     {
         GMExtWire.writeBool(b, obj.success());
 

@@ -11,7 +11,7 @@ public record PlayServicesScoreReport(boolean success, String leaderboard_id, do
 {
     public static final int CODEC_ID = 13;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesScoreReportCodec.write(b, this);
     }

@@ -40,7 +40,7 @@ public final class PlayServicesPlayerStatsCodec {
         return new PlayServicesPlayerStats(success, average_session_length, days_since_last_played, number_of_purchases, number_of_sessions, session_percentile, spend_percentile, churn_probability, high_spender_probability, spend_probability, total_spend_next_28_days, error);
     }
 
-    public static void write(ByteBuffer b, PlayServicesPlayerStats obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesPlayerStats obj)
     {
         GMExtWire.writeBool(b, obj.success());
 

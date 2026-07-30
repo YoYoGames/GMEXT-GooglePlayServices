@@ -28,7 +28,7 @@ public final class PlayServicesSavedGameCommitOptionsCodec {
         return new PlayServicesSavedGameCommitOptions(name, data, desc, played_time_millis, progress_value, cover_image_path);
     }
 
-    public static void write(ByteBuffer b, PlayServicesSavedGameCommitOptions obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesSavedGameCommitOptions obj)
     {
         GMExtWire.writeString(b, obj.name());
 

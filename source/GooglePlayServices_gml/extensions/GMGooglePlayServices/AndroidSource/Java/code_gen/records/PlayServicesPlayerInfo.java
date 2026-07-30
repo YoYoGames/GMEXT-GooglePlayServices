@@ -11,7 +11,7 @@ public record PlayServicesPlayerInfo(String player_id, String display_name, Stri
 {
     public static final int CODEC_ID = 2;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         PlayServicesPlayerInfoCodec.write(b, this);
     }

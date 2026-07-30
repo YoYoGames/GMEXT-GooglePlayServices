@@ -24,7 +24,7 @@ public final class PlayServicesScoreResultCodec {
         return new PlayServicesScoreResult(raw_score, formatted_score, score_tag, new_best);
     }
 
-    public static void write(ByteBuffer b, PlayServicesScoreResult obj)
+    public static void write(GMExtWire.IByteWriter b, PlayServicesScoreResult obj)
     {
         GMExtWire.writeF64(b, obj.raw_score());
 
