@@ -675,6 +675,11 @@ public class YYGooglePlayServices extends RunnerSocial {
 			return asyncIndex;
 		}
 		
+		final Snapshot snapshot = snapshotHashMap.get(name);
+		if (snapshot == null){
+			Log.i("yoyo","No snapshot found. Will not commit.");
+			return -1;
+		}
 		if (failIfNotAuthenticated("__GooglePlayServices_SavedGames_CommitAndClose", asyncIndex))
 			return asyncIndex;
 
