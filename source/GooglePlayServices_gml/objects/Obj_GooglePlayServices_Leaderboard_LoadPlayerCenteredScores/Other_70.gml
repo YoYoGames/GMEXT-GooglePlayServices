@@ -1,6 +1,9 @@
 
 if(async_load[?"type"] == GOOGLE_PLAY_EV_LEADERBOARDS_LOAD_CENTERED_SCORES)
 {
+	if(!is_string(async_load[?"data"]))
+		return
+	
 	var array = json_parse(async_load[?"data"])
 	for(var a = 0 ; a < array_length(array) ; a ++)
 	{
