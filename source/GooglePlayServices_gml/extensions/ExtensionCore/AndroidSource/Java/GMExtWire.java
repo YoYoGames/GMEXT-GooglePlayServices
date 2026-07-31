@@ -58,7 +58,7 @@ public class GMExtWire
         NULL, // encoded as ValueType.Undefined
         BOOL, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE,
         STRING,
-        ARRAY, OBJECT, // �Struct� => object
+        ARRAY, OBJECT, // "Struct" => object
         TYPED_STRUCT, TYPED_ARRAY, BUFFER, POINTER; // extra buckets (optional)
 
         public static GMKind fromTag(byte t) {
@@ -75,7 +75,7 @@ public class GMExtWire
                     return GMKind.INT;
                 case 12: /* UInt64 */
                     return GMKind.LONG;
-                case 7: /* Float16 � we�ll up-cast */
+                case 7: /* Float16 - we'll up-cast */
                 case 8: /* Float */
                     return GMKind.FLOAT;
                 case 9: /* Double */
@@ -641,7 +641,7 @@ public class GMExtWire
             return cast(payload);
         }
 
-        /** Generic optional accessor � idiomatic Java 8 style */
+        /** Generic optional accessor - idiomatic Java 8 style */
         @SuppressWarnings("unchecked")
         public <T> Optional<T> getIf(Class<T> type) {
             return type.isInstance(payload) ? Optional.of((T) payload) : Optional.empty();
@@ -719,7 +719,7 @@ public class GMExtWire
             this.uid = id;
             this.dispatcher = dispatcher;
 
-            // Register a cleanup action that sends Release when this GMFunction is GC�d
+            // Register a cleanup action that sends Release when this GMFunction is GC'd
             this.cleanable = CLEANER.register(this, new GMFunctionReleaser(id, dispatcher));
         }
 

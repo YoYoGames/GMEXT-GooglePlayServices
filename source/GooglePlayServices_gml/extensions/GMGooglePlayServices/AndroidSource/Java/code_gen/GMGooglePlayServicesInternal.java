@@ -171,15 +171,21 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         return 0;
     }
 
-    public double __EXT_NATIVE__play_services_player_search_show(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    public double __EXT_NATIVE__play_services_player_search_show(ByteBuffer __arg_buffer, double __arg_buffer_length, ByteBuffer __ret_buffer, double __ret_buffer_length)
     {
         GMExtWire.order(__arg_buffer);
 
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        boolean __result = play_services_player_search_show(callback);
-        return __result ? 1.0 : 0.0;
+        PlayServicesError __result = play_services_player_search_show(callback);
+
+        GMExtWire.order(__ret_buffer);
+        GMExtWire.IByteWriter __ret_buffer_writer = new GMExtWire.GMBufferWriter(__ret_buffer);
+        // return: __result, type: enum PlayServicesError
+        GMExtWire.writeI32(__ret_buffer_writer, __result.value());
+
+        return 0;
     }
 
     public double __EXT_NATIVE__play_services_achievements_show()
@@ -385,7 +391,7 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         return 0;
     }
 
-    public double __EXT_NATIVE__play_services_saved_games_commit_and_close(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    public double __EXT_NATIVE__play_services_saved_games_commit_and_close(ByteBuffer __arg_buffer, double __arg_buffer_length, ByteBuffer __ret_buffer, double __ret_buffer_length)
     {
         GMExtWire.order(__arg_buffer);
 
@@ -395,11 +401,17 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        play_services_saved_games_commit_and_close(options, callback);
+        PlayServicesError __result = play_services_saved_games_commit_and_close(options, callback);
+
+        GMExtWire.order(__ret_buffer);
+        GMExtWire.IByteWriter __ret_buffer_writer = new GMExtWire.GMBufferWriter(__ret_buffer);
+        // return: __result, type: enum PlayServicesError
+        GMExtWire.writeI32(__ret_buffer_writer, __result.value());
+
         return 0;
     }
 
-    public double __EXT_NATIVE__play_services_saved_games_commit_new(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    public double __EXT_NATIVE__play_services_saved_games_commit_new(ByteBuffer __arg_buffer, double __arg_buffer_length, ByteBuffer __ret_buffer, double __ret_buffer_length)
     {
         GMExtWire.order(__arg_buffer);
 
@@ -409,7 +421,13 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        play_services_saved_games_commit_new(options, callback);
+        PlayServicesError __result = play_services_saved_games_commit_new(options, callback);
+
+        GMExtWire.order(__ret_buffer);
+        GMExtWire.IByteWriter __ret_buffer_writer = new GMExtWire.GMBufferWriter(__ret_buffer);
+        // return: __result, type: enum PlayServicesError
+        GMExtWire.writeI32(__ret_buffer_writer, __result.value());
+
         return 0;
     }
 
@@ -472,7 +490,7 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         return 0;
     }
 
-    public double __EXT_NATIVE__play_services_saved_games_resolve_conflict(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    public double __EXT_NATIVE__play_services_saved_games_resolve_conflict(ByteBuffer __arg_buffer, double __arg_buffer_length, ByteBuffer __ret_buffer, double __ret_buffer_length)
     {
         GMExtWire.order(__arg_buffer);
 
@@ -485,7 +503,13 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        play_services_saved_games_resolve_conflict(conflict_id, use_local, callback);
+        PlayServicesError __result = play_services_saved_games_resolve_conflict(conflict_id, use_local, callback);
+
+        GMExtWire.order(__ret_buffer);
+        GMExtWire.IByteWriter __ret_buffer_writer = new GMExtWire.GMBufferWriter(__ret_buffer);
+        // return: __result, type: enum PlayServicesError
+        GMExtWire.writeI32(__ret_buffer_writer, __result.value());
+
         return 0;
     }
 

@@ -6,14 +6,13 @@ import ${YYAndroidPackageName}.GMExtWire;
 import ${YYAndroidPackageName}.codecs.*;
 
 import java.nio.ByteBuffer;
-import java.util.List;
 
-public record PlayServicesPlayerList(boolean success, java.util.List<PlayServicesPlayerInfo> players, boolean has_more, String error) implements GMExtWire.ITypedStruct
+public record PlayServicesResult(boolean success, String error) implements GMExtWire.ITypedStruct
 {
-    public static final int CODEC_ID = 10;
+    public static final int CODEC_ID = 9;
     @Override
     public void encode(GMExtWire.IByteWriter b)
     {
-        PlayServicesPlayerListCodec.write(b, this);
+        PlayServicesResultCodec.write(b, this);
     }
 }

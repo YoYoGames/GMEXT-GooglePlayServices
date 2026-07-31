@@ -40,8 +40,8 @@ function play_services_friends_load_more(page_size: real, callback: func): bool;
 function play_services_friends_load_with_consent(force_reload: bool, max_results: real, callback: func): bool;
 [global, bind = typed_gml]
 function play_services_player_profile_show(player_id: string): unit;
-[global, bind = typed_gml]
-function play_services_player_search_show(callback: func): bool;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_player_search_show(callback: func): gmval;
 
 // Achievements
 [global, bind = typed_gml]
@@ -76,10 +76,10 @@ function play_services_uri_to_path(uri: string, callback: func): unit;
 // Saved Games
 [global, bind = typed_gml]
 function play_services_saved_games_show_saved_games_ui(title: string, button_add: bool, button_delete: bool, max_results: real, callback: func): unit;
-[global, bind = typed_gml]
-function play_services_saved_games_commit_and_close([type_hint=`PlayServicesSavedGameCommitOptions`] options: gmval, callback: func): unit;
-[global, bind = typed_gml]
-function play_services_saved_games_commit_new([type_hint=`PlayServicesSavedGameCommitOptions`] options: gmval, callback: func): unit;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_saved_games_commit_and_close([type_hint=`PlayServicesSavedGameCommitOptions`] options: gmval, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_saved_games_commit_new([type_hint=`PlayServicesSavedGameCommitOptions`] options: gmval, callback: func): gmval;
 [global, bind = typed_gml]
 function play_services_saved_games_load(force_reload: bool, callback: func): unit;
 [global, bind = typed_gml]
@@ -88,8 +88,8 @@ function play_services_saved_games_open(name: string, callback: func): unit;
 function play_services_saved_games_open_conflict(name: string, [type_hint=`PlayServicesSavedGamesConflictPolicy`] conflict_policy, callback: func): unit;
 [global, bind = typed_gml]
 function play_services_saved_games_delete(name: string, callback: func): unit;
-[global, bind = typed_gml]
-function play_services_saved_games_resolve_conflict(conflict_id: string, use_local: bool, callback: func): unit;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_saved_games_resolve_conflict(conflict_id: string, use_local: bool, callback: func): gmval;
 
 // Input class used by saved-game commit functions.
 [global]
@@ -144,15 +144,6 @@ class `[[PlayServicesPlayerStats]]` prototype Object
     [field] property high_spender_probability : real { get; set; }
     [field] property spend_probability : real { get; set; }
     [field] property total_spend_next_28_days : real { get; set; }
-    [field] property error : string { get; set; }
-}
-
-[global, bind = typed_gml]
-class `[[PlayServicesPlayerList]]` prototype Object
-{
-    [field] property success : bool { get; set; }
-    [field, type_hint=`PlayServicesPlayerInfo[]`] property players : gmval { get; set; }
-    [field] property has_more : bool { get; set; }
     [field] property error : string { get; set; }
 }
 
@@ -297,6 +288,16 @@ class `[[PlayServicesTaskResult]]` prototype Object
     [field] property error : string { get; set; }
 }
 
+// Envelope for callbacks that report their real data through a separate
+// argument instead of a value/data string field - see the async callback
+// signatures on the saved-games commit/resolve and player-search functions.
+[global, bind = typed_gml]
+class `[[PlayServicesResult]]` prototype Object
+{
+    [field] property success : bool { get; set; }
+    [field] property error : string { get; set; }
+}
+
 // Enums
 [global, bind = typed_gml]
 enum PlayServicesAchievementState:int32 { Unlocked = 0, Revealed = 1, Hidden = 2, }
@@ -312,3 +313,10 @@ enum PlayServicesLeaderboardScoreOrder:int32 { SmallerIsBetter = 0, LargerIsBett
 enum PlayServicesSavedGamesConflictPolicy:int32 { Manual = -1, LongestPlaytime = 1, LastKnownGood = 2, MostRecentlyModified = 3, HighestProgress = 4, }
 [global, bind = typed_gml]
 enum PlayServicesSavedGamesUIResult:int32 { Cancelled = 0, Selected = 1, CreatedNew = 2, Deleted = 3, Error = -1, }
+
+// Synchronous pre-flight return code - reported before the underlying GMS call
+// is ever attempted. Ok means the call was accepted and the callback will fire
+// once the real async result is known; anything else means the callback never
+// fires at all for this invocation.
+[global, bind = typed_gml]
+enum PlayServicesError:int32 { Ok = 0, NotAuthenticated = -1, ActivityNull = -2, InvalidArgument = -3, }

@@ -1,4 +1,4 @@
-source/GooglePlayServices_gml/options/extensions/*
+source/GooglePlayServices_gml/options/
 output/
 
 source/GooglePlayServices_gml/extensions/googleplayservices/scriptUtils.bat.bak

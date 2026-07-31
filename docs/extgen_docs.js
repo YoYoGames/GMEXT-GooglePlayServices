@@ -90,7 +90,7 @@
 /**
  * @function_partial play_services_player_search_show
  * @param {Function} callback
- * @returns {Bool}
+ * @returns {Enum.PlayServicesError}
  * @function_end
  */
 
@@ -199,6 +199,7 @@
  * @function_partial play_services_saved_games_commit_and_close
  * @param {Struct.PlayServicesSavedGameCommitOptions} options
  * @param {Function} callback
+ * @returns {Enum.PlayServicesError}
  * @function_end
  */
 
@@ -206,6 +207,7 @@
  * @function_partial play_services_saved_games_commit_new
  * @param {Struct.PlayServicesSavedGameCommitOptions} options
  * @param {Function} callback
+ * @returns {Enum.PlayServicesError}
  * @function_end
  */
 
@@ -243,6 +245,7 @@
  * @param {String} conflict_id
  * @param {Bool} use_local
  * @param {Function} callback
+ * @returns {Enum.PlayServicesError}
  * @function_end
  */
 
@@ -347,18 +350,16 @@
  */
 
 /**
- * @struct_partial PlayServicesPlayer
+ * @struct_partial PlayServicesResult
  * @member {Bool} success
- * @member {Struct.PlayServicesPlayerInfo} player
  * @member {String} error
  * @struct_end
  */
 
 /**
- * @struct_partial PlayServicesPlayerList
+ * @struct_partial PlayServicesPlayer
  * @member {Bool} success
- * @member {Array[Struct.PlayServicesPlayerInfo]} players
- * @member {Bool} has_more
+ * @member {Struct.PlayServicesPlayerInfo} player
  * @member {String} error
  * @struct_end
  */
@@ -504,6 +505,15 @@
  * @member CreatedNew
  * @member Deleted
  * @member Error
+ * @enum_end
+ */
+
+/**
+ * @enum_partial PlayServicesError
+ * @member Ok
+ * @member NotAuthenticated
+ * @member ActivityNull
+ * @member InvalidArgument
  * @enum_end
  */
 

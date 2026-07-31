@@ -64,6 +64,14 @@ enum PlayServicesSavedGamesUIResult
     Error = -1
 }
 
+enum PlayServicesError
+{
+    Ok = 0,
+    NotAuthenticated = -1,
+    ActivityNull = -2,
+    InvalidArgument = -3
+}
+
 // #####################################################################
 // # Constructors
 // #####################################################################
@@ -250,6 +258,22 @@ function PlayServicesTaskResult() constructor
 }
 
 /**
+ * @returns {Struct.PlayServicesResult}
+ */
+function PlayServicesResult() constructor
+{
+    /**
+     * Internally generated hash for quick validation
+     * @ignore
+     */
+    static __uid = 3714327798;
+
+    self.success = undefined;
+    self.error = undefined;
+
+}
+
+/**
  * @returns {Struct.PlayServicesPlayer}
  */
 function PlayServicesPlayer() constructor
@@ -262,24 +286,6 @@ function PlayServicesPlayer() constructor
 
     self.success = undefined;
     self.player = undefined;
-    self.error = undefined;
-
-}
-
-/**
- * @returns {Struct.PlayServicesPlayerList}
- */
-function PlayServicesPlayerList() constructor
-{
-    /**
-     * Internally generated hash for quick validation
-     * @ignore
-     */
-    static __uid = 3211022202;
-
-    self.success = undefined;
-    self.players = undefined;
-    self.has_more = undefined;
     self.error = undefined;
 
 }
@@ -1205,6 +1211,57 @@ function __PlayServicesTaskResult_decode(_buffer, _offset)
 }
 
 /**
+ * @func __PlayServicesResult_encode(_inst, _buffer, _offset, _where)
+ * @param {Struct.PlayServicesResult} _inst
+ * @param {Id.Buffer} _buffer
+ * @param {Real} _offset
+ * @param {String} _where
+ * @ignore
+ */
+function __PlayServicesResult_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
+{
+    buffer_seek(_buffer, buffer_seek_start, _offset);
+    with (_inst)
+    {
+        // field: success, type: Bool
+        if (!is_bool(self.success)) show_error($"{_where} :: self.success expected bool", true);
+        buffer_write(_buffer, buffer_bool, self.success);
+
+        // field: error, type: String
+        if (!is_string(self.error)) show_error($"{_where} :: self.error expected string", true);
+        buffer_write(_buffer, buffer_u32, string_byte_length(self.error));
+        buffer_write(_buffer, buffer_string, self.error);
+
+    }
+}
+
+/**
+ * @func __PlayServicesResult_decode(_buffer, _offset)
+ * @param {Id.Buffer} _buffer
+ * @param {Real} _offset
+ * @returns {Struct.PlayServicesResult}
+ * @ignore
+ */
+function __PlayServicesResult_decode(_buffer, _offset)
+{
+    buffer_seek(_buffer, buffer_seek_start, _offset);
+
+    _inst = new PlayServicesResult();
+    with (_inst)
+    {
+        // field: success, type: Bool
+        self.success = buffer_read(_buffer, buffer_bool);
+
+        // field: error, type: String
+        buffer_read(_buffer, buffer_u32);
+        self.error = buffer_read(_buffer, buffer_string);
+
+    }
+
+    return _inst;
+}
+
+/**
  * @func __PlayServicesPlayer_encode(_inst, _buffer, _offset, _where)
  * @param {Struct.PlayServicesPlayer} _inst
  * @param {Id.Buffer} _buffer
@@ -1252,82 +1309,6 @@ function __PlayServicesPlayer_decode(_buffer, _offset)
 
         // field: player, type: struct PlayServicesPlayerInfo
         self.player = __PlayServicesPlayerInfo_decode(_buffer, buffer_tell(_buffer));
-
-        // field: error, type: String
-        buffer_read(_buffer, buffer_u32);
-        self.error = buffer_read(_buffer, buffer_string);
-
-    }
-
-    return _inst;
-}
-
-/**
- * @func __PlayServicesPlayerList_encode(_inst, _buffer, _offset, _where)
- * @param {Struct.PlayServicesPlayerList} _inst
- * @param {Id.Buffer} _buffer
- * @param {Real} _offset
- * @param {String} _where
- * @ignore
- */
-function __PlayServicesPlayerList_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
-{
-    buffer_seek(_buffer, buffer_seek_start, _offset);
-    with (_inst)
-    {
-        // field: success, type: Bool
-        if (!is_bool(self.success)) show_error($"{_where} :: self.success expected bool", true);
-        buffer_write(_buffer, buffer_bool, self.success);
-
-        // field: players, type: struct PlayServicesPlayerInfo[]
-        if (!is_array(self.players)) show_error($"{_where} :: self.players expected array", true);
-        var __length__ = array_length(self.players);
-        buffer_write(_buffer, buffer_u32, __length__);
-        for (var _i = 0; _i < __length__; ++_i)
-        {
-            if (self.players[_i].__uid != 1540281070) show_error($"{_where} :: self.players[_i] expected PlayServicesPlayerInfo", true);
-            __PlayServicesPlayerInfo_encode(self.players[_i], _buffer, buffer_tell(_buffer), _where);
-        }
-
-        // field: has_more, type: Bool
-        if (!is_bool(self.has_more)) show_error($"{_where} :: self.has_more expected bool", true);
-        buffer_write(_buffer, buffer_bool, self.has_more);
-
-        // field: error, type: String
-        if (!is_string(self.error)) show_error($"{_where} :: self.error expected string", true);
-        buffer_write(_buffer, buffer_u32, string_byte_length(self.error));
-        buffer_write(_buffer, buffer_string, self.error);
-
-    }
-}
-
-/**
- * @func __PlayServicesPlayerList_decode(_buffer, _offset)
- * @param {Id.Buffer} _buffer
- * @param {Real} _offset
- * @returns {Struct.PlayServicesPlayerList}
- * @ignore
- */
-function __PlayServicesPlayerList_decode(_buffer, _offset)
-{
-    buffer_seek(_buffer, buffer_seek_start, _offset);
-
-    _inst = new PlayServicesPlayerList();
-    with (_inst)
-    {
-        // field: success, type: Bool
-        self.success = buffer_read(_buffer, buffer_bool);
-
-        // field: players, type: struct PlayServicesPlayerInfo[]
-        var __length__ = buffer_read(_buffer, buffer_u32);
-        self.players = array_create(__length__);
-        for (var _i = 0; _i < __length__; ++_i)
-        {
-            self.players[_i] = __PlayServicesPlayerInfo_decode(_buffer, buffer_tell(_buffer));
-        }
-
-        // field: has_more, type: Bool
-        self.has_more = buffer_read(_buffer, buffer_bool);
 
         // field: error, type: String
         buffer_read(_buffer, buffer_u32);
@@ -2316,7 +2297,7 @@ function play_services_friends_load_with_consent(_force_reload, _max_results, _c
 
 /**
  * @param {Function} _callback
- * @returns {Bool}
+ * @returns {Enum.PlayServicesError}
  */
 function play_services_player_search_show(_callback)
 {
@@ -2332,9 +2313,13 @@ function play_services_player_search_show(_callback)
     var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var __return_value__ = __play_services_player_search_show(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __ret_buffer = __ext_core_get_ret_buffer();
 
-    return __return_value__;
+    var __return_value__ = __play_services_player_search_show(buffer_get_address(__args_buffer), buffer_tell(__args_buffer), buffer_get_address(__ret_buffer), buffer_get_size(__ret_buffer));
+
+    var __result__ = undefined;
+    __result__ = buffer_read(__ret_buffer, buffer_s32);
+    return __result__;
 }
 
 // Skipping function play_services_achievements_show (no wrapper is required)
@@ -2708,6 +2693,7 @@ function play_services_saved_games_show_saved_games_ui(_title, _button_add, _but
 /**
  * @param {Struct.PlayServicesSavedGameCommitOptions} _options
  * @param {Function} _callback
+ * @returns {Enum.PlayServicesError}
  */
 function play_services_saved_games_commit_and_close(_options, _callback)
 {
@@ -2727,14 +2713,19 @@ function play_services_saved_games_commit_and_close(_options, _callback)
     var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var __return_value__ = __play_services_saved_games_commit_and_close(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __ret_buffer = __ext_core_get_ret_buffer();
 
-    return __return_value__;
+    var __return_value__ = __play_services_saved_games_commit_and_close(buffer_get_address(__args_buffer), buffer_tell(__args_buffer), buffer_get_address(__ret_buffer), buffer_get_size(__ret_buffer));
+
+    var __result__ = undefined;
+    __result__ = buffer_read(__ret_buffer, buffer_s32);
+    return __result__;
 }
 
 /**
  * @param {Struct.PlayServicesSavedGameCommitOptions} _options
  * @param {Function} _callback
+ * @returns {Enum.PlayServicesError}
  */
 function play_services_saved_games_commit_new(_options, _callback)
 {
@@ -2754,9 +2745,13 @@ function play_services_saved_games_commit_new(_options, _callback)
     var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var __return_value__ = __play_services_saved_games_commit_new(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __ret_buffer = __ext_core_get_ret_buffer();
 
-    return __return_value__;
+    var __return_value__ = __play_services_saved_games_commit_new(buffer_get_address(__args_buffer), buffer_tell(__args_buffer), buffer_get_address(__ret_buffer), buffer_get_size(__ret_buffer));
+
+    var __result__ = undefined;
+    __result__ = buffer_read(__ret_buffer, buffer_s32);
+    return __result__;
 }
 
 /**
@@ -2880,6 +2875,7 @@ function play_services_saved_games_delete(_name, _callback)
  * @param {String} _conflict_id
  * @param {Bool} _use_local
  * @param {Function} _callback
+ * @returns {Enum.PlayServicesError}
  */
 function play_services_saved_games_resolve_conflict(_conflict_id, _use_local, _callback)
 {
@@ -2904,9 +2900,13 @@ function play_services_saved_games_resolve_conflict(_conflict_id, _use_local, _c
     var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer, buffer_u64, _callback_handle);
 
-    var __return_value__ = __play_services_saved_games_resolve_conflict(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+    var __ret_buffer = __ext_core_get_ret_buffer();
 
-    return __return_value__;
+    var __return_value__ = __play_services_saved_games_resolve_conflict(buffer_get_address(__args_buffer), buffer_tell(__args_buffer), buffer_get_address(__ret_buffer), buffer_get_size(__ret_buffer));
+
+    var __result__ = undefined;
+    __result__ = buffer_read(__ret_buffer, buffer_s32);
+    return __result__;
 }
 
 /// @ignore
@@ -2922,8 +2922,8 @@ function __GMGooglePlayServices_get_decoders()
         __PlayServicesLeaderboardVariant_decode,
         __PlayServicesSnapshotMetadata_decode,
         __PlayServicesTaskResult_decode,
+        __PlayServicesResult_decode,
         __PlayServicesPlayer_decode,
-        __PlayServicesPlayerList_decode,
         __PlayServicesLeaderboardScore_decode,
         __PlayServicesAchievementList_decode,
         __PlayServicesScoreReport_decode,

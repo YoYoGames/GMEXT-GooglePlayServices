@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 
 public record PlayServicesPlayer(boolean success, PlayServicesPlayerInfo player, String error) implements GMExtWire.ITypedStruct
 {
-    public static final int CODEC_ID = 9;
+    public static final int CODEC_ID = 10;
     @Override
     public void encode(GMExtWire.IByteWriter b)
     {

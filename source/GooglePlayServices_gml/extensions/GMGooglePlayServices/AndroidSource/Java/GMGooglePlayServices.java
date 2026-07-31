@@ -57,6 +57,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -67,8 +68,7 @@ import java.util.concurrent.TimeUnit;
  * Extension Generator conversion of YYGooglePlayServices.
  *
  * Social Async events have been replaced by GMFunction callbacks.
- * Outbound structured payloads use GMExtWire.StructStream and ArrayStream.
- * Generated records are used only for structured values received from GML.
+ * Every callback payload is a generated typed record (GMExtWire.ITypedStruct).
  */
 public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 {
@@ -93,8 +93,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     private volatile Snapshot conflictRemote;
     private volatile GMFunction savedGamesUiCallback;
 
-    private volatile PlayerBuffer friendsBuffer;
-    private volatile int friendsPageSize = MAX_FRIENDS_PAGE_SIZE;
+    private volatile boolean friendsLoaded = false;
     private volatile GMFunction playerSearchCallback;
     private volatile GMFunction friendsConsentCallback;
     private volatile int friendsConsentPageSize;
@@ -112,7 +111,6 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     public void onDestroy()
     {
         super.onDestroy();
-        releaseFriendsBuffer();
         if (scheduler != null && !scheduler.isShutdown())
         {
             scheduler.shutdown();
@@ -174,7 +172,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             + "play_services_is_authenticated or play_services_sign_in first.";
     }
 
-    private boolean requireAuthentication(GMFunction callback, boolean requireAuth, String value, String error)
+    private boolean requireAuthentication(GMFunction callback, String value, String error)
     {
         if (authenticationKnown && authenticated)
             return true;
@@ -281,7 +279,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         }
 
         if (!requireAuthentication(
-            callback, false, "", authenticationError()))
+            callback, "", authenticationError()))
             return;
 
         PlayGames.getGamesSignInClient(activity)
@@ -351,7 +349,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         }
 
         if (!requireAuthentication(
-            callback, false, "", authenticationError()))
+            callback, "", authenticationError()))
             return true;
 
         PlayGames.getPlayersClient(activity).getCurrentPlayerId()
@@ -482,13 +480,13 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         Activity activity = activity();
         if (activity == null)
         {
-            callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, "Activity is null."));
+            failFriendsList(callback, "Activity is null.");
             return true;
         }
 
         if (!authenticationKnown || !authenticated)
         {
-            callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, authenticationError()));
+            failFriendsList(callback, authenticationError());
             return true;
         }
 
@@ -496,50 +494,18 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         if (clampedResults != (int)max_results)
             Log.w(TAG, "play_services_friends_load: max_results " + (int)max_results + " clamped to [" + MIN_PAGE_SIZE + ", " + MAX_FRIENDS_PAGE_SIZE + "]");
 
-        friendsPageSize = clampedResults;
-
         PlayGames.getPlayersClient(activity)
             .loadFriends(clampedResults, force_reload)
             .addOnCompleteListener(task ->
             {
                 if (!task.isSuccessful())
                 {
-                    releaseFriendsBuffer();
-                    callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, error(task.getException())));
+                    failFriendsList(callback, error(task.getException()));
                     return;
                 }
 
                 AnnotatedData<PlayerBuffer> annotatedData = task.getResult();
-                PlayerBuffer buffer = annotatedData != null ? annotatedData.get() : null;
-
-                releaseFriendsBuffer();
-                friendsBuffer = buffer;
-
-                java.util.List<PlayServicesPlayerInfo> players = new java.util.ArrayList<>();
-
-                if (buffer != null)
-                {
-                    try
-                    {
-                        for (Player player : buffer)
-                            players.add(playerToInfo(player));
-                    }
-                    catch (Exception exception)
-                    {
-                        releaseFriendsBuffer();
-                        callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, error(exception)));
-                        return;
-                    }
-                }
-
-                boolean hasMore = buffer != null && buffer.getCount() > 0;
-
-                callback.call(new PlayServicesPlayerList(
-                    true,
-                    players,
-                    hasMore,
-                    ""
-                ));
+                completeFriendsList(annotatedData != null ? annotatedData.get() : null, callback);
             });
 
         return true;
@@ -552,19 +518,19 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         Activity activity = activity();
         if (activity == null)
         {
-            callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, "Activity is null."));
+            failFriendsList(callback, "Activity is null.");
             return true;
         }
 
         if (!authenticationKnown || !authenticated)
         {
-            callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, authenticationError()));
+            failFriendsList(callback, authenticationError());
             return true;
         }
 
-        if (friendsBuffer == null)
+        if (!friendsLoaded)
         {
-            callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, "No friends buffer available. Call play_services_friends_load first."));
+            failFriendsList(callback, "No friends buffer available. Call play_services_friends_load first.");
             return true;
         }
 
@@ -578,56 +544,58 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             {
                 if (!task.isSuccessful())
                 {
-                    releaseFriendsBuffer();
-                    callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, error(task.getException())));
+                    failFriendsList(callback, error(task.getException()));
                     return;
                 }
 
                 AnnotatedData<PlayerBuffer> annotatedData = task.getResult();
-                PlayerBuffer buffer = annotatedData != null ? annotatedData.get() : null;
-
-                releaseFriendsBuffer();
-                friendsBuffer = buffer;
-
-                java.util.List<PlayServicesPlayerInfo> players = new java.util.ArrayList<>();
-
-                if (buffer != null)
-                {
-                    try
-                    {
-                        for (Player player : buffer)
-                            players.add(playerToInfo(player));
-                    }
-                    catch (Exception exception)
-                    {
-                        releaseFriendsBuffer();
-                        callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, error(exception)));
-                        return;
-                    }
-                }
-
-                boolean hasMore = buffer != null && buffer.getCount() > 0;
-
-                callback.call(new PlayServicesPlayerList(
-                    true,
-                    players,
-                    hasMore,
-                    ""
-                ));
+                completeFriendsList(annotatedData != null ? annotatedData.get() : null, callback);
             });
 
         return true;
     }
 
-
-    private void releaseFriendsBuffer()
+    // Shared (status, players, has_more) callback shape for every friends-list
+    // function - status carries success/error only, the array is a real typed
+    // GMExtWire.TypedArrayStream rather than bundled into a per-function Result
+    // class, per the split-status callback pattern (see gmext-callback-design).
+    private static void failFriendsList(GMFunction callback, String error)
     {
-        PlayerBuffer buffer = friendsBuffer;
+        callback.call(
+            new PlayServicesResult(false, error),
+            new GMExtWire.TypedArrayStream<>(PlayServicesPlayerInfo.class),
+            false
+        );
+    }
+
+    private void completeFriendsList(PlayerBuffer buffer, GMFunction callback)
+    {
+        GMExtWire.TypedArrayStream<PlayServicesPlayerInfo> players =
+            new GMExtWire.TypedArrayStream<>(PlayServicesPlayerInfo.class);
+        boolean hasMore = false;
+
         if (buffer != null)
         {
-            friendsBuffer = null;
-            buffer.release();
+            try
+            {
+                for (Player player : buffer)
+                    players.add(playerToInfo(player));
+
+                hasMore = buffer.getCount() > 0;
+            }
+            catch (Exception exception)
+            {
+                failFriendsList(callback, error(exception));
+                return;
+            }
+            finally
+            {
+                buffer.release();
+            }
         }
+
+        friendsLoaded = true;
+        callback.call(new PlayServicesResult(true, ""), players, hasMore);
     }
 
     // -------------------------------------------------------------------------
@@ -661,20 +629,14 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
     // Player Search UI
     // -------------------------------------------------------------------------
 
-    public boolean play_services_player_search_show(final GMFunction callback)
+    public PlayServicesError play_services_player_search_show(final GMFunction callback)
     {
         if (!authenticationKnown || !authenticated)
-        {
-            callback.call(playerSearchResultError("Google Play Games user is not authenticated."));
-            return true;
-        }
+            return PlayServicesError.NotAuthenticated;
 
         Activity activity = activity();
         if (activity == null)
-        {
-            callback.call(playerSearchResultError("Activity is null."));
-            return true;
-        }
+            return PlayServicesError.ActivityNull;
 
         playerSearchCallback = callback;
 
@@ -685,10 +647,10 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             .addOnFailureListener(exception ->
             {
                 playerSearchCallback = null;
-                callback.call(playerSearchResultError(error(exception)));
+                callback.call(new PlayServicesResult(false, error(exception)), Optional.empty());
             });
 
-        return true;
+        return PlayServicesError.Ok;
     }
 
     // -------------------------------------------------------------------------
@@ -703,13 +665,13 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         Activity activity = activity();
         if (activity == null)
         {
-            callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, "Activity is null."));
+            failFriendsList(callback, "Activity is null.");
             return true;
         }
 
         if (!authenticationKnown || !authenticated)
         {
-            callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, authenticationError()));
+            failFriendsList(callback, authenticationError());
             return true;
         }
 
@@ -733,36 +695,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             .addOnSuccessListener(task ->
             {
                 AnnotatedData<PlayerBuffer> annotatedData = task;
-                PlayerBuffer buffer = annotatedData != null ? annotatedData.get() : null;
-
-                releaseFriendsBuffer();
-                friendsBuffer = buffer;
-
-                java.util.List<PlayServicesPlayerInfo> players = new java.util.ArrayList<>();
-
-                if (buffer != null)
-                {
-                    try
-                    {
-                        for (Player player : buffer)
-                            players.add(playerToInfo(player));
-                    }
-                    catch (Exception exception)
-                    {
-                        releaseFriendsBuffer();
-                        callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, error(exception)));
-                        return;
-                    }
-                }
-
-                boolean hasMore = buffer != null && buffer.getCount() > 0;
-
-                callback.call(new PlayServicesPlayerList(
-                    true,
-                    players,
-                    hasMore,
-                    ""
-                ));
+                completeFriendsList(annotatedData != null ? annotatedData.get() : null, callback);
             })
             .addOnFailureListener(exception ->
             {
@@ -782,12 +715,12 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     catch (Exception e)
                     {
                         friendsConsentCallback = null;
-                        callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, error(e)));
+                        failFriendsList(callback, error(e));
                     }
                 }
                 else
                 {
-                    callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, error(exception)));
+                    failFriendsList(callback, error(exception));
                 }
             });
     }
@@ -845,7 +778,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         }
 
         if (!requireAuthentication(
-            callback, false, achievementId, authenticationError()))
+            callback, achievementId, authenticationError()))
             return;
 
         PlayGames.getAchievementsClient(activity)
@@ -866,7 +799,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         }
 
         if (!requireAuthentication(
-            callback, false, achievementId, authenticationError()))
+            callback, achievementId, authenticationError()))
             return;
 
         PlayGames.getAchievementsClient(activity)
@@ -888,7 +821,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         }
 
         if (!requireAuthentication(
-            callback, false, achievementId, authenticationError()))
+            callback, achievementId, authenticationError()))
             return;
 
         PlayGames.getAchievementsClient(activity)
@@ -909,7 +842,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         }
 
         if (!requireAuthentication(
-            callback, false, achievementId, authenticationError()))
+            callback, achievementId, authenticationError()))
             return;
 
         PlayGames.getAchievementsClient(activity)
@@ -1517,52 +1450,43 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         ));
     }
 
-    public void play_services_saved_games_commit_and_close(
+    public PlayServicesError play_services_saved_games_commit_and_close(
         PlayServicesSavedGameCommitOptions options,
         final GMFunction callback)
     {
-        if (!requireAuthentication(
-            callback, false, "", authenticationError()))
-            return;
+        if (!authenticationKnown || !authenticated)
+            return PlayServicesError.NotAuthenticated;
+
+        Activity activity = activity();
+        if (activity == null)
+            return PlayServicesError.ActivityNull;
 
         if (options == null)
-        {
-            callback.call(new PlayServicesTaskResult(false, "", "Commit options cannot be null."));
-            return;
-        }
+            return PlayServicesError.InvalidArgument;
 
         String name = options.name();
         Snapshot snapshot = snapshots.get(name);
 
         if (snapshot == null)
-        {
-            callback.call(new PlayServicesTaskResult(false, name, "Snapshot is not opened or has already been closed."));
-            return;
-        }
+            return PlayServicesError.InvalidArgument;
 
         commitSnapshot(snapshot, options, callback);
+        return PlayServicesError.Ok;
     }
 
-    public void play_services_saved_games_commit_new(
+    public PlayServicesError play_services_saved_games_commit_new(
         PlayServicesSavedGameCommitOptions options,
         final GMFunction callback)
     {
-        if (!requireAuthentication(
-            callback, false, "", authenticationError()))
-            return;
-
-        if (options == null)
-        {
-            callback.call(new PlayServicesTaskResult(false, "", "Commit options cannot be null."));
-            return;
-        }
+        if (!authenticationKnown || !authenticated)
+            return PlayServicesError.NotAuthenticated;
 
         Activity activity = activity();
         if (activity == null)
-        {
-            callback.call(new PlayServicesTaskResult(false, options.name(), "Activity is null."));
-            return;
-        }
+            return PlayServicesError.ActivityNull;
+
+        if (options == null)
+            return PlayServicesError.InvalidArgument;
 
         String name = options.name();
 
@@ -1575,21 +1499,22 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             {
                 if (!task.isSuccessful())
                 {
-                    callback.call(new PlayServicesTaskResult(false, name, error(task.getException())));
+                    callback.call(new PlayServicesResult(false, error(task.getException())), Optional.empty());
                     return;
                 }
 
                 Snapshot snapshot = task.getResult().getData();
                 if (snapshot == null)
                 {
-                    callback.call(new PlayServicesTaskResult(false, name, "No snapshot was returned."));
+                    callback.call(new PlayServicesResult(false, "No snapshot was returned."), Optional.empty());
                     return;
                 }
 
-                String snapshotName = snapshot.getMetadata().getUniqueName();
-                snapshots.put(snapshotName, snapshot);
+                trackSnapshot(snapshot.getMetadata().getUniqueName(), snapshot);
                 commitSnapshot(snapshot, options, callback);
             });
+
+        return PlayServicesError.Ok;
     }
 
     private void commitSnapshot(
@@ -1633,7 +1558,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                 if (activity == null)
                 {
                     snapshots.remove(name);
-                    callback.call(new PlayServicesTaskResult(false, name, "Activity is null."));
+                    callback.call(new PlayServicesResult(false, "Activity is null."), Optional.empty());
                     return;
                 }
 
@@ -1644,14 +1569,14 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                         snapshots.remove(name);
 
                         if (task.isSuccessful())
-                            callback.call(new PlayServicesTaskResult(true, name, ""));
+                            callback.call(new PlayServicesResult(true, ""), Optional.of(snapshotMetadataToRecord(task.getResult())));
                         else
-                            callback.call(new PlayServicesTaskResult(false, name, error(task.getException())));
+                            callback.call(new PlayServicesResult(false, error(task.getException())), Optional.empty());
                     }));
             }
             catch (Exception exception)
             {
-                callback.call(new PlayServicesTaskResult(false, name, error(exception)));
+                callback.call(new PlayServicesResult(false, error(exception)), Optional.empty());
             }
         });
     }
@@ -1780,63 +1705,10 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     return;
                 }
 
-                DataOrConflict<Snapshot> result = task.getResult();
-
                 try
                 {
-                    PlayServicesSnapshotOpenResult response;
-
-                    if (!result.isConflict())
-                    {
-                        Snapshot snapshot = result.getData();
-
-                        if (snapshot == null)
-                        {
-                            throw new IllegalStateException(
-                                "No snapshot was returned."
-                            );
-                        }
-
-                        String snapshotName = snapshot.getMetadata().getUniqueName();
-                        snapshots.put(snapshotName, snapshot);
-
-                        response = new PlayServicesSnapshotOpenResult(
-                            false,
-                            snapshotMetadataToRecord(snapshot.getMetadata()),
-                            readSnapshot(snapshot),
-                            "",
-                            emptySnapshotMetadata(),
-                            "",
-                            emptySnapshotMetadata(),
-                            ""
-                        );
-                    }
-                    else
-                    {
-                        if (!includeConflict)
-                        {
-                            throw new IllegalStateException(
-                                "A Saved Games conflict was returned."
-                            );
-                        }
-
-                        conflictLocal =
-                            result.getConflict().getConflictingSnapshot();
-
-                        conflictRemote =
-                            result.getConflict().getSnapshot();
-
-                        response = new PlayServicesSnapshotOpenResult(
-                            true,
-                            emptySnapshotMetadata(),
-                            "",
-                            safeString(result.getConflict().getConflictId()),
-                            snapshotMetadataToRecord(conflictLocal.getMetadata()),
-                            readSnapshot(conflictLocal),
-                            snapshotMetadataToRecord(conflictRemote.getMetadata()),
-                            readSnapshot(conflictRemote)
-                        );
-                    }
+                    PlayServicesSnapshotOpenResult response =
+                        buildSnapshotOpenResult(task.getResult(), includeConflict);
 
                     callback.call(new PlayServicesSnapshot(
                         true,
@@ -1855,6 +1727,70 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             });
     }
 
+    // Shared by openSnapshot and play_services_saved_games_resolve_conflict - both wrap
+    // Task<DataOrConflict<Snapshot>> and need identical is_conflict/metadata handling.
+    private PlayServicesSnapshotOpenResult buildSnapshotOpenResult(
+        DataOrConflict<Snapshot> result,
+        boolean includeConflict) throws Exception
+    {
+        if (!result.isConflict())
+        {
+            Snapshot snapshot = result.getData();
+
+            if (snapshot == null)
+                throw new IllegalStateException("No snapshot was returned.");
+
+            trackSnapshot(snapshot.getMetadata().getUniqueName(), snapshot);
+
+            return new PlayServicesSnapshotOpenResult(
+                false,
+                snapshotMetadataToRecord(snapshot.getMetadata()),
+                readSnapshot(snapshot),
+                "",
+                emptySnapshotMetadata(),
+                "",
+                emptySnapshotMetadata(),
+                ""
+            );
+        }
+
+        if (!includeConflict)
+            throw new IllegalStateException("A Saved Games conflict was returned.");
+
+        conflictLocal = result.getConflict().getConflictingSnapshot();
+        conflictRemote = result.getConflict().getSnapshot();
+
+        return new PlayServicesSnapshotOpenResult(
+            true,
+            emptySnapshotMetadata(),
+            "",
+            safeString(result.getConflict().getConflictId()),
+            snapshotMetadataToRecord(conflictLocal.getMetadata()),
+            readSnapshot(conflictLocal),
+            snapshotMetadataToRecord(conflictRemote.getMetadata()),
+            readSnapshot(conflictRemote)
+        );
+    }
+
+    // Fixes the snapshot handle leak: re-tracking an already-open name used to
+    // silently overwrite the map entry without releasing the prior Snapshot handle.
+    private void trackSnapshot(String name, Snapshot snapshot)
+    {
+        Snapshot previous = snapshots.put(name, snapshot);
+
+        if (previous != null && previous != snapshot)
+        {
+            Activity activity = activity();
+            if (activity != null)
+            {
+                PlayGames.getSnapshotsClient(activity)
+                    .discardAndClose(previous)
+                    .addOnFailureListener(exception ->
+                        Log.w(TAG, "Failed to discard superseded snapshot handle for " + name, exception));
+            }
+        }
+    }
+
     public void play_services_saved_games_delete(
         String name,
         final GMFunction callback)
@@ -1867,7 +1803,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         }
 
         if (!requireAuthentication(
-            callback, false, name, authenticationError()))
+            callback, name, authenticationError()))
             return;
 
         Snapshot snapshot = snapshots.get(name);
@@ -1893,28 +1829,21 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             });
     }
 
-    public void play_services_saved_games_resolve_conflict(
+    public PlayServicesError play_services_saved_games_resolve_conflict(
         String conflictId,
         boolean useLocal,
         final GMFunction callback)
     {
+        if (!authenticationKnown || !authenticated)
+            return PlayServicesError.NotAuthenticated;
+
         Activity activity = activity();
         if (activity == null)
-        {
-            callback.call(new PlayServicesTaskResult(false, conflictId, "Activity is null."));
-            return;
-        }
-
-        if (!requireAuthentication(
-            callback, false, conflictId, authenticationError()))
-            return;
+            return PlayServicesError.ActivityNull;
 
         Snapshot selected = useLocal ? conflictLocal : conflictRemote;
         if (selected == null)
-        {
-            callback.call(new PlayServicesTaskResult(false, conflictId, "There is no active conflict."));
-            return;
-        }
+            return PlayServicesError.InvalidArgument;
 
         PlayGames.getSnapshotsClient(activity)
             .resolveConflict(conflictId, selected)
@@ -1922,14 +1851,34 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             {
                 if (!task.isSuccessful())
                 {
-                    callback.call(new PlayServicesTaskResult(false, conflictId, error(task.getException())));
+                    callback.call(new PlayServicesResult(false, error(task.getException())), Optional.empty());
                     return;
                 }
 
-                conflictLocal = null;
-                conflictRemote = null;
-                callback.call(new PlayServicesTaskResult(true, conflictId, ""));
+                DataOrConflict<Snapshot> result = task.getResult();
+
+                try
+                {
+                    // resolveConflict() returns the same DataOrConflict<Snapshot> shape open()
+                    // does - it can itself race into a fresh conflict, so only clear the retry
+                    // state when the result actually isn't conflicted anymore.
+                    PlayServicesSnapshotOpenResult data = buildSnapshotOpenResult(result, true);
+
+                    if (!result.isConflict())
+                    {
+                        conflictLocal = null;
+                        conflictRemote = null;
+                    }
+
+                    callback.call(new PlayServicesResult(true, ""), Optional.of(data));
+                }
+                catch (Exception exception)
+                {
+                    callback.call(new PlayServicesResult(false, error(exception)), Optional.empty());
+                }
             });
+
+        return PlayServicesError.Ok;
     }
 
     private static String readSnapshot(Snapshot snapshot) throws Exception
@@ -1952,19 +1901,19 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (resultCode == Activity.RESULT_CANCELED)
         {
-            callback.call(playerSearchResultError("User canceled player search."));
+            callback.call(new PlayServicesResult(false, "User canceled player search."), Optional.empty());
             return;
         }
 
         if (resultCode != Activity.RESULT_OK)
         {
-            callback.call(playerSearchResultError("Player search failed with result code: " + resultCode));
+            callback.call(new PlayServicesResult(false, "Player search failed with result code: " + resultCode), Optional.empty());
             return;
         }
 
         if (data == null)
         {
-            callback.call(playerSearchResultError("No data returned from player search."));
+            callback.call(new PlayServicesResult(false, "No data returned from player search."), Optional.empty());
             return;
         }
 
@@ -1975,25 +1924,18 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
             if (results == null || results.size() == 0)
             {
-                callback.call(playerSearchResultError("No players found in search results."));
+                callback.call(new PlayServicesResult(false, "No players found in search results."), Optional.empty());
                 return;
             }
 
             // Google typically returns at most one player from search UI
             Player selected = results.get(0);
 
-            GMExtWire.StructStream stream = streamStruct()
-                .kv("status", 1)
-                .kv("player_id", safeString(selected.getPlayerId()))
-                .kv("display_name", safeString(selected.getDisplayName()))
-                .kv("icon_image_url", selected.getIconImageUri() != null ? selected.getIconImageUri().toString() : "")
-                .kv("hi_res_image_url", selected.getHiResImageUri() != null ? selected.getHiResImageUri().toString() : "");
-
-            callback.call(stream);
+            callback.call(new PlayServicesResult(true, ""), Optional.of(playerToInfo(selected)));
         }
         catch (Exception exception)
         {
-            callback.call(playerSearchResultError(error(exception)));
+            callback.call(new PlayServicesResult(false, error(exception)), Optional.empty());
         }
     }
 
@@ -2007,317 +1949,24 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (resultCode == Activity.RESULT_CANCELED)
         {
-            callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, "User denied friends access permission."));
+            failFriendsList(callback, "User denied friends access permission.");
             return;
         }
 
         if (resultCode != Activity.RESULT_OK)
         {
-            callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, "Friends permission result: " + resultCode));
+            failFriendsList(callback, "Friends permission result: " + resultCode);
             return;
         }
 
         Activity activity = activity();
         if (activity == null)
         {
-            callback.call(new PlayServicesPlayerList(false, new java.util.ArrayList<>(), false, "Activity is null."));
+            failFriendsList(callback, "Activity is null.");
             return;
         }
 
         loadFriendsWithConsentHandling(activity, friendsConsentPageSize, friendsConsentForceReload, callback);
-    }
-
-    // -------------------------------------------------------------------------
-    // Dynamic GML stream conversion
-    // -------------------------------------------------------------------------
-
-    private static GMExtWire.StructStream streamStruct()
-    {
-        return new GMExtWire.StructStream(4096);
-    }
-
-    private static GMExtWire.ArrayStream streamArray()
-    {
-        return new GMExtWire.ArrayStream(32768);
-    }
-
-    private static GMExtWire.StructStream playerToStream(
-        com.google.android.gms.games.Player player)
-    {
-        if (player == null)
-            return emptyPlayerStream();
-
-        return streamStruct()
-            .kv("player_id", safeString(player.getPlayerId()))
-            .kv("display_name", safeString(player.getDisplayName()))
-            .kv("title", safeString(player.getTitle()))
-            .kv(
-                "icon_image_uri",
-                player.getIconImageUri() != null
-                    ? player.getIconImageUri().toString()
-                    : ""
-            )
-            .kv(
-                "hi_res_image_uri",
-                player.getHiResImageUri() != null
-                    ? player.getHiResImageUri().toString()
-                    : ""
-            );
-    }
-
-    private static GMExtWire.StructStream playerStatsToStream(
-        PlayerStats stats)
-    {
-        return streamStruct()
-            .kv(
-                "average_session_length",
-                stats.getAverageSessionLength()
-            )
-            .kv(
-                "days_since_last_played",
-                stats.getDaysSinceLastPlayed()
-            )
-            .kv(
-                "number_of_purchases",
-                stats.getNumberOfPurchases()
-            )
-            .kv(
-                "number_of_sessions",
-                stats.getNumberOfSessions()
-            )
-            .kv(
-                "session_percentile",
-                stats.getSessionPercentile()
-            )
-            .kv(
-                "spend_percentile",
-                stats.getSpendPercentile()
-            )
-            .kv(
-                "churn_probability",
-                stats.getChurnProbability()
-            )
-            .kv(
-                "high_spender_probability",
-                stats.getHighSpenderProbability()
-            )
-            .kv(
-                "spend_probability",
-                stats.getSpendProbability()
-            )
-            .kv(
-                "total_spend_next_28_days",
-                stats.getTotalSpendNext28Days()
-            );
-    }
-
-    private static GMExtWire.StructStream achievementToStream(
-        Achievement achievement)
-    {
-        int type = achievement.getType();
-        boolean incremental = type == Achievement.TYPE_INCREMENTAL;
-
-        int currentSteps =
-            incremental ? achievement.getCurrentSteps() : 0;
-
-        int totalSteps =
-            incremental ? achievement.getTotalSteps() : 0;
-
-        return streamStruct()
-            .kv(
-                "achievement_id",
-                safeString(achievement.getAchievementId())
-            )
-            .kv("name", safeString(achievement.getName()))
-            .kv(
-                "description",
-                safeString(achievement.getDescription())
-            )
-            .kv("state", achievement.getState())
-            .kv("type", type)
-            .kv("current_steps", currentSteps)
-            .kv("total_steps", totalSteps)
-            .kv(
-                "last_updated_timestamp",
-                achievement.getLastUpdatedTimestamp()
-            )
-            .kv("xp_value", achievement.getXpValue())
-            .kv(
-                "revealed_image_uri",
-                achievement.getRevealedImageUri() != null
-                    ? achievement.getRevealedImageUri().toString()
-                    : ""
-            )
-            .kv(
-                "unlocked_image_uri",
-                achievement.getUnlockedImageUri() != null
-                    ? achievement.getUnlockedImageUri().toString()
-                    : ""
-            );
-    }
-
-    private static GMExtWire.StructStream leaderboardToStream(
-        Leaderboard leaderboard)
-    {
-        if (leaderboard == null)
-            return emptyLeaderboardStream();
-
-        GMExtWire.ArrayStream variants = streamArray();
-
-        for (LeaderboardVariant variant : leaderboard.getVariants())
-        {
-            variants.add(
-                streamStruct()
-                    .kv("collection", variant.getCollection())
-                    .kv("time_span", variant.getTimeSpan())
-                    .kv("has_player_info", variant.hasPlayerInfo())
-            );
-        }
-
-        return streamStruct()
-            .kv(
-                "leaderboard_id",
-                safeString(leaderboard.getLeaderboardId())
-            )
-            .kv(
-                "display_name",
-                safeString(leaderboard.getDisplayName())
-            )
-            .kv("score_order", leaderboard.getScoreOrder())
-            .kv("variants", variants);
-    }
-
-    private static GMExtWire.ArrayStream leaderboardScoresToStream(
-        LeaderboardScoreBuffer buffer)
-    {
-        GMExtWire.ArrayStream scores = streamArray();
-
-        if (buffer == null)
-            return scores;
-
-        for (LeaderboardScore score : buffer)
-        {
-            scores.add(
-                streamStruct()
-                    .kv(
-                        "display_rank",
-                        safeString(score.getDisplayRank())
-                    )
-                    .kv(
-                        "display_score",
-                        safeString(score.getDisplayScore())
-                    )
-                    .kv("raw_score", score.getRawScore())
-                    .kv(
-                        "score_tag",
-                        safeString(score.getScoreTag())
-                    )
-                    .kv(
-                        "timestamp_millis",
-                        score.getTimestampMillis()
-                    )
-                    .kv(
-                        "score_holder",
-                        playerToStream(score.getScoreHolder())
-                    )
-            );
-        }
-
-        return scores;
-    }
-
-    private static GMExtWire.StructStream scoreResultToStream(
-        ScoreSubmissionData.Result result)
-    {
-        if (result == null)
-            return emptyScoreResultStream();
-
-        return streamStruct()
-            .kv("raw_score", result.rawScore)
-            .kv(
-                "formatted_score",
-                safeString(result.formattedScore)
-            )
-            .kv("score_tag", safeString(result.scoreTag))
-            .kv("new_best", result.newBest);
-    }
-
-    private static GMExtWire.StructStream scoreReportToStream(
-        ScoreSubmissionData report)
-    {
-        if (report == null)
-            return emptyScoreReportStream();
-
-        GMExtWire.StructStream results = streamStruct()
-            .kv(
-                "daily",
-                scoreResultToStream(
-                    report.getScoreResult(
-                        LeaderboardVariant.TIME_SPAN_DAILY
-                    )
-                )
-            )
-            .kv(
-                "weekly",
-                scoreResultToStream(
-                    report.getScoreResult(
-                        LeaderboardVariant.TIME_SPAN_WEEKLY
-                    )
-                )
-            )
-            .kv(
-                "all_time",
-                scoreResultToStream(
-                    report.getScoreResult(
-                        LeaderboardVariant.TIME_SPAN_ALL_TIME
-                    )
-                )
-            );
-
-        return streamStruct()
-            .kv(
-                "leaderboard_id",
-                safeString(report.getLeaderboardId())
-            )
-            .kv("player_id", safeString(report.getPlayerId()))
-            .kv("results", results);
-    }
-
-    private static GMExtWire.StructStream snapshotMetadataToStream(
-        SnapshotMetadata metadata)
-    {
-        if (metadata == null)
-            return emptySnapshotMetadataStream();
-
-        return streamStruct()
-            .kv(
-                "unique_name",
-                safeString(metadata.getUniqueName())
-            )
-            .kv(
-                "description",
-                safeString(metadata.getDescription())
-            )
-            .kv(
-                "device_name",
-                safeString(metadata.getDeviceName())
-            )
-            .kv(
-                "last_modified_timestamp",
-                metadata.getLastModifiedTimestamp()
-            )
-            .kv("played_time", metadata.getPlayedTime())
-            .kv("progress_value", metadata.getProgressValue())
-            .kv(
-                "has_change_pending",
-                metadata.hasChangePending()
-            )
-            .kv(
-                "cover_image_uri",
-                metadata.getCoverImageUri() != null
-                    ? metadata.getCoverImageUri().toString()
-                    : ""
-            );
     }
 
     private static PlayServicesAchievement achievementToRecord(Achievement achievement)
@@ -2444,108 +2093,4 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         return new PlayServicesPlayerInfo("", "", "", "", "");
     }
 
-    private static GMExtWire.StructStream playerSearchResultError(String errorMessage)
-    {
-        return streamStruct()
-            .kv("status", 0)
-            .kv("player_id", "")
-            .kv("display_name", "")
-            .kv("icon_image_url", "")
-            .kv("hi_res_image_url", "");
-    }
-
-    private static GMExtWire.StructStream emptyPlayerStream()
-    {
-        return streamStruct()
-            .kv("player_id", "")
-            .kv("display_name", "")
-            .kv("title", "")
-            .kv("icon_image_uri", "")
-            .kv("hi_res_image_uri", "");
-    }
-
-    private static GMExtWire.StructStream emptyPlayerStatsStream()
-    {
-        return streamStruct()
-            .kv("average_session_length", 0.0)
-            .kv("days_since_last_played", 0.0)
-            .kv("number_of_purchases", 0.0)
-            .kv("number_of_sessions", 0.0)
-            .kv("session_percentile", 0.0)
-            .kv("spend_percentile", 0.0)
-            .kv("churn_probability", 0.0)
-            .kv("high_spender_probability", 0.0)
-            .kv("spend_probability", 0.0)
-            .kv("total_spend_next_28_days", 0.0);
-    }
-
-    private static GMExtWire.StructStream emptyScoreResultStream()
-    {
-        return streamStruct()
-            .kv("raw_score", 0.0)
-            .kv("formatted_score", "")
-            .kv("score_tag", "")
-            .kv("new_best", false);
-    }
-
-    private static GMExtWire.StructStream emptyScoreReportStream()
-    {
-        return streamStruct()
-            .kv("leaderboard_id", "")
-            .kv("player_id", "")
-            .kv(
-                "results",
-                streamStruct()
-                    .kv("daily", emptyScoreResultStream())
-                    .kv("weekly", emptyScoreResultStream())
-                    .kv("all_time", emptyScoreResultStream())
-            );
-    }
-
-    private static GMExtWire.StructStream emptyLeaderboardStream()
-    {
-        return streamStruct()
-            .kv("leaderboard_id", "")
-            .kv("display_name", "")
-            .kv(
-                "score_order",
-                PlayServicesLeaderboardScoreOrder.SmallerIsBetter.value()
-            )
-            .kv("variants", streamArray());
-    }
-
-    private static GMExtWire.StructStream emptySnapshotMetadataStream()
-    {
-        return streamStruct()
-            .kv("unique_name", "")
-            .kv("description", "")
-            .kv("device_name", "")
-            .kv("last_modified_timestamp", 0.0)
-            .kv("played_time", 0.0)
-            .kv("progress_value", 0.0)
-            .kv("has_change_pending", false)
-            .kv("cover_image_uri", "");
-    }
-
-    private static GMExtWire.StructStream emptySavedGameOpenResultStream()
-    {
-        return streamStruct()
-            .kv("is_conflict", false)
-            .kv(
-                "snapshot_metadata",
-                emptySnapshotMetadataStream()
-            )
-            .kv("data", "")
-            .kv("conflict_id", "")
-            .kv(
-                "snapshot_metadata_local",
-                emptySnapshotMetadataStream()
-            )
-            .kv("data_local", "")
-            .kv(
-                "snapshot_metadata_remote",
-                emptySnapshotMetadataStream()
-            )
-            .kv("data_remote", "");
-    }
 }
