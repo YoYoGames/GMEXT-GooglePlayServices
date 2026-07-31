@@ -4,11 +4,11 @@ if (locked) exit;
 
 var _name = obj_play_services_saved_games.opened_unique_name;
 
-play_services_saved_games_delete(_name, function(_result)
+play_services_saved_games_delete(_name, function(_status)
 {
-    if (!_result.success)
+    if (!_status.success)
     {
-        show_debug_message(_result.error);
+        show_debug_message(_status.error);
         return;
     }
 

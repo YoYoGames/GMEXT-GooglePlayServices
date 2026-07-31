@@ -7,27 +7,27 @@ event_inherited();
 player_sprite = noone;
 callback_owner = id;
 
-    var _image_uri = "";
+    var _image_uri = undefined;
 
-    if (struct_exists(data, "hi_res_image_uri") && data.hi_res_image_uri != "")
+    if (!is_undefined(data.hi_res_image_uri))
     {
         _image_uri = data.hi_res_image_uri;
     }
-    else if (struct_exists(data, "icon_image_uri") && data.icon_image_uri != "")
+    else if (!is_undefined(data.icon_image_uri))
     {
         _image_uri = data.icon_image_uri;
     }
 
-    if (_image_uri != "")
+    if (!is_undefined(_image_uri))
     {
-        play_services_uri_to_path(_image_uri,function(_result)
+        play_services_uri_to_path(_image_uri,function(_status, _path)
 			{
 			    show_debug_message("play_services_uri_to_path_callback");
-			    show_debug_message(_result);
+			    show_debug_message(_status);
 
-			    if (!_result.success)
+			    if (!_status.success)
 			    {
-			        show_debug_message(_result.error);
+			        show_debug_message(_status.error);
 			        return;
 			    }
 
@@ -39,7 +39,7 @@ callback_owner = id;
 			        if (sprite_exists(player_sprite))
 			            sprite_delete(player_sprite);
 
-			        player_sprite = sprite_add(_result.value,1,false,false,0,0);
+			        player_sprite = sprite_add(_path,1,false,false,0,0);
 
 			        show_debug_message({player_sprite: player_sprite,sprite_exists: sprite_exists(player_sprite)});
 			    }

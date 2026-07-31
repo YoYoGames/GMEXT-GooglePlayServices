@@ -11,20 +11,16 @@ switch (state)
     case PlayServicesAchievementState.Hidden:
         play_services_achievements_reveal(
             achievement_id,
-            function(_success, _achievement_id, _error)
+            function(_status)
             {
-                show_debug_message({
-                    success: _success,
-                    achievement_id: _achievement_id,
-                    error: _error
-                });
+                show_debug_message(_status);
 
-                if (!_success)
+                if (!_status.success)
                     return;
 
                 state = PlayServicesAchievementState.Revealed;
 
-                if (revealed_image_uri != "")
+                if (!is_undefined(revealed_image_uri))
                 {
                     play_services_uri_to_path(
                         revealed_image_uri,
@@ -42,15 +38,11 @@ switch (state)
                 play_services_achievements_increment(
                     achievement_id,
                     1,
-                    function(_success, _achievement_id, _error)
+                    function(_status)
                     {
-                        show_debug_message({
-                            success: _success,
-                            achievement_id: _achievement_id,
-                            error: _error
-                        });
+                        show_debug_message(_status);
 
-                        if (!_success)
+                        if (!_status.success)
                             return;
 
                         current_steps = min(
@@ -65,7 +57,7 @@ switch (state)
                         {
                             state = PlayServicesAchievementState.Unlocked;
 
-                            if (unlocked_image_uri != "")
+                            if (!is_undefined(unlocked_image_uri))
                             {
                                 play_services_uri_to_path(
                                     unlocked_image_uri,
@@ -80,20 +72,16 @@ switch (state)
             case PlayServicesAchievementType.Standard:
                 play_services_achievements_unlock(
                     achievement_id,
-                    function(_success, _achievement_id, _error)
+                    function(_status)
                     {
-                        show_debug_message({
-                            success: _success,
-                            achievement_id: _achievement_id,
-                            error: _error
-                        });
+                        show_debug_message(_status);
 
-                        if (!_success)
+                        if (!_status.success)
                             return;
 
                         state = PlayServicesAchievementState.Unlocked;
 
-                        if (unlocked_image_uri != "")
+                        if (!is_undefined(unlocked_image_uri))
                         {
                             play_services_uri_to_path(
                                 unlocked_image_uri,

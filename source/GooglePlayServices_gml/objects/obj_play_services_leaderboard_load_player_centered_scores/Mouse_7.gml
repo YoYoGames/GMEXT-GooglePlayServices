@@ -7,18 +7,15 @@ play_services_leaderboard_load_player_centered_scores(
     PlayServicesLeaderboardCollection.Public,
     5,
     true,
-    function(_result)
+    function(_status, _leaderboard, _scores)
     {
-        show_debug_message(_result);
+        show_debug_message(_status);
 
-        if (!_result.success)
+        if (!_status.success)
         {
-            show_debug_message(_result.error);
+            show_debug_message(_status.error);
             return;
         }
-
-        var _leaderboard = _result.leaderboard;
-        var _scores = _result.scores;
 
         show_debug_message(_leaderboard);
 

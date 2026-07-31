@@ -4,14 +4,14 @@ player_info = undefined;
 player_sprite = noone;
 callback_owner = id;
 
-play_services_uri_to_path_callback = function(_result)
+play_services_uri_to_path_callback = function(_status, _path)
 {
     show_debug_message("play_services_uri_to_path_callback");
-    show_debug_message(_result);
+    show_debug_message(_status);
 
-    if (!_result.success)
+    if (!_status.success)
     {
-        show_debug_message(_result.error);
+        show_debug_message(_status.error);
         return;
     }
 
@@ -23,7 +23,7 @@ play_services_uri_to_path_callback = function(_result)
         if (sprite_exists(player_sprite))
             sprite_delete(player_sprite);
 
-        player_sprite = sprite_add(_result.value,1,false,false,0,0);
+        player_sprite = sprite_add(_path,1,false,false,0,0);
 
         show_debug_message({player_sprite: player_sprite,sprite_exists: sprite_exists(player_sprite)});
     }
@@ -40,18 +40,18 @@ function player_info_reset()
     }
 }
 
-play_services_player_current(function(_result)
+play_services_player_current(function(_status, _player)
 {
-    show_debug_message(_result);
+    show_debug_message(_status);
 
-    if (!_result.success)
+    if (!_status.success)
     {
-        show_debug_message(_result.error);
+        show_debug_message(_status.error);
         player_info_reset();
         return;
     }
 
-    player_info = _result.player;
+    player_info = _player;
 
     if (!is_struct(player_info))
     {
@@ -59,20 +59,18 @@ play_services_player_current(function(_result)
         return;
     }
 
-    var _image_uri = "";
+    var _image_uri = undefined;
 
-    if (struct_exists(player_info, "hi_res_image_uri")
-        && player_info.hi_res_image_uri != "")
+    if (!is_undefined(player_info.hi_res_image_uri))
     {
         _image_uri = player_info.hi_res_image_uri;
     }
-    else if (struct_exists(player_info, "icon_image_uri")
-        && player_info.icon_image_uri != "")
+    else if (!is_undefined(player_info.icon_image_uri))
     {
         _image_uri = player_info.icon_image_uri;
     }
 
-    if (_image_uri != "")
+    if (!is_undefined(_image_uri))
     {
         play_services_uri_to_path(_image_uri,play_services_uri_to_path_callback);
     }

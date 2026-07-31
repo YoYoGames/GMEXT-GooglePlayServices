@@ -30,11 +30,11 @@ function setSignedInMode(enable)
 }
 
 setSignedInMode(false);
-play_services_is_authenticated(function(_result){
-	show_debug_message(_result);
-	if(_result.success)
+play_services_is_authenticated(function(_status, _is_authenticated){
+	show_debug_message(_status);
+	if(_status.success)
 	{
-		if(_result.is_authenticated)
+		if(_is_authenticated)
 		{
 			setSignedInMode(true);
 			instance_create_depth(30,100,0,obj_play_services_player_stats);
@@ -42,8 +42,8 @@ play_services_is_authenticated(function(_result){
 		}
 		else
 		{
-			play_services_sign_in(function(_signin_result){
-				show_debug_message(_signin_result);
+			play_services_sign_in(function(_signin_status, _signin_is_authenticated){
+				show_debug_message(_signin_status);
 			});
 		}
 	}

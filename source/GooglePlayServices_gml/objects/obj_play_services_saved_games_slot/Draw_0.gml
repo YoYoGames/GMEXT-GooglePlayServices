@@ -13,7 +13,7 @@ if (sprite_exists(cover_sprite))
         80
     );
 }
-else if (!cover_image_requested && cover_image_uri != "")
+else if (!cover_image_requested && !is_undefined(cover_image_uri))
 {
     cover_image_requested = true;
     play_services_uri_to_path(cover_image_uri, uri_to_path_callback);

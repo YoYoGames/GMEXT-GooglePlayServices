@@ -26,15 +26,15 @@ xp_value = data.xp_value;
 revealed_image_uri = data.revealed_image_uri;
 unlocked_image_uri = data.unlocked_image_uri;
 
-play_services_uri_to_path_callback = function(_success, _path, _error)
+play_services_uri_to_path_callback = function(_status, _path)
 {
-    if (!_success)
+    if (!_status.success)
     {
-        show_debug_message(_error);
+        show_debug_message(_status.error);
         return;
     }
 
-    if (_path == "")
+    if (is_undefined(_path))
         return;
 
     if (sprite_exists(sprite))
@@ -46,7 +46,7 @@ play_services_uri_to_path_callback = function(_success, _path, _error)
 switch (state)
 {
     case PlayServicesAchievementState.Revealed:
-        if (revealed_image_uri != "")
+        if (!is_undefined(revealed_image_uri))
             play_services_uri_to_path(
                 revealed_image_uri,
                 play_services_uri_to_path_callback
@@ -54,7 +54,7 @@ switch (state)
     break;
 
     case PlayServicesAchievementState.Unlocked:
-        if (unlocked_image_uri != "")
+        if (!is_undefined(unlocked_image_uri))
             play_services_uri_to_path(
                 unlocked_image_uri,
                 play_services_uri_to_path_callback

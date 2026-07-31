@@ -18,10 +18,10 @@ timestamp_millis = data.timestamp_millis;
 
 score_holder = data.score_holder;
 
-score_holder_name = "";
-score_holder_player_id = "";
-score_holder_icon_image_uri = "";
-score_holder_hi_res_image_uri = "";
+score_holder_name = undefined;
+score_holder_player_id = undefined;
+score_holder_icon_image_uri = undefined;
+score_holder_hi_res_image_uri = undefined;
 
 if (is_struct(score_holder))
 {
@@ -31,20 +31,20 @@ if (is_struct(score_holder))
     score_holder_hi_res_image_uri = score_holder.hi_res_image_uri;
 }
 
-var _image_uri = "";
+var _image_uri = undefined;
 
-if (score_holder_hi_res_image_uri != "")
+if (!is_undefined(score_holder_hi_res_image_uri))
     _image_uri = score_holder_hi_res_image_uri;
-else if (score_holder_icon_image_uri != "")
+else if (!is_undefined(score_holder_icon_image_uri))
     _image_uri = score_holder_icon_image_uri;
 
 var _owner = id;
 
-play_services_uri_to_path_callback = function(_success, _path, _error)
+play_services_uri_to_path_callback = function(_status, _path)
 {
-    if (!_success)
+    if (!_status.success)
     {
-        show_debug_message(_error);
+        show_debug_message(_status.error);
         return;
     }
 
@@ -67,7 +67,7 @@ play_services_uri_to_path_callback = function(_success, _path, _error)
     }
 };
 
-if (_image_uri != "")
+if (!is_undefined(_image_uri))
 {
     play_services_uri_to_path(
         _image_uri,

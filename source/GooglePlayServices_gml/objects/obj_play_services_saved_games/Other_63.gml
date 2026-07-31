@@ -30,11 +30,11 @@ _options.played_time_millis = 0;
 _options.progress_value = 0;
 _options.cover_image_path = _thumbnail_path;
 
-play_services_saved_games_commit_new(_options, function(_result)
+play_services_saved_games_commit_new(_options, function(_status, _metadata)
 {
-    if (!_result.success)
+    if (!_status.success)
     {
-        show_debug_message(_result.error);
+        show_debug_message(_status.error);
         return;
     }
 

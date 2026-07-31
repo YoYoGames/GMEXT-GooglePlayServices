@@ -1,16 +1,14 @@
 instance_destroy(obj_play_services_achievement_entry);
 show_debug_message("play_services_achievements_get_status GML call")
-play_services_achievements_get_status(true, function(_result)
+play_services_achievements_get_status(true, function(_status, _achievements)
 {
-    show_debug_message(_result);
+    show_debug_message(_status);
 
-    if (!_result.success)
+    if (!_status.success)
     {
-        show_debug_message(_result.error);
+        show_debug_message(_status.error);
         return;
     }
-
-    var _achievements = _result.achievements;
 
     array_sort(_achievements, function(_achievement1, _achievement2)
     {

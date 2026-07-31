@@ -7,20 +7,19 @@ play_services_saved_games_show_saved_games_ui(
     true,
     true,
     3,
-    function(_result)
+    function(_status, _outcome, _metadata)
     {
-        show_debug_message(_result);
+        show_debug_message(_status);
 
-        switch (_result.result)
+        switch (_outcome)
         {
             case PlayServicesSavedGamesUIResult.Selected:
-                var _metadata = _result.snapshot_metadata;
-                play_services_saved_games_open(_metadata.unique_name, function(_open_result)
+                play_services_saved_games_open(_metadata.unique_name, function(_open_status, _opened)
                 {
-                    if (!_open_result.success)
-                        show_debug_message(_open_result.error);
+                    if (!_open_status.success)
+                        show_debug_message(_open_status.error);
 					else
-						obj_play_services_saved_games_slot.slot_open(_open_result.result.snapshot_metadata.unique_name )
+						obj_play_services_saved_games_slot.slot_open(_opened.snapshot_metadata.unique_name)
                 });
                 break;
 
@@ -29,14 +28,13 @@ play_services_saved_games_show_saved_games_ui(
                     dialog_ind = get_string_async("Description: ", "Slot #0");
                 break;
 
-            case PlayServicesSavedGamesUIResult.Deleted:
             case PlayServicesSavedGamesUIResult.Cancelled:
                 with (obj_play_services_saved_games)
                     play_services_saved_games_load(true, callback_saved_games_load);
                 break;
 
             case PlayServicesSavedGamesUIResult.Error:
-                show_debug_message(_result.error);
+                show_debug_message(_status.error);
                 break;
         }
     }

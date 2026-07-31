@@ -3,7 +3,7 @@
 event_inherited();
 
 cover_sprite = noone;
-cover_image_uri = "";
+cover_image_uri = undefined;
 cover_image_requested = false;
 callback_owner = id;
 unique_name = "";
@@ -11,11 +11,11 @@ description = "";
 
 image_xscale = 5;
 
-uri_to_path_callback = function(_result)
+uri_to_path_callback = function(_status, _path)
 {
-    if (!_result.success)
+    if (!_status.success)
     {
-        show_debug_message(_result.error);
+        show_debug_message(_status.error);
         return;
     }
 
@@ -27,7 +27,7 @@ uri_to_path_callback = function(_result)
         if (sprite_exists(cover_sprite))
             sprite_delete(cover_sprite);
 
-        cover_sprite = sprite_add(_result.value, 1, false, false, 0, 0);
+        cover_sprite = sprite_add(_path, 1, false, false, 0, 0);
     }
 };
 
@@ -37,19 +37,17 @@ uri_to_path_callback = function(_result)
 
 function slot_open(_slot_name)
 {
-	play_services_saved_games_open(_slot_name, function(_result)
+	play_services_saved_games_open(_slot_name, function(_status, _opened)
 	{
-	    show_debug_message(_result);
+	    show_debug_message(_status);
 
-	    if (!_result.success)
+	    if (!_status.success)
 	    {
-	        show_debug_message(_result.error);
+	        show_debug_message(_status.error);
 	        with (obj_play_services_saved_games)
 	            play_services_saved_games_load(true, callback_saved_games_load);
 	        return;
 	    }
-
-	    var _opened = _result.result;
 
 	    if (_opened.is_conflict)
 	    {
@@ -60,7 +58,7 @@ function slot_open(_slot_name)
 	    var _metadata = _opened.snapshot_metadata;
 	    var _data = {};
 
-	    if (_opened.data != "")
+	    if (!is_undefined(_opened.data))
 	    {
 	        try
 	        {

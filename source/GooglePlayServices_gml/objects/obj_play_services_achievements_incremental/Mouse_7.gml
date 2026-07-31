@@ -3,7 +3,7 @@
 // This function will work for incremental achievements and allows the developer to 
 // increase the user progression on a given achievement.
 // It requires you to use the unique achievement id string.
-play_services_achievements_increment(Achievement1, 1, function(_result)
+play_services_achievements_increment(Achievement1, 1, function(_status)
 {
-	show_debug_message(_result);
+	show_debug_message(_status);
 });
