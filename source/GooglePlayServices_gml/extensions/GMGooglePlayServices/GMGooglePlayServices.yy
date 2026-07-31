@@ -42,12 +42,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_sign_in",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_sign_in",
           "help": "",
           "hidden": true,
@@ -60,12 +62,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_is_authenticated",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_is_authenticated",
           "help": "",
           "hidden": true,
@@ -78,12 +82,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_request_server_side_access",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_request_server_side_access",
           "help": "",
           "hidden": true,
@@ -96,12 +102,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_player_current",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_player_current",
           "help": "",
           "hidden": true,
@@ -114,12 +122,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_player_current_id",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_player_current_id",
           "help": "",
           "hidden": true,
@@ -132,12 +142,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_player_stats_load",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_player_stats_load",
           "help": "",
           "hidden": true,
@@ -150,12 +162,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_player_load",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_player_load",
           "help": "",
           "hidden": true,
@@ -168,12 +182,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_friends_load",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_friends_load",
           "help": "",
           "hidden": true,
@@ -186,12 +202,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_friends_load_more",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_friends_load_more",
           "help": "",
           "hidden": true,
@@ -204,12 +222,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_friends_load_with_consent",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_friends_load_with_consent",
           "help": "",
           "hidden": true,
@@ -221,17 +241,19 @@
         },
         {
           "$GMExtensionFunction": "",
-          "%Name": "play_services_player_profile_show",
-          "argCount": 1,
+          "%Name": "__play_services_player_profile_show",
+          "argCount": 3,
           "args": [
-            1
+            1,
+            1,
+            2
           ],
-          "documentation": "@param {String} player_id\r\n@returns {Real}",
+          "documentation": "@param {String} player_id\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_player_profile_show",
           "help": "",
-          "hidden": false,
+          "hidden": true,
           "kind": 4,
-          "name": "play_services_player_profile_show",
+          "name": "__play_services_player_profile_show",
           "resourceType": "GMExtensionFunction",
           "resourceVersion": "2.0",
           "returnType": 2
@@ -258,15 +280,18 @@
         },
         {
           "$GMExtensionFunction": "",
-          "%Name": "play_services_achievements_show",
-          "argCount": 0,
-          "args": [],
-          "documentation": "@returns {Real}",
+          "%Name": "__play_services_achievements_show",
+          "argCount": 2,
+          "args": [
+            1,
+            2
+          ],
+          "documentation": "@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_achievements_show",
           "help": "",
-          "hidden": false,
+          "hidden": true,
           "kind": 4,
-          "name": "play_services_achievements_show",
+          "name": "__play_services_achievements_show",
           "resourceType": "GMExtensionFunction",
           "resourceVersion": "2.0",
           "returnType": 2
@@ -274,12 +299,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_achievements_increment",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_achievements_increment",
           "help": "",
           "hidden": true,
@@ -292,12 +319,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_achievements_reveal",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_achievements_reveal",
           "help": "",
           "hidden": true,
@@ -310,12 +339,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_achievements_set_steps",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_achievements_set_steps",
           "help": "",
           "hidden": true,
@@ -328,12 +359,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_achievements_unlock",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_achievements_unlock",
           "help": "",
           "hidden": true,
@@ -346,12 +379,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_achievements_get_status",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_achievements_get_status",
           "help": "",
           "hidden": true,
@@ -363,32 +398,37 @@
         },
         {
           "$GMExtensionFunction": "",
-          "%Name": "play_services_leaderboard_show_all",
-          "argCount": 0,
-          "args": [],
-          "documentation": "@returns {Real}",
+          "%Name": "__play_services_leaderboard_show_all",
+          "argCount": 2,
+          "args": [
+            1,
+            2
+          ],
+          "documentation": "@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_leaderboard_show_all",
           "help": "",
-          "hidden": false,
+          "hidden": true,
           "kind": 4,
-          "name": "play_services_leaderboard_show_all",
+          "name": "__play_services_leaderboard_show_all",
           "resourceType": "GMExtensionFunction",
           "resourceVersion": "2.0",
           "returnType": 2
         },
         {
           "$GMExtensionFunction": "",
-          "%Name": "play_services_leaderboard_show",
-          "argCount": 1,
+          "%Name": "__play_services_leaderboard_show",
+          "argCount": 3,
           "args": [
-            1
+            1,
+            1,
+            2
           ],
-          "documentation": "@param {String} leaderboard_id\r\n@returns {Real}",
+          "documentation": "@param {String} leaderboard_id\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_leaderboard_show",
           "help": "",
-          "hidden": false,
+          "hidden": true,
           "kind": 4,
-          "name": "play_services_leaderboard_show",
+          "name": "__play_services_leaderboard_show",
           "resourceType": "GMExtensionFunction",
           "resourceVersion": "2.0",
           "returnType": 2
@@ -396,12 +436,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_leaderboard_submit_score",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_leaderboard_submit_score",
           "help": "",
           "hidden": true,
@@ -413,13 +455,35 @@
         },
         {
           "$GMExtensionFunction": "",
-          "%Name": "__play_services_leaderboard_load_player_centered_scores",
-          "argCount": 2,
+          "%Name": "__play_services_leaderboard_submit_score_with_tag",
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
+          "externalName": "__EXT_NATIVE__play_services_leaderboard_submit_score_with_tag",
+          "help": "",
+          "hidden": true,
+          "kind": 4,
+          "name": "__play_services_leaderboard_submit_score_with_tag",
+          "resourceType": "GMExtensionFunction",
+          "resourceVersion": "2.0",
+          "returnType": 2
+        },
+        {
+          "$GMExtensionFunction": "",
+          "%Name": "__play_services_leaderboard_load_player_centered_scores",
+          "argCount": 4,
+          "args": [
+            1,
+            2,
+            1,
+            2
+          ],
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_leaderboard_load_player_centered_scores",
           "help": "",
           "hidden": true,
@@ -432,12 +496,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_leaderboard_load_top_scores",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_leaderboard_load_top_scores",
           "help": "",
           "hidden": true,
@@ -450,12 +516,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_uri_to_path",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_uri_to_path",
           "help": "",
           "hidden": true,
@@ -468,12 +536,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_saved_games_show_saved_games_ui",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_saved_games_show_saved_games_ui",
           "help": "",
           "hidden": true,
@@ -526,12 +596,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_saved_games_load",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_saved_games_load",
           "help": "",
           "hidden": true,
@@ -544,12 +616,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_saved_games_open",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_saved_games_open",
           "help": "",
           "hidden": true,
@@ -562,12 +636,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_saved_games_open_conflict",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_saved_games_open_conflict",
           "help": "",
           "hidden": true,
@@ -580,12 +656,14 @@
         {
           "$GMExtensionFunction": "",
           "%Name": "__play_services_saved_games_delete",
-          "argCount": 2,
+          "argCount": 4,
           "args": [
+            1,
+            2,
             1,
             2
           ],
-          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}",
+          "documentation": "@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@param {Pointer} _ret_buffer\r\n@param {Real} _ret_buffer_length\r\n@returns {Real}",
           "externalName": "__EXT_NATIVE__play_services_saved_games_delete",
           "help": "",
           "hidden": true,

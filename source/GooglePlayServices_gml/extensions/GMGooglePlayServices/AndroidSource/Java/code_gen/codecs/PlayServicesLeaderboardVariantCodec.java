@@ -5,6 +5,7 @@ package ${YYAndroidPackageName}.codecs;
 import java.nio.ByteBuffer;
 
 import ${YYAndroidPackageName}.GMExtWire;
+import ${YYAndroidPackageName}.enums.*;
 import ${YYAndroidPackageName}.records.*;
 
 public final class PlayServicesLeaderboardVariantCodec {
@@ -13,9 +14,9 @@ public final class PlayServicesLeaderboardVariantCodec {
     }
     public static PlayServicesLeaderboardVariant read(ByteBuffer b)
     {
-        double collection = GMExtWire.readF64(b);
+        PlayServicesLeaderboardCollection collection = PlayServicesLeaderboardCollection.from(GMExtWire.readI32(b));
 
-        double time_span = GMExtWire.readF64(b);
+        PlayServicesLeaderboardTimeSpan time_span = PlayServicesLeaderboardTimeSpan.from(GMExtWire.readI32(b));
 
         boolean has_player_info = GMExtWire.readBool(b);
 
@@ -24,9 +25,9 @@ public final class PlayServicesLeaderboardVariantCodec {
 
     public static void write(GMExtWire.IByteWriter b, PlayServicesLeaderboardVariant obj)
     {
-        GMExtWire.writeF64(b, obj.collection());
+        GMExtWire.writeI32(b, obj.collection().value());
 
-        GMExtWire.writeF64(b, obj.time_span());
+        GMExtWire.writeI32(b, obj.time_span().value());
 
         GMExtWire.writeBool(b, obj.has_player_info());
 

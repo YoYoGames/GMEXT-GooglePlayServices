@@ -7,87 +7,89 @@ const PlayServicesMaxFriendsPageSize : int32 = 25;      // Maximum friends per p
 const PlayServicesMaxLeaderboardResults : int32 = 25;   // Maximum leaderboard results per page (API limit)
 const PlayServicesMinPageSize : int32 = 1;              // Minimum page size
 
-// Structured callback results are defined as GMIDL classes and automatically
-// marshaled by the code generator into typed GML structs that callers receive
-// as instances (e.g. new PlayServicesAuthResult(...)). This unifies the callback convention:
-// every play_services_* callback receives a single typed result struct with success, data,
-// and error fields, making the extension a transparent projection of the GMS API.
+// Every play_services_* callback follows the same shape: callback.call(status, data...).
+// status is always the shared PlayServicesResult (success/error only); data is the real
+// SDK payload as one or more further positional arguments - Optional<T> for a value that
+// can be genuinely absent, a typed array for a collection, plus any further scalar - never
+// bundled into a single per-function result struct.
 
 // Base
 [global, bind = typed_gml]
 function play_services_is_available(): bool;
-[global, bind = typed_gml]
-function play_services_sign_in(callback: func): unit;
-[global, bind = typed_gml]
-function play_services_is_authenticated(callback: func): unit;
-[global, bind = typed_gml]
-function play_services_request_server_side_access(server_client_id: string, force_refresh_token: bool, callback: func): unit;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_sign_in(callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_is_authenticated(callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_request_server_side_access(server_client_id: string, force_refresh_token: bool, callback: func): gmval;
 
 // Player
-[global, bind = typed_gml]
-function play_services_player_current(callback: func): bool;
-[global, bind = typed_gml]
-function play_services_player_current_id(callback: func): bool;
-[global, bind = typed_gml]
-function play_services_player_stats_load(force_reload: bool, callback: func): bool;
-[global, bind = typed_gml]
-function play_services_player_load(player_id: string, force_reload: bool, callback: func): bool;
-[global, bind = typed_gml]
-function play_services_friends_load(force_reload: bool, max_results: real, callback: func): bool;
-[global, bind = typed_gml]
-function play_services_friends_load_more(page_size: real, callback: func): bool;
-[global, bind = typed_gml]
-function play_services_friends_load_with_consent(force_reload: bool, max_results: real, callback: func): bool;
-[global, bind = typed_gml]
-function play_services_player_profile_show(player_id: string): unit;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_player_current(callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_player_current_id(callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_player_stats_load(force_reload: bool, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_player_load(player_id: string, force_reload: bool, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_friends_load(force_reload: bool, max_results: real, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_friends_load_more(page_size: real, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_friends_load_with_consent(force_reload: bool, max_results: real, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_player_profile_show(player_id: string): gmval;
 [global, bind = typed_gml, type_hint=`PlayServicesError`]
 function play_services_player_search_show(callback: func): gmval;
 
 // Achievements
-[global, bind = typed_gml]
-function play_services_achievements_show(): unit;
-[global, bind = typed_gml]
-function play_services_achievements_increment(achievement_id: string, steps: real, callback: func): unit;
-[global, bind = typed_gml]
-function play_services_achievements_reveal(achievement_id: string, callback: func): unit;
-[global, bind = typed_gml]
-function play_services_achievements_set_steps(achievement_id: string, steps: real, callback: func): unit;
-[global, bind = typed_gml]
-function play_services_achievements_unlock(achievement_id: string, callback: func): unit;
-[global, bind = typed_gml]
-function play_services_achievements_get_status(force_reload: bool, callback: func): unit;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_achievements_show(): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_achievements_increment(achievement_id: string, steps: real, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_achievements_reveal(achievement_id: string, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_achievements_set_steps(achievement_id: string, steps: real, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_achievements_unlock(achievement_id: string, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_achievements_get_status(force_reload: bool, callback: func): gmval;
 
 // Leaderboards
-[global, bind = typed_gml]
-function play_services_leaderboard_show_all(): unit;
-[global, bind = typed_gml]
-function play_services_leaderboard_show(leaderboard_id: string): unit;
-[global, bind = typed_gml]
-function play_services_leaderboard_submit_score(leaderboard_id: string, score: real, score_tag: string, callback: func): unit;
-[global, bind = typed_gml]
-function play_services_leaderboard_load_player_centered_scores(leaderboard_id: string, [type_hint=`PlayServicesLeaderboardTimeSpan`] span, [type_hint=`PlayServicesLeaderboardCollection`] leaderboard_collection, max_results: real, force_reload: bool, callback: func): unit;
-[global, bind = typed_gml]
-function play_services_leaderboard_load_top_scores(leaderboard_id: string, [type_hint=`PlayServicesLeaderboardTimeSpan`] span, [type_hint=`PlayServicesLeaderboardCollection`] leaderboard_collection, max_results: real, force_reload: bool, callback: func): unit;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_leaderboard_show_all(): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_leaderboard_show(leaderboard_id: string): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_leaderboard_submit_score(leaderboard_id: string, score: real, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_leaderboard_submit_score_with_tag(leaderboard_id: string, score: real, score_tag: string, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_leaderboard_load_player_centered_scores(leaderboard_id: string, [type_hint=`PlayServicesLeaderboardTimeSpan`] span, [type_hint=`PlayServicesLeaderboardCollection`] leaderboard_collection, max_results: real, force_reload: bool, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_leaderboard_load_top_scores(leaderboard_id: string, [type_hint=`PlayServicesLeaderboardTimeSpan`] span, [type_hint=`PlayServicesLeaderboardCollection`] leaderboard_collection, max_results: real, force_reload: bool, callback: func): gmval;
 
 // URI helper
-[global, bind = typed_gml]
-function play_services_uri_to_path(uri: string, callback: func): unit;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_uri_to_path(uri: string, callback: func): gmval;
 
 // Saved Games
-[global, bind = typed_gml]
-function play_services_saved_games_show_saved_games_ui(title: string, button_add: bool, button_delete: bool, max_results: real, callback: func): unit;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_saved_games_show_saved_games_ui(title: string, button_add: bool, button_delete: bool, max_results: real, callback: func): gmval;
 [global, bind = typed_gml, type_hint=`PlayServicesError`]
 function play_services_saved_games_commit_and_close([type_hint=`PlayServicesSavedGameCommitOptions`] options: gmval, callback: func): gmval;
 [global, bind = typed_gml, type_hint=`PlayServicesError`]
 function play_services_saved_games_commit_new([type_hint=`PlayServicesSavedGameCommitOptions`] options: gmval, callback: func): gmval;
-[global, bind = typed_gml]
-function play_services_saved_games_load(force_reload: bool, callback: func): unit;
-[global, bind = typed_gml]
-function play_services_saved_games_open(name: string, callback: func): unit;
-[global, bind = typed_gml]
-function play_services_saved_games_open_conflict(name: string, [type_hint=`PlayServicesSavedGamesConflictPolicy`] conflict_policy, callback: func): unit;
-[global, bind = typed_gml]
-function play_services_saved_games_delete(name: string, callback: func): unit;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_saved_games_load(force_reload: bool, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_saved_games_open(name: string, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_saved_games_open_conflict(name: string, [type_hint=`PlayServicesSavedGamesConflictPolicy`] conflict_policy, callback: func): gmval;
+[global, bind = typed_gml, type_hint=`PlayServicesError`]
+function play_services_saved_games_delete(name: string, callback: func): gmval;
 [global, bind = typed_gml, type_hint=`PlayServicesError`]
 function play_services_saved_games_resolve_conflict(conflict_id: string, use_local: bool, callback: func): gmval;
 
@@ -103,37 +105,37 @@ class `[[PlayServicesSavedGameCommitOptions]]` prototype Object
     [field] property cover_image_path : string { get; set; }
 }
 
-// Result classes for callback payloads.
+// Envelope for every callback below - carries only success/error. The actual
+// payload always rides as further, separate positional arguments to
+// callback.call(status, data...), never bundled into this struct or a
+// bespoke per-function result class. See gmext-callback-design.
 [global, bind = typed_gml]
-class `[[PlayServicesAuthResult]]` prototype Object
+class `[[PlayServicesResult]]` prototype Object
 {
     [field] property success : bool { get; set; }
-    [field] property is_authenticated : bool { get; set; }
     [field] property error : string { get; set; }
 }
 
+// Data payloads for callback results. None of these carry success/error
+// themselves - that's always the shared PlayServicesResult status argument -
+// so none of these are Result-suffixed.
+// All string fields here are Optional<T>, not a fake-empty-string fallback -
+// a null string cannot be passed through a plain (non-Optional) string field's
+// wire codec safely (writeString has no null-guard), and undefined is a real,
+// distinct value from "" in GML.
 [global, bind = typed_gml]
 class `[[PlayServicesPlayerInfo]]` prototype Object
 {
-    [field] property player_id : string { get; set; }
-    [field] property display_name : string { get; set; }
-    [field] property title : string { get; set; }
-    [field] property icon_image_uri : string { get; set; }
-    [field] property hi_res_image_uri : string { get; set; }
+    [field, type_hint=`string?`] property player_id : gmval { get; set; }
+    [field, type_hint=`string?`] property display_name : gmval { get; set; }
+    [field, type_hint=`string?`] property title : gmval { get; set; }
+    [field, type_hint=`string?`] property icon_image_uri : gmval { get; set; }
+    [field, type_hint=`string?`] property hi_res_image_uri : gmval { get; set; }
 }
 
 [global, bind = typed_gml]
-class `[[PlayServicesPlayer]]` prototype Object
+class `[[PlayServicesPlayerStatsInfo]]` prototype Object
 {
-    [field] property success : bool { get; set; }
-    [field, type_hint=`PlayServicesPlayerInfo`] property player : gmval { get; set; }
-    [field] property error : string { get; set; }
-}
-
-[global, bind = typed_gml]
-class `[[PlayServicesPlayerStats]]` prototype Object
-{
-    [field] property success : bool { get; set; }
     [field] property average_session_length : real { get; set; }
     [field] property days_since_last_played : real { get; set; }
     [field] property number_of_purchases : real { get; set; }
@@ -144,158 +146,106 @@ class `[[PlayServicesPlayerStats]]` prototype Object
     [field] property high_spender_probability : real { get; set; }
     [field] property spend_probability : real { get; set; }
     [field] property total_spend_next_28_days : real { get; set; }
-    [field] property error : string { get; set; }
 }
 
+// revealed/unlocked image URIs are genuinely absent until the achievement
+// reaches that state.
 [global, bind = typed_gml]
 class `[[PlayServicesAchievement]]` prototype Object
 {
-    [field] property achievement_id : string { get; set; }
-    [field] property name : string { get; set; }
-    [field] property description : string { get; set; }
-    [field] property state : real { get; set; }
-    [field] property type : real { get; set; }
+    [field, type_hint=`string?`] property achievement_id : gmval { get; set; }
+    [field, type_hint=`string?`] property name : gmval { get; set; }
+    [field, type_hint=`string?`] property description : gmval { get; set; }
+    [field, type_hint=`PlayServicesAchievementState`] property state : gmval { get; set; }
+    [field, type_hint=`PlayServicesAchievementType`] property type : gmval { get; set; }
     [field] property current_steps : real { get; set; }
     [field] property total_steps : real { get; set; }
     [field] property last_updated_timestamp : real { get; set; }
     [field] property xp_value : real { get; set; }
-    [field] property revealed_image_uri : string { get; set; }
-    [field] property unlocked_image_uri : string { get; set; }
+    [field, type_hint=`string?`] property revealed_image_uri : gmval { get; set; }
+    [field, type_hint=`string?`] property unlocked_image_uri : gmval { get; set; }
 }
 
+// score_tag is documented as optional - a game may submit a score with no tag.
 [global, bind = typed_gml]
-class `[[PlayServicesAchievementList]]` prototype Object
-{
-    [field] property success : bool { get; set; }
-    [field, type_hint=`PlayServicesAchievement[]`] property achievements : gmval { get; set; }
-    [field] property error : string { get; set; }
-}
-
-[global, bind = typed_gml]
-class `[[PlayServicesScoreResult]]` prototype Object
+class `[[PlayServicesScoreSubmission]]` prototype Object
 {
     [field] property raw_score : real { get; set; }
-    [field] property formatted_score : string { get; set; }
-    [field] property score_tag : string { get; set; }
+    [field, type_hint=`string?`] property formatted_score : gmval { get; set; }
+    [field, type_hint=`string?`] property score_tag : gmval { get; set; }
     [field] property new_best : bool { get; set; }
 }
 
 [global, bind = typed_gml]
-class `[[PlayServicesScoreReport]]` prototype Object
+class `[[PlayServicesScoreReportInfo]]` prototype Object
 {
-    [field] property success : bool { get; set; }
-    [field] property leaderboard_id : string { get; set; }
-    [field] property score : real { get; set; }
-    [field] property score_tag : string { get; set; }
-    [field, type_hint=`PlayServicesScoreResult`] property daily : gmval { get; set; }
-    [field, type_hint=`PlayServicesScoreResult`] property weekly : gmval { get; set; }
-    [field, type_hint=`PlayServicesScoreResult`] property all_time : gmval { get; set; }
-    [field] property error : string { get; set; }
+    [field, type_hint=`PlayServicesScoreSubmission`] property daily : gmval { get; set; }
+    [field, type_hint=`PlayServicesScoreSubmission`] property weekly : gmval { get; set; }
+    [field, type_hint=`PlayServicesScoreSubmission`] property all_time : gmval { get; set; }
 }
 
 [global, bind = typed_gml]
 class `[[PlayServicesLeaderboardVariant]]` prototype Object
 {
-    [field] property collection : real { get; set; }
-    [field] property time_span : real { get; set; }
+    [field, type_hint=`PlayServicesLeaderboardCollection`] property collection : gmval { get; set; }
+    [field, type_hint=`PlayServicesLeaderboardTimeSpan`] property time_span : gmval { get; set; }
     [field] property has_player_info : bool { get; set; }
 }
 
 [global, bind = typed_gml]
 class `[[PlayServicesLeaderboard]]` prototype Object
 {
-    [field] property leaderboard_id : string { get; set; }
-    [field] property display_name : string { get; set; }
-    [field] property score_order : real { get; set; }
+    [field, type_hint=`string?`] property leaderboard_id : gmval { get; set; }
+    [field, type_hint=`string?`] property display_name : gmval { get; set; }
+    [field, type_hint=`PlayServicesLeaderboardScoreOrder`] property score_order : gmval { get; set; }
     [field, type_hint=`PlayServicesLeaderboardVariant[]`] property variants : gmval { get; set; }
 }
 
+// score_holder is genuinely absent when the leaderboard variant doesn't include
+// player info (see PlayServicesLeaderboardVariant.has_player_info). score_tag
+// is documented as optional - a game may submit a score with no tag.
 [global, bind = typed_gml]
 class `[[PlayServicesLeaderboardScore]]` prototype Object
 {
-    [field] property display_rank : string { get; set; }
-    [field] property display_score : string { get; set; }
+    [field, type_hint=`string?`] property display_rank : gmval { get; set; }
+    [field, type_hint=`string?`] property display_score : gmval { get; set; }
     [field] property raw_score : real { get; set; }
-    [field] property score_tag : string { get; set; }
+    [field, type_hint=`string?`] property score_tag : gmval { get; set; }
     [field] property timestamp_millis : real { get; set; }
-    [field, type_hint=`PlayServicesPlayerInfo`] property score_holder : gmval { get; set; }
+    [field, type_hint=`PlayServicesPlayerInfo?`] property score_holder : gmval { get; set; }
 }
 
-[global, bind = typed_gml]
-class `[[PlayServicesLeaderboardScores]]` prototype Object
-{
-    [field] property success : bool { get; set; }
-    [field, type_hint=`PlayServicesLeaderboard`] property leaderboard : gmval { get; set; }
-    [field, type_hint=`PlayServicesLeaderboardScore[]`] property scores : gmval { get; set; }
-    [field] property error : string { get; set; }
-}
-
+// cover_image_uri is genuinely absent when the game never set a cover image
+// for this snapshot.
 [global, bind = typed_gml]
 class `[[PlayServicesSnapshotMetadata]]` prototype Object
 {
-    [field] property unique_name : string { get; set; }
-    [field] property description : string { get; set; }
-    [field] property device_name : string { get; set; }
+    [field, type_hint=`string?`] property unique_name : gmval { get; set; }
+    [field, type_hint=`string?`] property description : gmval { get; set; }
+    [field, type_hint=`string?`] property device_name : gmval { get; set; }
     [field] property last_modified_timestamp : real { get; set; }
     [field] property played_time : real { get; set; }
     [field] property progress_value : real { get; set; }
     [field] property has_change_pending : bool { get; set; }
-    [field] property cover_image_uri : string { get; set; }
+    [field, type_hint=`string?`] property cover_image_uri : gmval { get; set; }
 }
 
+// Fields below split into two mutually-exclusive groups gated by is_conflict:
+// snapshot_metadata/data are present only when !is_conflict; conflict_id/
+// snapshot_metadata_local/data_local/snapshot_metadata_remote/data_remote are
+// present only when is_conflict. Optional<T>, not a fake-empty value, for the
+// group that doesn't apply to a given result.
 [global, bind = typed_gml]
-class `[[PlayServicesSnapshotMetadataList]]` prototype Object
-{
-    [field] property success : bool { get; set; }
-    [field, type_hint=`PlayServicesSnapshotMetadata[]`] property snapshots : gmval { get; set; }
-    [field] property error : string { get; set; }
-}
-
-[global, bind = typed_gml]
-class `[[PlayServicesSnapshotOpenResult]]` prototype Object
+class `[[PlayServicesSnapshotOpenInfo]]` prototype Object
 {
     [field] property is_conflict : bool { get; set; }
-    [field, type_hint=`PlayServicesSnapshotMetadata`] property snapshot_metadata : gmval { get; set; }
-    [field] property data : string { get; set; }
-    [field] property conflict_id : string { get; set; }
-    [field, type_hint=`PlayServicesSnapshotMetadata`] property snapshot_metadata_local : gmval { get; set; }
-    [field] property data_local : string { get; set; }
-    [field, type_hint=`PlayServicesSnapshotMetadata`] property snapshot_metadata_remote : gmval { get; set; }
-    [field] property data_remote : string { get; set; }
-}
-
-[global, bind = typed_gml]
-class `[[PlayServicesSnapshot]]` prototype Object
-{
-    [field] property success : bool { get; set; }
-    [field, type_hint=`PlayServicesSnapshotOpenResult`] property result : gmval { get; set; }
-    [field] property error : string { get; set; }
-}
-
-[global, bind = typed_gml]
-class `[[PlayServicesSavedGamesUIEvent]]` prototype Object
-{
-    [field] property result : real { get; set; }
-    [field, type_hint=`PlayServicesSnapshotMetadata`] property snapshot_metadata : gmval { get; set; }
-    [field] property error : string { get; set; }
-}
-
-[global, bind = typed_gml]
-class `[[PlayServicesTaskResult]]` prototype Object
-{
-    [field] property success : bool { get; set; }
-    [field] property value : string { get; set; }
-    [field] property error : string { get; set; }
-}
-
-// Envelope for callbacks that report their real data through a separate
-// argument instead of a value/data string field - see the async callback
-// signatures on the saved-games commit/resolve and player-search functions.
-[global, bind = typed_gml]
-class `[[PlayServicesResult]]` prototype Object
-{
-    [field] property success : bool { get; set; }
-    [field] property error : string { get; set; }
+    [field, type_hint=`PlayServicesSnapshotMetadata?`] property snapshot_metadata : gmval { get; set; }
+    [field, type_hint=`string?`] property data : gmval { get; set; }
+    [field, type_hint=`string?`] property conflict_id : gmval { get; set; }
+    [field, type_hint=`PlayServicesSnapshotMetadata?`] property snapshot_metadata_local : gmval { get; set; }
+    [field, type_hint=`string?`] property data_local : gmval { get; set; }
+    [field, type_hint=`PlayServicesSnapshotMetadata?`] property snapshot_metadata_remote : gmval { get; set; }
+    [field, type_hint=`string?`] property data_remote : gmval { get; set; }
 }
 
 // Enums
@@ -312,7 +262,7 @@ enum PlayServicesLeaderboardScoreOrder:int32 { SmallerIsBetter = 0, LargerIsBett
 [global, bind = typed_gml]
 enum PlayServicesSavedGamesConflictPolicy:int32 { Manual = -1, LongestPlaytime = 1, LastKnownGood = 2, MostRecentlyModified = 3, HighestProgress = 4, }
 [global, bind = typed_gml]
-enum PlayServicesSavedGamesUIResult:int32 { Cancelled = 0, Selected = 1, CreatedNew = 2, Deleted = 3, Error = -1, }
+enum PlayServicesSavedGamesUIResult:int32 { Cancelled = 0, Selected = 1, CreatedNew = 2, Error = -1, }
 
 // Synchronous pre-flight return code - reported before the underlying GMS call
 // is ever attempted. Ok means the call was accepted and the callback will fire

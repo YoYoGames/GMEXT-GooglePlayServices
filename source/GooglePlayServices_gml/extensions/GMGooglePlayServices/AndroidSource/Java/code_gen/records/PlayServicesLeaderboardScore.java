@@ -6,10 +6,11 @@ import ${YYAndroidPackageName}.GMExtWire;
 import ${YYAndroidPackageName}.codecs.*;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
-public record PlayServicesLeaderboardScore(String display_rank, String display_score, double raw_score, String score_tag, double timestamp_millis, PlayServicesPlayerInfo score_holder) implements GMExtWire.ITypedStruct
+public record PlayServicesLeaderboardScore(java.util.Optional<String> display_rank, java.util.Optional<String> display_score, double raw_score, java.util.Optional<String> score_tag, double timestamp_millis, java.util.Optional<PlayServicesPlayerInfo> score_holder) implements GMExtWire.ITypedStruct
 {
-    public static final int CODEC_ID = 11;
+    public static final int CODEC_ID = 8;
     @Override
     public void encode(GMExtWire.IByteWriter b)
     {

@@ -6,13 +6,14 @@ import ${YYAndroidPackageName}.GMExtWire;
 import ${YYAndroidPackageName}.codecs.*;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
-public record PlayServicesScoreResult(double raw_score, String formatted_score, String score_tag, boolean new_best) implements GMExtWire.ITypedStruct
+public record PlayServicesScoreSubmission(double raw_score, java.util.Optional<String> formatted_score, java.util.Optional<String> score_tag, boolean new_best) implements GMExtWire.ITypedStruct
 {
     public static final int CODEC_ID = 5;
     @Override
     public void encode(GMExtWire.IByteWriter b)
     {
-        PlayServicesScoreResultCodec.write(b, this);
+        PlayServicesScoreSubmissionCodec.write(b, this);
     }
 }

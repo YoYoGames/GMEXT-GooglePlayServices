@@ -5,7 +5,9 @@ package ${YYAndroidPackageName}.codecs;
 import java.nio.ByteBuffer;
 
 import ${YYAndroidPackageName}.GMExtWire;
+import java.util.Optional;
 import java.util.List;
+import ${YYAndroidPackageName}.enums.*;
 import ${YYAndroidPackageName}.records.*;
 
 public final class PlayServicesLeaderboardCodec {
@@ -14,11 +16,21 @@ public final class PlayServicesLeaderboardCodec {
     }
     public static PlayServicesLeaderboard read(ByteBuffer b)
     {
-        String leaderboard_id = GMExtWire.readString(b);
+        java.util.Optional<String> leaderboard_id = java.util.Optional.empty();
+        if (GMExtWire.readBool(b))
+        {
+            String __opt_leaderboard_id = GMExtWire.readString(b);
+            leaderboard_id = java.util.Optional.of(__opt_leaderboard_id);
+        }
 
-        String display_name = GMExtWire.readString(b);
+        java.util.Optional<String> display_name = java.util.Optional.empty();
+        if (GMExtWire.readBool(b))
+        {
+            String __opt_display_name = GMExtWire.readString(b);
+            display_name = java.util.Optional.of(__opt_display_name);
+        }
 
-        double score_order = GMExtWire.readF64(b);
+        PlayServicesLeaderboardScoreOrder score_order = PlayServicesLeaderboardScoreOrder.from(GMExtWire.readI32(b));
 
         java.util.List<PlayServicesLeaderboardVariant> variants = GMExtWire.readList(b, bb -> PlayServicesLeaderboardVariantCodec.read(bb));
 
@@ -27,11 +39,19 @@ public final class PlayServicesLeaderboardCodec {
 
     public static void write(GMExtWire.IByteWriter b, PlayServicesLeaderboard obj)
     {
-        GMExtWire.writeString(b, obj.leaderboard_id());
+        GMExtWire.writeBool(b, obj.leaderboard_id() != null && obj.leaderboard_id().isPresent());
+        if (obj.leaderboard_id() != null && obj.leaderboard_id().isPresent())
+        {
+            GMExtWire.writeString(b, obj.leaderboard_id().get());
+        }
 
-        GMExtWire.writeString(b, obj.display_name());
+        GMExtWire.writeBool(b, obj.display_name() != null && obj.display_name().isPresent());
+        if (obj.display_name() != null && obj.display_name().isPresent())
+        {
+            GMExtWire.writeString(b, obj.display_name().get());
+        }
 
-        GMExtWire.writeF64(b, obj.score_order());
+        GMExtWire.writeI32(b, obj.score_order().value());
 
         GMExtWire.writeList(b, obj.variants(), (bb, x) -> PlayServicesLeaderboardVariantCodec.write(bb, x));
 

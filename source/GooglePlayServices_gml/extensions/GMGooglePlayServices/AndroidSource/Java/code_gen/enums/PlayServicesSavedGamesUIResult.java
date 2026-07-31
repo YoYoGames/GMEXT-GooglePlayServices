@@ -7,7 +7,6 @@ public enum PlayServicesSavedGamesUIResult
     Cancelled((int)0),
     Selected((int)1),
     CreatedNew((int)2),
-    Deleted((int)3),
     Error((int)-1);
 
     private final int value;
@@ -29,8 +28,6 @@ public enum PlayServicesSavedGamesUIResult
                 return PlayServicesSavedGamesUIResult.Selected;
             case 2:
                 return PlayServicesSavedGamesUIResult.CreatedNew;
-            case 3:
-                return PlayServicesSavedGamesUIResult.Deleted;
             case -1:
                 return PlayServicesSavedGamesUIResult.Error;
             default:
