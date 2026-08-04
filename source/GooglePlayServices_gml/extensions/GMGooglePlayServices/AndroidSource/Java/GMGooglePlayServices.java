@@ -10,11 +10,17 @@ import ${YYAndroidPackageName}.GMExtWire.GMValue;
 import ${YYAndroidPackageName}.GMExtUtils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -188,14 +194,49 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         return message != null ? message : throwable.toString();
     }
 
-    // GMS quirk (GamesClientStatusCodes.NETWORK_ERROR_NO_DATA, 26504): a forced
-    // reload with nothing cached locally and nothing to fetch reports this instead
-    // of succeeding with an empty result - e.g. a fresh account with zero saved
-    // games. Treat it as "no data" rather than a real failure.
+    // GamesClientStatusCodes.NETWORK_ERROR_NO_DATA (26504) is genuinely ambiguous:
+    // GMS reports it both when the device is online and the player simply has no
+    // data yet (a documented GMS quirk - a forced reload with an empty result gets
+    // reported as this error instead of a clean empty success), and when the
+    // device is offline with nothing cached, where it truly doesn't know whether
+    // data exists. Only the caller who checks connectivity at the same moment can
+    // tell those apart - see isOnline().
     private static boolean isNoLocalDataError(Throwable throwable)
     {
         return throwable instanceof ApiException
             && ((ApiException)throwable).getStatusCode() == GamesClientStatusCodes.NETWORK_ERROR_NO_DATA;
+    }
+
+    // NET_CAPABILITY_VALIDATED (not just NET_CAPABILITY_INTERNET) confirms the
+    // network has actually been validated to reach the internet, not just that a
+    // transport (Wi-Fi/cellular) is up - e.g. excludes a captive portal with no
+    // real connectivity, which matters here since isNoLocalDataError() needs to
+    // know whether GMS could really have reached the server.
+    private static boolean isOnline()
+    {
+        Activity activity = activity();
+        if (activity == null)
+            return false;
+
+        ConnectivityManager connectivityManager =
+            (ConnectivityManager)activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null)
+            return false;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            Network network = connectivityManager.getActiveNetwork();
+            if (network == null)
+                return false;
+
+            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+            return capabilities != null
+                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
+        }
+
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
     }
 
     // -------------------------------------------------------------------------
@@ -1400,7 +1441,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             {
                 if (!task.isSuccessful())
                 {
-                    if (isNoLocalDataError(task.getException()))
+                    if (isNoLocalDataError(task.getException()) && isOnline())
                     {
                         callback.call(
                             new PlayServicesResult(true, ""),
