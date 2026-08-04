@@ -21,9 +21,11 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.images.ImageManager;
 import com.google.android.gms.games.AnnotatedData;
 import com.google.android.gms.games.AuthenticationResult;
+import com.google.android.gms.games.GamesClientStatusCodes;
 import com.google.android.gms.games.LeaderboardsClient;
 import com.google.android.gms.games.PlayGames;
 import com.google.android.gms.games.PlayGamesSdk;
@@ -184,6 +186,16 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         String message = throwable.getMessage();
         return message != null ? message : throwable.toString();
+    }
+
+    // GMS quirk (GamesClientStatusCodes.NETWORK_ERROR_NO_DATA, 26504): a forced
+    // reload with nothing cached locally and nothing to fetch reports this instead
+    // of succeeding with an empty result - e.g. a fresh account with zero saved
+    // games. Treat it as "no data" rather than a real failure.
+    private static boolean isNoLocalDataError(Throwable throwable)
+    {
+        return throwable instanceof ApiException
+            && ((ApiException)throwable).getStatusCode() == GamesClientStatusCodes.NETWORK_ERROR_NO_DATA;
     }
 
     // -------------------------------------------------------------------------
@@ -1388,6 +1400,15 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             {
                 if (!task.isSuccessful())
                 {
+                    if (isNoLocalDataError(task.getException()))
+                    {
+                        callback.call(
+                            new PlayServicesResult(true, ""),
+                            new GMExtWire.TypedArrayStream<>(PlayServicesSnapshotMetadata.class)
+                        );
+                        return;
+                    }
+
                     callback.call(
                         new PlayServicesResult(false, error(task.getException())),
                         new GMExtWire.TypedArrayStream<>(PlayServicesSnapshotMetadata.class)
