@@ -1,257 +1,190 @@
-// FUNCTIONS
 
 /**
- * @func GooglePlayServices_Achievements_GetStatus
- * @desc This function requests the Google Play Services API to query the status of the achievements for the current player.
- * @param {boolean} forceReload Should we force reload the achievements status.
- * @returns {real}
- * 
- * @event social
- * @member {string} type The string `"GooglePlayServices_Achievements_GetStatus"`
- * @member {real} ind The id of the request this callback refers to.
- * @member {string} data A json formatted string of an array of ${struct.AchievementStatusJSON}. This string can be parsed into a struct with the function ${function.json_parse}.
- * @event_end
- * 
- * @example
- * ```gml
- * GooglePlayServices_Achievements_GetStatus(achievementId);
- * ```
- * The code sample above will initialize the status querie for all the available achievements. The result can then be caught inside an ${event.social}.
- * ```gml
- * if(async_load[?"type"] == "GooglePlayServices_Achievements_GetStatus")
- * {
- *     var array = json_parse(async_load[?"data"])
- * 
- *     array_sort(array, function(_ach1, _ach2) { return _ach1.name < _ach2.name ? -1 : 1 });
- *     for(var a = 0 ; a < array_length(array) ; a++)
- *     {
- *         var struct = array[a];
- * 
- *         show_debug_message(struct);
- * 
- *         var ins = instance_create_depth(150+a*300,room_height/2-50,0,Obj_GooglePlayServices_Achievement_Entry)
- *         ins.ID = struct.id
- *         ins.description = struct.description
- *         ins.lastUpdatedTimestamp = struct.lastUpdatedTimestamp
- *         ins.name = struct.name
- *         ins.revealedImage = struct.revealedImage
- *         ins.state = struct.state
- *         ins.typeAchievement = struct.typeAchievement
- *         ins.unlockedImage = struct.unlockedImage
- *         ins.xpValue = struct.xpValue
- * 
- *         if(ins.typeAchievement == Achievement_TYPE_INCREMENTAL)
- *         {
- *             ins.currentSteps = struct.currentSteps
- *             ins.formattedCurrentSteps = struct.formattedCurrentSteps
- *             ins.formattedTotalSteps = struct.formattedTotalSteps
- *             ins.totalSteps = struct.totalSteps
- *         }
- *     }
- * }
- * ```
- * The code above shows a way of reading the returned data using the function ${function.json_parse}. This sample is taken from the demo project check the project for more context.
- * @func_end
- */
-function GooglePlayServices_Achievements_GetStatus() {}
-
-/** 
- * @func GooglePlayServices_Achievements_Increment
- * @desc This function requests the Google Play Services API to increment the achievement progress by a given amount of steps. Incremental achievements require a specific amount of steps before they are set as complete. You can also set the steps to a specific value using ${function.GooglePlayServices_Achievements_SetSteps}.
- * @param {string} achievementId The unique identifier of the achievement
- * @param {real} steps The amount of steps to increment by
- * @returns {real}
- * 
- * @event social
- * @member {string} type The string `"GooglePlayServices_Achievements_Increment"`
- * @member {real} ind The id of the request this callback refers to.
- * @member {boolean} success Whether or not the function request succeeded.
- * @member {string} achievement_id The unique name of the achievement
- * @event_end
- * 
- * @example
- * ```gml
- * GooglePlayServices_Achievements_Increment(achievementId, 1);
- * ```
- * The code sample above will increment the number of steps for the specified acheivement by 1. The result can be caught inside an ${event.social} as follows:
- * ```gml
- * if(async_load[?"type"] == "GooglePlayServices_Achievements_Increment")
- * if(async_load[?"success"])
- * {    
- *     //Done, let's continue
- * }
- * ```
- * The code above checks if the task was successful. This sample is taken from the demo project check the project for more context.
- * @func_end
- */
-function GooglePlayServices_Achievements_Increment() {}
-
-/** 
- * @func GooglePlayServices_Achievements_Reveal
- * @desc This function requests the Google Play Services API to change the state of a given achievement to **revealed** (${constant.AchievementState}) for the currently signed in player.
- * @param {string} achievementId The unique identifier of the achievement
- * @returns {real}
- * 
- * @event social 
- * @member {string} type The string `"GooglePlayServices_Achievements_Reveal"`
- * @member {real} ind The id of the request this callback refers to.
- * @member {boolean} success Whether or not the function request succeeded.
- * @member {string} achievement_id The unique name of the achievement
- * @event_end
- * 
- * @example
- * ```gml
- * GooglePlayServices_Achievements_Reveal(achievementId);
- * ```
- * The code sample above will set the state of the specified acheivement to revealed. The result can be caught inside an ${event.social} as follows:
- * ```gml
- * if(async_load[?"type"] == "GooglePlayServices_Achievements_Reveal")
- * if(async_load[?"success"])
- * {    
- *     //Done, let's continue
- * }
- * ```
- * The code above checks if the task was successful. This sample is taken from the demo project check the project for more context.
- * @func_end
- */
-function GooglePlayServices_Achievements_Reveal() {}
-
-/** 
- * @func GooglePlayServices_Achievements_SetSteps
- * @desc This function requests the Google Play Services API to set the achievement progress to a given amount of steps. Incremental achievements require a specific amount of steps before they are set as complete. You can also increment the steps by a given amount using ${function.GooglePlayServices_Achievements_Increment}.
- * @returns {real}
- * 
- * @event social 
- * @member {string} type The string `"GooglePlayServices_Achievements_SetSteps"`
- * @member {real} ind The id of the request this callback refers to.
- * @member {boolean} success Whether or not the function request succeeded.
- * @member {string} achievement_id The unique name of the achievement
- * @event_end
- * 
- * @example
- * ```gml
- * GooglePlayServices_Achievements_SetSteps(achievementId,1);
- * ```
- * The code sample above will set the number of steps for the specified acheivement to 1. The result can be caught inside an ${event.social} as follows:
- * ```gml
- * if(async_load[?"type"] == "GooglePlayServices_Achievements_SetSteps")
- * if(async_load[?"success"])
- * {    
- *     //Done, let's continue
- * }
- * ```
- * The code above checks if the task was successful. This sample is taken from the demo project check the project for more context.
- * @func_end
- */
-function GooglePlayServices_Achievements_SetSteps() {}
-
-/** 
- * @func GooglePlayServices_Achievements_Show
- * @desc This function will call the Google Play Services achievement overlay with all your achievement information.
- * @example
- * ```gml
- * GooglePlayServices_Achievements_Show()
- * ```
- * The code above will trigger the achievement overlay.
- * @func_end
- */
-function GooglePlayServices_Achievements_Show() {}
-
-
-/** 
- * @func GooglePlayServices_Achievements_Unlock
- * @desc This function requests the Google Play Services API to unlock (${constant.AchievementState}) the given achievement for the currently signed in player.
- * @param {string} achievementId The unique identifier of the achievement
- * @returns {real}
- * 
- * @event social 
- * @member {string} type The string `"GooglePlayServices_Achievements_Unlock"`
- * @member {real} ind The id of the request this callback refers to.
- * @member {boolean} success Whether or not the function request succeeded.
- * @member {string} achievement_id The unique name of the achievement
- * @event_end
- * 
- * @example
- * ```gml
- * GooglePlayServices_Achievements_Unlock(achievementId);
- * ```
- * The code sample above will set the state of the specified acheivement to unlocked. The result can be caught inside an ${event.social} as follows:
- * ```gml
- * if(async_load[?"type"] == "GooglePlayServices_Achievements_Unlock")
- * if(async_load[?"success"])
- * {    
- *     //Done, let's continue
- * }
- * ```
- * The code above checks if the task was successful. This sample is taken from the demo project check the project for more context.
- * @func_end
- */
-function GooglePlayServices_Achievements_Unlock() {}
-
-
-// CONSTANTS
-
-/** 
- * @const AchievementState
- * @desc These constants specify the achievement state.
- * @member Achievement_STATE_HIDDEN Indicates a hidden achievement.
- * @member Achievement_STATE_REVEALED Indicates a revealed achievement.
- * @member Achievement_STATE_UNLOCKED Indicates an unlocked achievement.
- * @const_end
- */
-
-/** 
- * @const AchievementType
- * @desc These constants specify the type on an achievement.
- * @member Achievement_TYPE_INCREMENTAL Indicates an incremental achievement.
- * @member Achievement_TYPE_STANDARD Indicates a standard achievement.
- * @const_end
- */
-
-// STRUCTS
-
-/** 
- * @struct AchievementStatusJSON
- * @desc Represents an achievement and its associated metadata.
- * @member {string} id The ID of this achievement.
- * @member {string} name The name of this achievement.
- * @member {string} description The description for this achievement.
- * @member {constant.AchievementState} state The AchievementState of the achievement.
- * @member {constant.AchievementType} typeAchievement The AchievementType of the achievement.
- * @member {real} xpValue The XP value of this achievement.
- * @member {real} lastUpdatedTimestamp The timestamp (in millseconds since epoch) at which this achievement was last updated.
- * @member {string} [revealedImage] A URI string that can be used to load the achievement's revealed image icon (see ${function.GooglePlayServices_UriToPath}). Not present if the achievement has no revealed image.
- * @member {string} [unlockedImage] A URI string that can be used to load the achievement's unlocked image icon (see ${function.GooglePlayServices_UriToPath}). Not present if the achievement has no revealed image.
- * @member {real} currentSteps The number of steps this user has gone toward unlocking this achievement. Only available for incremental achievement types (${constant.AchievementType}).
- * @member {string} [formattedCurrentSteps] The number of steps this user has gone toward unlocking this achievement (formatted for the user's locale). Only available for incremental achievement types (${constant.AchievementType}).
- * @member {real} [totalSteps] The total number of steps necessary to unlock this achievement. Only available for incremental achievement types (${constant.AchievementType}).
- * @member {string} [formattedTotalSteps] The total number of steps necessary to unlock this achievement, formatted for the user's locale. Only available for incremental achievement types (${constant.AchievementType}).
+ * @struct PlayServicesAchievement
+ * @desc An achievement's current state for the signed-in player. `current_steps`/`total_steps` are
+ * only meaningful for ${constant.PlayServicesAchievementType}.Incremental achievements - both are `0`
+ * for a Standard achievement.
+ * @member {String} [achievement_id] The achievement's unique ID.
+ * @member {String} [name] The achievement's display name.
+ * @member {String} [description] The achievement's description (typically the "how to unlock" text).
+ * @member {Enum.PlayServicesAchievementState} state The achievement's current state.
+ * @member {Enum.PlayServicesAchievementType} type Whether this achievement is standard or
+ * incremental.
+ * @member {Real} current_steps The number of steps completed so far. Incremental achievements only.
+ * @member {Real} total_steps The total number of steps required to unlock. Incremental achievements
+ * only.
+ * @member {Real} last_updated_timestamp When this achievement was last updated, in milliseconds since
+ * epoch.
+ * @member {Real} xp_value The XP awarded for unlocking this achievement.
+ * @member {String} [revealed_image_uri] A URI for the achievement's revealed-state image. Convert to
+ * a local path with ${function.play_services_uri_to_path} before loading it as a sprite. Only present
+ * once the achievement has been revealed.
+ * @member {String} [unlocked_image_uri] A URI for the achievement's unlocked-state image. Convert to
+ * a local path with ${function.play_services_uri_to_path} before loading it as a sprite. Only present
+ * once the achievement has been unlocked.
  * @struct_end
  */
 
-// MODULES
+/**
+ * @function play_services_achievements_show
+ * @desc Shows the system Achievements UI overlay, listing every achievement for this game.
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the UI was launched,
+ * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
+ * otherwise.
+ * @function_end
+ */
+
+/**
+ * @function play_services_achievements_increment
+ * @desc Increments an incremental achievement's progress by a number of steps. Has no effect beyond
+ * unlocking the achievement once `total_steps` is reached - calling it again afterward is harmless.
+ * Use ${function.play_services_achievements_set_steps} instead if you want to set an absolute step
+ * count rather than add to it.
+ * @param {String} achievement_id The unique ID of the (incremental) achievement.
+ * @param {Real} steps The number of steps to add.
+ * @param {Function} callback The function to call once the request completes.
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
+ * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
+ * otherwise.
+ * @event callback
+ * @desc Fires once, when the request completes or fails.
+ * @member {Struct.PlayServicesResult} status The request's outcome.
+ * @event_end
+ * @function_end
+ */
+
+/**
+ * @function play_services_achievements_reveal
+ * @desc Changes a hidden achievement's state to ${constant.PlayServicesAchievementState}.Revealed for
+ * the signed-in player, without unlocking it.
+ * @param {String} achievement_id The unique ID of the achievement.
+ * @param {Function} callback The function to call once the request completes.
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
+ * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
+ * otherwise.
+ * @event callback
+ * @desc Fires once, when the request completes or fails.
+ * @member {Struct.PlayServicesResult} status The request's outcome.
+ * @event_end
+ * @function_end
+ */
+
+/**
+ * @function play_services_achievements_set_steps
+ * @desc Sets an incremental achievement's progress to *at least* the given number of steps - it never
+ * decreases progress the player already has. Use
+ * ${function.play_services_achievements_increment} instead if you want to add to the current count
+ * rather than set an absolute value.
+ * @param {String} achievement_id The unique ID of the (incremental) achievement.
+ * @param {Real} steps The absolute step count to set.
+ * @param {Function} callback The function to call once the request completes.
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
+ * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
+ * otherwise.
+ * @event callback
+ * @desc Fires once, when the request completes or fails.
+ * @member {Struct.PlayServicesResult} status The request's outcome.
+ * @event_end
+ * @function_end
+ */
+
+/**
+ * @function play_services_achievements_unlock
+ * @desc Unlocks (${constant.PlayServicesAchievementState}.Unlocked) the given achievement for the
+ * signed-in player. For an incremental achievement, this immediately completes it regardless of its
+ * current step count.
+ * @param {String} achievement_id The unique ID of the achievement.
+ * @param {Function} callback The function to call once the request completes.
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
+ * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
+ * otherwise.
+ * @event callback
+ * @desc Fires once, when the request completes or fails.
+ * @member {Struct.PlayServicesResult} status The request's outcome.
+ * @event_end
+ * @example
+ * ```gml
+ * play_services_achievements_unlock("CgkI....", function(_status)
+ * {
+ *     if (_status.success)
+ *         show_debug_message("Achievement unlocked");
+ * });
+ * ```
+ * @function_end
+ */
+
+/**
+ * @function play_services_achievements_get_status
+ * @desc Loads the current state of every achievement for this game, for the signed-in player.
+ * @param {Bool} force_reload If `true`, bypasses the local cache and fetches fresh data from the
+ * server.
+ * @param {Function} callback The function to call once the load completes.
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
+ * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
+ * otherwise.
+ * @event callback
+ * @desc Fires once, when the load completes or fails.
+ * @member {Struct.PlayServicesResult} status The load's outcome.
+ * @member {Array[Struct.PlayServicesAchievement]} achievements Every achievement's current state.
+ * Empty on failure.
+ * @event_end
+ * @example
+ * ```gml
+ * play_services_achievements_get_status(false, function(_status, _achievements)
+ * {
+ *     if (!_status.success) return;
+ *
+ *     for (var i = 0; i < array_length(_achievements); i++)
+ *     {
+ *         var _achievement = _achievements[i];
+ *         show_debug_message($"{_achievement.name}: {_achievement.state}");
+ *     }
+ * });
+ * ```
+ * @function_end
+ */
+
+/**
+ * @const PlayServicesAchievementState
+ * @desc An achievement's unlock state.
+ * @member Unlocked The achievement has been unlocked.
+ * @member Revealed The achievement is visible to the player but not yet unlocked.
+ * @member Hidden The achievement's existence is not yet shown to the player.
+ * @const_end
+ */
+
+/**
+ * @const PlayServicesAchievementType
+ * @desc Whether an achievement unlocks all at once or tracks incremental progress.
+ * @member Standard Unlocked in a single step - ${function.play_services_achievements_unlock} only.
+ * @member Incremental Tracks progress via `current_steps`/`total_steps` -
+ * ${function.play_services_achievements_increment}/${function.play_services_achievements_set_steps}
+ * apply.
+ * @const_end
+ */
 
 /**
  * @module achievements
  * @title Achievements
- * @desc Achievements can be a great way to increase your users' engagement within your game. You can implement achievements in your game to encourage players to experiment with features they might not normally use, or to approach your game with entirely different play styles. Achievements can also be a fun way for players to compare their progress with each other and engage in light-hearted competition.
- * 
+ * @desc Unlocking, revealing, and tracking progress on achievements, plus the system Achievements UI.
+ *
  * @section_func
- * @desc The following functions are provided for working with achievements:
- * @reference GooglePlayServices_Achievements_*
+ * @ref play_services_achievements_show
+ * @ref play_services_achievements_increment
+ * @ref play_services_achievements_reveal
+ * @ref play_services_achievements_set_steps
+ * @ref play_services_achievements_unlock
+ * @ref play_services_achievements_get_status
  * @section_end
- * 
- * @section_const
- * @desc The following constants are provided to be used as input arguments or output values:
- * @reference AchievementState
- * @reference AchievementType
- * @section_end
- * 
+ *
  * @section_struct
- * @desc The following structurs are used as output values from the function calls to the GooglePlayServices API:
- * @reference AchievementStatusJSON
+ * @ref PlayServicesAchievement
  * @section_end
- * 
+ *
+ * @section_const
+ * @ref PlayServicesAchievementState
+ * @ref PlayServicesAchievementType
+ * @section_end
+ *
  * @module_end
  */
-

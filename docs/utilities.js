@@ -1,47 +1,38 @@
 
 /**
- * @func GooglePlayServices_UriToPath
- * @desc Some of the functions callbacks in this API return URIs (unique resource identifiers). However if you need to open these files or load them as images (using the ${function.sprite_add} function) it is necessary to convert these URIs into paths. This function requests the Google Play Services API for the path to a given URI.
- * @param {string} uri The URI to get the path from.
- * @returns {real}
- * 
- * @event social
- * @member {string} type The string `"GooglePlayServices_UriToPath"`
- * @member {boolean} success Whether or not the function request succeeded.
- * @member {real} ind The id of the request this callback refers to.
- * @member {string} path The path to the resource.
+ * @function play_services_uri_to_path
+ * @desc Downloads and converts a Play Games image URI (as returned in `icon_image_uri`,
+ * `hi_res_image_uri`, `cover_image_uri`, etc. throughout this extension) into a local file path,
+ * suitable for loading with ${function.sprite_add}. The image is fetched from the network if not
+ * already cached and written to a temporary PNG file.
+ * @param {String} uri The image URI to resolve, as returned by another function in this extension.
+ * @param {Function} callback The function to call once the download/conversion completes.
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
+ * ${constant.PlayServicesError}.ActivityNull otherwise.
+ * @event callback
+ * @desc Fires once, when the download completes, fails, or times out (after 30 seconds).
+ * @member {Struct.PlayServicesResult} status The conversion's outcome.
+ * @member {String} [path] The local file path to the downloaded image. Only present on success.
  * @event_end
- * 
  * @example
  * ```gml
- * var request = GooglePlayServices_UriToPath(uri)
- * ```
- * The code sample above save the identifier that can be used inside ${event.social}.
- * ```gml
- * if(async_load[? "type"] == "GooglePlayServices_UriToPath")
- * if(async_load[?"ind"] == request)
+ * play_services_uri_to_path(_player.icon_image_uri, function(_status, _path = undefined)
  * {
- *     if(!async_load[?"success"])
- *        exit
- * 
- *     sprite = sprite_add(async_load[?"path"], 0, 0, 0, 0, 0);
- * }
+ *     if (_status.success)
+ *         icon_sprite = sprite_add(_path, 1, false, false, 0, 0);
+ * });
  * ```
- * The code above matches the response against the correct event type and request identifier (ind) . And loads the resolved path as a sprite using the ${function.sprite_add} function.
- * @func_end
+ * @function_end
  */
-function GooglePlayServices_UriToPath() {}
-
 
 /**
  * @module utilities
  * @title Utilities
- * @desc This modules provides the user with some utility functions.
- * 
+ * @desc Helper functions for working with data returned by other modules.
+ *
  * @section_func
- * @desc The following functions are provided for helping with development:
- * @reference GooglePlayServices_UriToPath
+ * @ref play_services_uri_to_path
  * @section_end
- * 
+ *
  * @module_end
  */

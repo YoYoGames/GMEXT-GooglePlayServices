@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Home - GMEXT-GooglePlayServices</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+        <link href="assets/css/gmext_style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Home";
+        var mkdocs_page_input_path = "home.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/gml.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> GMEXT-GooglePlayServices
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="google_setup.html">Google Setup</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="extension_setup.html">Extension Setup</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="general.html">General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="player.html">Player</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="friends.html">Friends</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="achievements.html">Achievements</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="leaderboards.html">Leaderboards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="savedgames.html">Saved Games</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="utilities.html">Utilities</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">GMEXT-GooglePlayServices</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Home</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/YoYoGames/GMEXT-GooglePlayServices/edit/master/docs/home.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <p><a id="top"></a></p>
+<h1 id="googleplayservices"><strong>GooglePlayServices</strong></h1>
+<h2 id="extensions-features">Extension's Features</h2>
+<ul>
+<li>Sign in with Google Play Games Services and check/request authentication state</li>
+<li>Read the current player's profile, stats, and friends list (with consent handling)</li>
+<li>Show the Player Search and Player Profile Compare system UIs</li>
+<li>Unlock/reveal/increment achievements and show the Achievements system UI</li>
+<li>Submit and load leaderboard scores, and show the Leaderboards system UI</li>
+<li>Save and load player progress with the Saved Games service, including conflict resolution</li>
+<li>Convert a Play Games image URI into a local file path for use with <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Asset_Management/Sprites/Sprite_Manipulation/sprite_add.htm">sprite_add</a></li>
+</ul>
+<h2 id="introduction">Introduction</h2>
+<p>This extension wraps Google Play Games Services <strong>v2</strong> for <strong>Android</strong>. Every <code>play_services_*</code>
+function returns a <a href="general.html#playserviceserror">PlayServicesError</a> synchronously - <code>Ok</code> means the call was accepted
+and, if it takes a <code>callback</code>, that callback will fire once with the real result; any other value
+means the call was rejected before ever reaching Google Play (not authenticated, no activity, or an
+invalid argument) and the callback is never touched.</p>
+<p>Every callback fires exactly once, <code>callback.call(status, data...)</code>: <code>status</code> is always a
+<a href="general.html#playservicesresult">PlayServicesResult</a> carrying just success/error, and the real payload rides as further,
+separate positional arguments - never bundled into a single per-function result struct. Check
+<code>status.success</code> before reading anything else.</p>
+<p>Most functions require the player to be signed in first - call <a href="general.html#play_services_sign_in">play_services_sign_in</a> (or
+rely on the automatic sign-in attempt made at game start) before calling anything else. A handful of
+functions launch a native system UI (achievements, leaderboards, saved games picker, player search,
+player profile compare) instead of returning data directly.</p>
+<h2 id="guides">Guides</h2>
+<p>Guides for the GooglePlayServices extension.</p>
+<ul>
+<li><a href="google_setup.html">Google Setup</a></li>
+<li><a href="extension_setup.html">Extension Setup</a></li>
+<li><a href="getting_started.html">Getting Started</a></li>
+</ul>
+<h2 id="modules">Modules</h2>
+<p>The following are the available modules for the GooglePlayServices extension:</p>
+<ul>
+<li><a href="general.html">General</a></li>
+<li><a href="player.html">Player</a></li>
+<li><a href="friends.html">Friends</a></li>
+<li><a href="achievements.html">Achievements</a></li>
+<li><a href="leaderboards.html">Leaderboards</a></li>
+<li><a href="savedgames.html">Saved Games</a></li>
+<li><a href="utilities.html">Utilities</a></li>
+</ul>
+<p><br></p>
+<hr />
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><p align="center">GameMaker 2026</p></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/YoYoGames/GMEXT-GooglePlayServices" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/gml.min.js"></script>
+      <script src="assets/js/gmext_script.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
