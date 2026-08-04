@@ -23,7 +23,6 @@
     {"name":"GMGooglePlayServices","order":2,"path":"extensions/GMGooglePlayServices/GMGooglePlayServices.yy",},
     {"name":"fnt_gm_20","order":1,"path":"fonts/fnt_gm_20/fnt_gm_20.yy",},
     {"name":"fnt_gm_30","order":2,"path":"fonts/fnt_gm_30/fnt_gm_30.yy",},
-    {"name":"changelog","order":7,"path":"notes/changelog/changelog.yy",},
     {"name":"obj_gm_text","order":1,"path":"objects/obj_gm_text/obj_gm_text.yy",},
     {"name":"obj_gm_textbox","order":2,"path":"objects/obj_gm_textbox/obj_gm_textbox.yy",},
     {"name":"obj_googlePlayServices_friends","order":1,"path":"objects/obj_googlePlayServices_friends/obj_googlePlayServices_friends.yy",},
