@@ -37,7 +37,7 @@ uri_to_path_callback = function(_status, _path)
 
 function slot_open(_slot_name)
 {
-	play_services_saved_games_open(_slot_name, function(_status, _opened)
+	play_services_saved_games_open(_slot_name, false, PlayServicesSavedGamesConflictPolicy.MostRecentlyModified, function(_status, _opened)
 	{
 	    show_debug_message(_status);
 

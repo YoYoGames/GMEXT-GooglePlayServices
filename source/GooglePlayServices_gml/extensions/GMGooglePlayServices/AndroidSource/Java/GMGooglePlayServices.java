@@ -301,7 +301,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             {
                 if (task.isSuccessful() && task.getResult() != null)
                 {
-                    callback.call(new PlayServicesResult(true, ""), Optional.of(playerToInfo(task.getResult())));
+                    callback.call(new PlayServicesResult(true, ""), playerToInfo(task.getResult()));
                 }
                 else
                 {
@@ -411,7 +411,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     return;
                 }
 
-                callback.call(new PlayServicesResult(true, ""), Optional.of(playerToInfo(player)));
+                callback.call(new PlayServicesResult(true, ""), playerToInfo(player));
             });
 
         return PlayServicesError.Ok;
@@ -518,7 +518,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             try
             {
                 for (Player player : buffer)
-                    players.add(playerToInfo(player));
+                    players.add(playerToInfo(player).orElseThrow());
 
                 hasMore = buffer.getCount() > 0;
             }
@@ -1269,7 +1269,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             callback.call(
                 new PlayServicesResult(true, ""),
                 PlayServicesSavedGamesUIResult.Selected,
-                Optional.of(snapshotMetadataToRecord(metadata))
+                snapshotMetadataToRecord(metadata)
             );
             return;
         }
@@ -1304,49 +1304,6 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return PlayServicesError.InvalidArgument;
 
         commitSnapshot(snapshot, options, callback);
-        return PlayServicesError.Ok;
-    }
-
-    public PlayServicesError play_services_saved_games_commit_new(
-        PlayServicesSavedGameCommitOptions options,
-        final GMFunction callback)
-    {
-        if (!isAuthenticated())
-            return PlayServicesError.NotAuthenticated;
-
-        Activity activity = activity();
-        if (activity == null)
-            return PlayServicesError.ActivityNull;
-
-        if (options == null)
-            return PlayServicesError.InvalidArgument;
-
-        String name = options.name();
-
-        PlayGames.getSnapshotsClient(activity)
-            .open(
-                name,
-                true,
-                SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
-            .addOnCompleteListener(task ->
-            {
-                if (!task.isSuccessful())
-                {
-                    callback.call(new PlayServicesResult(false, error(task.getException())), Optional.empty());
-                    return;
-                }
-
-                Snapshot snapshot = task.getResult().getData();
-                if (snapshot == null)
-                {
-                    callback.call(new PlayServicesResult(false, "No snapshot was returned."), Optional.empty());
-                    return;
-                }
-
-                trackSnapshot(snapshot.getMetadata().getUniqueName(), snapshot);
-                commitSnapshot(snapshot, options, callback);
-            });
-
         return PlayServicesError.Ok;
     }
 
@@ -1402,7 +1359,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                         snapshots.remove(name);
 
                         if (task.isSuccessful())
-                            callback.call(new PlayServicesResult(true, ""), Optional.of(snapshotMetadataToRecord(task.getResult())));
+                            callback.call(new PlayServicesResult(true, ""), snapshotMetadataToRecord(task.getResult()));
                         else
                             callback.call(new PlayServicesResult(false, error(task.getException())), Optional.empty());
                     }));
@@ -1447,7 +1404,15 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     try
                     {
                         for (SnapshotMetadata metadata : buffer)
-                            snapshotList.add(snapshotMetadataToRecord(metadata));
+                            snapshotList.add(snapshotMetadataToRecord(metadata).orElseThrow());
+                    }
+                    catch (Exception exception)
+                    {
+                        callback.call(
+                            new PlayServicesResult(false, error(exception)),
+                            new GMExtWire.TypedArrayStream<>(PlayServicesSnapshotMetadata.class)
+                        );
+                        return;
                     }
                     finally
                     {
@@ -1463,26 +1428,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
     public PlayServicesError play_services_saved_games_open(
         String name,
+        boolean create_if_not_found,
+        PlayServicesSavedGamesConflictPolicy conflict_policy,
         final GMFunction callback)
-    {
-        return openSnapshot(
-            name,
-            SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED,
-            false,
-            callback
-        );
-    }
-
-    public PlayServicesError play_services_saved_games_open_conflict(String name, PlayServicesSavedGamesConflictPolicy conflict_policy, GMFunction callback)
-    {
-        return openSnapshot(name, (int)conflict_policy.value(), true, callback);
-    }
-
-    private PlayServicesError openSnapshot(
-        String name,
-        int policy,
-        boolean includeConflict,
-        GMFunction callback)
     {
         if (!isAuthenticated())
             return PlayServicesError.NotAuthenticated;
@@ -1495,7 +1443,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         // Snapshot.readFully() (synchronous disk I/O) which must not run on the UI
         // thread. Callback delivery is thread-agnostic (marshalled via DispatchQueue).
         PlayGames.getSnapshotsClient(activity)
-            .open(name, false, policy)
+            .open(name, create_if_not_found, (int)conflict_policy.value())
             .addOnCompleteListener(background, task ->
             {
                 if (!task.isSuccessful())
@@ -1506,9 +1454,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
                 try
                 {
-                    PlayServicesSnapshotOpenInfo response =
-                        buildSnapshotOpenResult(task.getResult(), includeConflict);
-
+                    PlayServicesSnapshotOpenInfo response = buildSnapshotOpenResult(task.getResult());
                     callback.call(new PlayServicesResult(true, ""), Optional.of(response));
                 }
                 catch (Exception exception)
@@ -1520,11 +1466,13 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         return PlayServicesError.Ok;
     }
 
-    // Shared by openSnapshot and play_services_saved_games_resolve_conflict - both wrap
-    // Task<DataOrConflict<Snapshot>> and need identical is_conflict/metadata handling.
+    // Shared by play_services_saved_games_open and play_services_saved_games_resolve_conflict -
+    // both wrap Task<DataOrConflict<Snapshot>> and need identical is_conflict/metadata handling.
+    // Only PlayServicesSavedGamesConflictPolicy.Manual can ever produce a conflict result (every
+    // other policy value makes GMS auto-resolve), so there is no separate "reject conflicts" gate
+    // here - a caller passing Manual is by definition prepared to handle one.
     private PlayServicesSnapshotOpenInfo buildSnapshotOpenResult(
-        DataOrConflict<Snapshot> result,
-        boolean includeConflict) throws Exception
+        DataOrConflict<Snapshot> result) throws Exception
     {
         if (!result.isConflict())
         {
@@ -1537,7 +1485,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
             return new PlayServicesSnapshotOpenInfo(
                 false,
-                Optional.of(snapshotMetadataToRecord(snapshot.getMetadata())),
+                snapshotMetadataToRecord(snapshot.getMetadata()),
                 Optional.of(readSnapshot(snapshot)),
                 Optional.empty(),
                 Optional.empty(),
@@ -1547,9 +1495,6 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             );
         }
 
-        if (!includeConflict)
-            throw new IllegalStateException("A Saved Games conflict was returned.");
-
         conflictLocal = result.getConflict().getConflictingSnapshot();
         conflictRemote = result.getConflict().getSnapshot();
 
@@ -1558,9 +1503,9 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             Optional.empty(),
             Optional.empty(),
             Optional.ofNullable(result.getConflict().getConflictId()),
-            Optional.of(snapshotMetadataToRecord(conflictLocal.getMetadata())),
+            snapshotMetadataToRecord(conflictLocal.getMetadata()),
             Optional.of(readSnapshot(conflictLocal)),
-            Optional.of(snapshotMetadataToRecord(conflictRemote.getMetadata())),
+            snapshotMetadataToRecord(conflictRemote.getMetadata()),
             Optional.of(readSnapshot(conflictRemote))
         );
     }
@@ -1650,7 +1595,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                     // resolveConflict() returns the same DataOrConflict<Snapshot> shape open()
                     // does - it can itself race into a fresh conflict, so only clear the retry
                     // state when the result actually isn't conflicted anymore.
-                    PlayServicesSnapshotOpenInfo data = buildSnapshotOpenResult(result, true);
+                    PlayServicesSnapshotOpenInfo data = buildSnapshotOpenResult(result);
 
                     if (!result.isConflict())
                     {
@@ -1719,7 +1664,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             // Google typically returns at most one player from search UI
             Player selected = results.get(0);
 
-            callback.call(new PlayServicesResult(true, ""), Optional.of(playerToInfo(selected)));
+            callback.call(new PlayServicesResult(true, ""), playerToInfo(selected));
         }
         catch (Exception exception)
         {

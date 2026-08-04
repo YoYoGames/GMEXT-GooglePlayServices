@@ -81,13 +81,9 @@ function play_services_saved_games_show_saved_games_ui(title: string, button_add
 [global, bind = typed_gml, type_hint=`PlayServicesError`]
 function play_services_saved_games_commit_and_close([type_hint=`PlayServicesSavedGameCommitOptions`] options: gmval, callback: func): gmval;
 [global, bind = typed_gml, type_hint=`PlayServicesError`]
-function play_services_saved_games_commit_new([type_hint=`PlayServicesSavedGameCommitOptions`] options: gmval, callback: func): gmval;
-[global, bind = typed_gml, type_hint=`PlayServicesError`]
 function play_services_saved_games_load(force_reload: bool, callback: func): gmval;
 [global, bind = typed_gml, type_hint=`PlayServicesError`]
-function play_services_saved_games_open(name: string, callback: func): gmval;
-[global, bind = typed_gml, type_hint=`PlayServicesError`]
-function play_services_saved_games_open_conflict(name: string, [type_hint=`PlayServicesSavedGamesConflictPolicy`] conflict_policy, callback: func): gmval;
+function play_services_saved_games_open(name: string, create_if_not_found: bool, [type_hint=`PlayServicesSavedGamesConflictPolicy`] conflict_policy, callback: func): gmval;
 [global, bind = typed_gml, type_hint=`PlayServicesError`]
 function play_services_saved_games_delete(name: string, callback: func): gmval;
 [global, bind = typed_gml, type_hint=`PlayServicesError`]

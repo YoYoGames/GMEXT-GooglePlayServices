@@ -14,7 +14,7 @@ play_services_saved_games_show_saved_games_ui(
         switch (_outcome)
         {
             case PlayServicesSavedGamesUIResult.Selected:
-                play_services_saved_games_open(_metadata.unique_name, function(_open_status, _opened)
+                play_services_saved_games_open(_metadata.unique_name, false, PlayServicesSavedGamesConflictPolicy.MostRecentlyModified, function(_open_status, _opened)
                 {
                     if (!_open_status.success)
                         show_debug_message(_open_status.error);

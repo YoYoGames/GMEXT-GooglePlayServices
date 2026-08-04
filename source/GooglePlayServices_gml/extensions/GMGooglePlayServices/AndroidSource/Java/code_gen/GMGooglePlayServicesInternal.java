@@ -578,26 +578,6 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         return 0;
     }
 
-    public double __EXT_NATIVE__play_services_saved_games_commit_new(ByteBuffer __arg_buffer, double __arg_buffer_length, ByteBuffer __ret_buffer, double __ret_buffer_length)
-    {
-        GMExtWire.order(__arg_buffer);
-
-        // field: options, type: struct PlayServicesSavedGameCommitOptions
-        PlayServicesSavedGameCommitOptions options = PlayServicesSavedGameCommitOptionsCodec.read(__arg_buffer);
-
-        // field: callback, type: Function
-        GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
-
-        PlayServicesError __result = play_services_saved_games_commit_new(options, callback);
-
-        GMExtWire.order(__ret_buffer);
-        GMExtWire.IByteWriter __ret_buffer_writer = new GMExtWire.GMBufferWriter(__ret_buffer);
-        // return: __result, type: enum PlayServicesError
-        GMExtWire.writeI32(__ret_buffer_writer, __result.value());
-
-        return 0;
-    }
-
     public double __EXT_NATIVE__play_services_saved_games_load(ByteBuffer __arg_buffer, double __arg_buffer_length, ByteBuffer __ret_buffer, double __ret_buffer_length)
     {
         GMExtWire.order(__arg_buffer);
@@ -625,25 +605,8 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         // field: name, type: String
         String name = GMExtWire.readString(__arg_buffer);
 
-        // field: callback, type: Function
-        GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
-
-        PlayServicesError __result = play_services_saved_games_open(name, callback);
-
-        GMExtWire.order(__ret_buffer);
-        GMExtWire.IByteWriter __ret_buffer_writer = new GMExtWire.GMBufferWriter(__ret_buffer);
-        // return: __result, type: enum PlayServicesError
-        GMExtWire.writeI32(__ret_buffer_writer, __result.value());
-
-        return 0;
-    }
-
-    public double __EXT_NATIVE__play_services_saved_games_open_conflict(ByteBuffer __arg_buffer, double __arg_buffer_length, ByteBuffer __ret_buffer, double __ret_buffer_length)
-    {
-        GMExtWire.order(__arg_buffer);
-
-        // field: name, type: String
-        String name = GMExtWire.readString(__arg_buffer);
+        // field: create_if_not_found, type: Bool
+        boolean create_if_not_found = GMExtWire.readBool(__arg_buffer);
 
         // field: conflict_policy, type: enum PlayServicesSavedGamesConflictPolicy
         PlayServicesSavedGamesConflictPolicy conflict_policy = PlayServicesSavedGamesConflictPolicy.from(GMExtWire.readI32(__arg_buffer));
@@ -651,7 +614,7 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        PlayServicesError __result = play_services_saved_games_open_conflict(name, conflict_policy, callback);
+        PlayServicesError __result = play_services_saved_games_open(name, create_if_not_found, conflict_policy, callback);
 
         GMExtWire.order(__ret_buffer);
         GMExtWire.IByteWriter __ret_buffer_writer = new GMExtWire.GMBufferWriter(__ret_buffer);

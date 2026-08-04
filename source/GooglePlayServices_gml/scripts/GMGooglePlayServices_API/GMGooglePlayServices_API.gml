@@ -2644,38 +2644,6 @@ function play_services_saved_games_commit_and_close(_options, _callback)
 }
 
 /**
- * @param {Struct.PlayServicesSavedGameCommitOptions} _options
- * @param {Function} _callback
- * @returns {Enum.PlayServicesError}
- */
-function play_services_saved_games_commit_new(_options, _callback)
-{
-    var __available__ = __GMGooglePlayServices_is_available();
-    if (!__available__) return;
-
-    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
-
-    var __args_buffer = __ext_core_get_args_buffer();
-
-    // param: _options, type: struct PlayServicesSavedGameCommitOptions
-    if (_options.__uid != 1866852405) show_error($"{_GMFUNCTION_} :: _options expected PlayServicesSavedGameCommitOptions", true);
-    __PlayServicesSavedGameCommitOptions_encode(_options, __args_buffer, buffer_tell(__args_buffer), _GMFUNCTION_);
-
-    // param: _callback, type: Function
-    if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
-    buffer_write(__args_buffer, buffer_u64, _callback_handle);
-
-    var __ret_buffer = __ext_core_get_ret_buffer();
-
-    var __return_value__ = __play_services_saved_games_commit_new(buffer_get_address(__args_buffer), buffer_tell(__args_buffer), buffer_get_address(__ret_buffer), buffer_get_size(__ret_buffer));
-
-    var __result__ = undefined;
-    __result__ = buffer_read(__ret_buffer, buffer_s32);
-    return __result__;
-}
-
-/**
  * @param {Bool} _force_reload
  * @param {Function} _callback
  * @returns {Enum.PlayServicesError}
@@ -2709,44 +2677,12 @@ function play_services_saved_games_load(_force_reload, _callback)
 
 /**
  * @param {String} _name
- * @param {Function} _callback
- * @returns {Enum.PlayServicesError}
- */
-function play_services_saved_games_open(_name, _callback)
-{
-    var __available__ = __GMGooglePlayServices_is_available();
-    if (!__available__) return;
-
-    var __dispatcher__ = __GMGooglePlayServices_get_dispatcher();
-
-    var __args_buffer = __ext_core_get_args_buffer();
-
-    // param: _name, type: String
-    if (!is_string(_name)) show_error($"{_GMFUNCTION_} :: _name expected string", true);
-    buffer_write(__args_buffer, buffer_u32, string_byte_length(_name));
-    buffer_write(__args_buffer, buffer_string, _name);
-
-    // param: _callback, type: Function
-    if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
-    buffer_write(__args_buffer, buffer_u64, _callback_handle);
-
-    var __ret_buffer = __ext_core_get_ret_buffer();
-
-    var __return_value__ = __play_services_saved_games_open(buffer_get_address(__args_buffer), buffer_tell(__args_buffer), buffer_get_address(__ret_buffer), buffer_get_size(__ret_buffer));
-
-    var __result__ = undefined;
-    __result__ = buffer_read(__ret_buffer, buffer_s32);
-    return __result__;
-}
-
-/**
- * @param {String} _name
+ * @param {Bool} _create_if_not_found
  * @param {Enum.PlayServicesSavedGamesConflictPolicy} _conflict_policy
  * @param {Function} _callback
  * @returns {Enum.PlayServicesError}
  */
-function play_services_saved_games_open_conflict(_name, _conflict_policy, _callback)
+function play_services_saved_games_open(_name, _create_if_not_found, _conflict_policy, _callback)
 {
     var __available__ = __GMGooglePlayServices_is_available();
     if (!__available__) return;
@@ -2759,6 +2695,10 @@ function play_services_saved_games_open_conflict(_name, _conflict_policy, _callb
     if (!is_string(_name)) show_error($"{_GMFUNCTION_} :: _name expected string", true);
     buffer_write(__args_buffer, buffer_u32, string_byte_length(_name));
     buffer_write(__args_buffer, buffer_string, _name);
+
+    // param: _create_if_not_found, type: Bool
+    if (!is_bool(_create_if_not_found)) show_error($"{_GMFUNCTION_} :: _create_if_not_found expected bool", true);
+    buffer_write(__args_buffer, buffer_bool, _create_if_not_found);
 
     // param: _conflict_policy, type: enum PlayServicesSavedGamesConflictPolicy
 
@@ -2772,7 +2712,7 @@ function play_services_saved_games_open_conflict(_name, _conflict_policy, _callb
 
     var __ret_buffer = __ext_core_get_ret_buffer();
 
-    var __return_value__ = __play_services_saved_games_open_conflict(buffer_get_address(__args_buffer), buffer_tell(__args_buffer), buffer_get_address(__ret_buffer), buffer_get_size(__ret_buffer));
+    var __return_value__ = __play_services_saved_games_open(buffer_get_address(__args_buffer), buffer_tell(__args_buffer), buffer_get_address(__ret_buffer), buffer_get_size(__ret_buffer));
 
     var __result__ = undefined;
     __result__ = buffer_read(__ret_buffer, buffer_s32);

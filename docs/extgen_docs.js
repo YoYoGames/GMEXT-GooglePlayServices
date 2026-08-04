@@ -230,14 +230,6 @@
  */
 
 /**
- * @function_partial play_services_saved_games_commit_new
- * @param {Struct.PlayServicesSavedGameCommitOptions} options
- * @param {Function} callback
- * @returns {Enum.PlayServicesError}
- * @function_end
- */
-
-/**
  * @function_partial play_services_saved_games_load
  * @param {Bool} force_reload
  * @param {Function} callback
@@ -248,14 +240,7 @@
 /**
  * @function_partial play_services_saved_games_open
  * @param {String} name
- * @param {Function} callback
- * @returns {Enum.PlayServicesError}
- * @function_end
- */
-
-/**
- * @function_partial play_services_saved_games_open_conflict
- * @param {String} name
+ * @param {Bool} create_if_not_found
  * @param {Enum.PlayServicesSavedGamesConflictPolicy} conflict_policy
  * @param {Function} callback
  * @returns {Enum.PlayServicesError}

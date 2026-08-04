@@ -30,16 +30,25 @@ _options.played_time_millis = 0;
 _options.progress_value = 0;
 _options.cover_image_path = _thumbnail_path;
 
-play_services_saved_games_commit_new(_options, function(_status, _metadata)
+play_services_saved_games_open(_options.name, true, PlayServicesSavedGamesConflictPolicy.MostRecentlyModified, method({ options: _options }, function(_open_status, _opened)
 {
-    if (!_status.success)
+    if (!_open_status.success)
     {
-        show_debug_message(_status.error);
+        show_debug_message(_open_status.error);
         return;
     }
 
-    with (obj_play_services_saved_games)
+    play_services_saved_games_commit_and_close(options, function(_status, _metadata)
     {
-        play_services_saved_games_load(true, callback_saved_games_load);
-    }
-});
+        if (!_status.success)
+        {
+            show_debug_message(_status.error);
+            return;
+        }
+
+        with (obj_play_services_saved_games)
+        {
+            play_services_saved_games_load(true, callback_saved_games_load);
+        }
+    });
+}));

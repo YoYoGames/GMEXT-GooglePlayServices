@@ -38,10 +38,8 @@ public interface GMGooglePlayServicesInterface {
     public PlayServicesError play_services_uri_to_path(String uri, GMFunction callback);
     public PlayServicesError play_services_saved_games_show_saved_games_ui(String title, boolean button_add, boolean button_delete, double max_results, GMFunction callback);
     public PlayServicesError play_services_saved_games_commit_and_close(PlayServicesSavedGameCommitOptions options, GMFunction callback);
-    public PlayServicesError play_services_saved_games_commit_new(PlayServicesSavedGameCommitOptions options, GMFunction callback);
     public PlayServicesError play_services_saved_games_load(boolean force_reload, GMFunction callback);
-    public PlayServicesError play_services_saved_games_open(String name, GMFunction callback);
-    public PlayServicesError play_services_saved_games_open_conflict(String name, PlayServicesSavedGamesConflictPolicy conflict_policy, GMFunction callback);
+    public PlayServicesError play_services_saved_games_open(String name, boolean create_if_not_found, PlayServicesSavedGamesConflictPolicy conflict_policy, GMFunction callback);
     public PlayServicesError play_services_saved_games_delete(String name, GMFunction callback);
     public PlayServicesError play_services_saved_games_resolve_conflict(String conflict_id, boolean use_local, GMFunction callback);
 }
