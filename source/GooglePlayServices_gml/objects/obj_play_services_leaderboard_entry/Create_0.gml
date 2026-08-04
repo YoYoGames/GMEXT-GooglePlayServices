@@ -38,7 +38,7 @@ if (!is_undefined(score_holder_hi_res_image_uri))
 else if (!is_undefined(score_holder_icon_image_uri))
     _image_uri = score_holder_icon_image_uri;
 
-var _owner = id;
+callback_owner = id;
 
 play_services_uri_to_path_callback = function(_status, _path)
 {
@@ -48,10 +48,10 @@ play_services_uri_to_path_callback = function(_status, _path)
         return;
     }
 
-    if (!instance_exists(_owner))
+    if (!instance_exists(callback_owner))
         return;
 
-    with (_owner)
+    with (callback_owner)
     {
         if (sprite_exists(entry_sprite))
             sprite_delete(entry_sprite);
