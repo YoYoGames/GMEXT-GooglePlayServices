@@ -10,6 +10,7 @@ import ${YYAndroidPackageName}.GMExtWire.GMValue;
 import ${YYAndroidPackageName}.GMExtUtils;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -661,7 +662,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         if (clampedResults != (int)max_results)
             Log.w(TAG, "play_services_friends_load_with_consent: max_results " + (int)max_results + " clamped to [" + MIN_PAGE_SIZE + ", " + MAX_FRIENDS_PAGE_SIZE + "]");
 
-        loadFriendsWithConsentHandling(activity, clampedResults, force_reload, callback);
+        loadFriendsWithConsentHandling(activity, clampedResults, force_reload, callback, false);
 
         return PlayServicesError.Ok;
     }
@@ -670,19 +671,47 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
         Activity activity,
         int pageSize,
         boolean forceReload,
-        GMFunction callback)
+        GMFunction callback,
+        boolean isPostConsentRetry)
     {
+        Log.i(TAG, "loadFriendsWithConsentHandling: calling loadFriends(pageSize=" + pageSize
+            + ", forceReload=" + forceReload + ", isPostConsentRetry=" + isPostConsentRetry + ")");
+
         PlayGames.getPlayersClient(activity)
             .loadFriends(pageSize, forceReload)
             .addOnSuccessListener(task ->
             {
+                Log.i(TAG, "loadFriendsWithConsentHandling: loadFriends succeeded");
                 AnnotatedData<PlayerBuffer> annotatedData = task;
                 completeFriendsList(annotatedData != null ? annotatedData.get() : null, callback);
             })
             .addOnFailureListener(exception ->
             {
+                Log.w(TAG, "loadFriendsWithConsentHandling: loadFriends failed with "
+                    + exception.getClass().getName() + ": " + exception.getMessage());
+
                 if (exception instanceof FriendsResolutionRequiredException)
                 {
+                    // If this call was ITSELF the retry right after the user granted consent and
+                    // Play Games is still reporting consent required, the grant isn't being
+                    // persisted server-side (a Play Console / OAuth-consent-screen / tester-account
+                    // configuration issue, not something a client-side retry can fix) - showing the
+                    // dialog again here would just loop forever. Fail out with a clear signal
+                    // instead of re-prompting.
+                    if (isPostConsentRetry)
+                    {
+                        Log.w(TAG, "loadFriendsWithConsentHandling: still CONSENT_REQUIRED "
+                            + "immediately after the user granted consent - not re-prompting, "
+                            + "check the Play Console Play Games Services configuration / tester list");
+                        failFriendsList(
+                            callback,
+                            "Friends consent still required after the user granted it - Play Games "
+                                + "did not persist the grant (check Play Console Play Games Services "
+                                + "configuration and that this account is a registered tester).",
+                            true);
+                        return;
+                    }
+
                     FriendsResolutionRequiredException friendsException =
                         (FriendsResolutionRequiredException) exception;
 
@@ -692,7 +721,17 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
                     try
                     {
-                        friendsException.startResolutionForResult(activity, RC_FRIENDS_CONSENT);
+                        Log.i(TAG, "loadFriendsWithConsentHandling: launching friends-consent resolution");
+                        // Per the official guide (developer.android.com/games/pgs/android/friends):
+                        // getResolution() -> PendingIntent -> startIntentSenderForResult().
+                        PendingIntent pendingIntent = friendsException.getResolution();
+                        activity.startIntentSenderForResult(
+                            pendingIntent.getIntentSender(),
+                            RC_FRIENDS_CONSENT,
+                            null,
+                            0,
+                            0,
+                            0);
                     }
                     catch (Exception e)
                     {
@@ -1736,11 +1775,17 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
     private void handleFriendsConsentResult(int resultCode)
     {
+        Log.i(TAG, "handleFriendsConsentResult: resultCode=" + resultCode
+            + " (RESULT_OK=" + Activity.RESULT_OK + ", RESULT_CANCELED=" + Activity.RESULT_CANCELED + ")");
+
         GMFunction callback = friendsConsentCallback;
         friendsConsentCallback = null;
 
         if (callback == null)
+        {
+            Log.w(TAG, "handleFriendsConsentResult: no pending friendsConsentCallback, dropping result");
             return;
+        }
 
         if (resultCode == Activity.RESULT_CANCELED)
         {
@@ -1761,7 +1806,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
             return;
         }
 
-        loadFriendsWithConsentHandling(activity, friendsConsentPageSize, friendsConsentForceReload, callback);
+        loadFriendsWithConsentHandling(activity, friendsConsentPageSize, friendsConsentForceReload, callback, true);
     }
 
     private static PlayServicesAchievement achievementToRecord(Achievement achievement)
