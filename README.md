@@ -5,6 +5,9 @@ This repository was created with the intent of presenting users with the latest 
 
 This is an Android extension only.
 
+> [!IMPORTANT]
+> **Version 3.0.0 is a breaking change.** The extension has been fully rewritten onto Google Play Games Services v2 (`play-services-games-v2` 20.1.2) with a new API (`play_services_*` functions replacing the old `GooglePlayServices_*` functions). Projects upgrading from an earlier (2.x) version will need to adjust their code. Check [the documentation](../../wiki) for the current API. If you'd rather not migrate yet, [v2.2.0](../../releases/tag/v2.2.0) is the last release on the old API and will continue to be available.
+
 ANDROID SOURCE: `source/GooglePlayServices_gml/extensions/GMGooglePlayServices/AndroidSource/Java/`
 
 ---
