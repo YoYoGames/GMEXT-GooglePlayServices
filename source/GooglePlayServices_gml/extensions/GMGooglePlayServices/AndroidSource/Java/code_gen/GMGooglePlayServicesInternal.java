@@ -667,7 +667,7 @@ public abstract class GMGooglePlayServicesInternal extends RunnerSocial implemen
         return 0;
     }
 
-    public static final int PlayServicesMaxFriendsPageSize = 25;
-    public static final int PlayServicesMaxLeaderboardResults = 25;
-    public static final int PlayServicesMinPageSize = 1;
+    public static final int PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE = 25;
+    public static final int PLAY_SERVICES_MAX_LEADERBOARD_RESULTS = 25;
+    public static final int PLAY_SERVICES_MIN_PAGE_SIZE = 1;
 }

@@ -4,11 +4,11 @@
 // # Macros
 // #####################################################################
 
-#macro PlayServicesMaxFriendsPageSize 25
+#macro PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE 25
 
-#macro PlayServicesMaxLeaderboardResults 25
+#macro PLAY_SERVICES_MAX_LEADERBOARD_RESULTS 25
 
-#macro PlayServicesMinPageSize 1
+#macro PLAY_SERVICES_MIN_PAGE_SIZE 1
 
 // #####################################################################
 // # Enums

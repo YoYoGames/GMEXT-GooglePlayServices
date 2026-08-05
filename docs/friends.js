@@ -8,7 +8,7 @@
  * @param {Bool} force_reload If `true`, bypasses the local cache and fetches fresh data from the
  * server.
  * @param {Real} max_results The maximum number of friends to return in this page, clamped to
- * `[${constant.macros}.PlayServicesMinPageSize, ${constant.macros}.PlayServicesMaxFriendsPageSize]`.
+ * the range [${constant.macros}.PLAY_SERVICES_MIN_PAGE_SIZE, ${constant.macros}.PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE].
  * @param {Function} callback The function to call once the load completes.
  * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
  * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
@@ -25,7 +25,7 @@
  * @event_end
  * @example
  * ```gml
- * play_services_friends_load(false, PlayServicesMaxFriendsPageSize,
+ * play_services_friends_load(false, PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE,
  *     function(_status, _players, _has_more, _needs_consent)
  *     {
  *         if (_status.success)
@@ -44,7 +44,7 @@
  * ${function.play_services_friends_load}/${function.play_services_friends_load_with_consent} call in
  * this session.
  * @param {Real} page_size The maximum number of friends to return in this page, clamped to
- * `[${constant.macros}.PlayServicesMinPageSize, ${constant.macros}.PlayServicesMaxFriendsPageSize]`.
+ * the range [${constant.macros}.PLAY_SERVICES_MIN_PAGE_SIZE, ${constant.macros}.PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE].
  * @param {Function} callback The function to call once the load completes.
  * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
  * ${constant.PlayServicesError}.NotAuthenticated/${constant.PlayServicesError}.ActivityNull, or
@@ -69,7 +69,7 @@
  * @param {Bool} force_reload If `true`, bypasses the local cache and fetches fresh data from the
  * server.
  * @param {Real} max_results The maximum number of friends to return in this page, clamped to
- * `[${constant.macros}.PlayServicesMinPageSize, ${constant.macros}.PlayServicesMaxFriendsPageSize]`.
+ * the range [${constant.macros}.PLAY_SERVICES_MIN_PAGE_SIZE, ${constant.macros}.PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE].
  * @param {Function} callback The function to call once the load (and any consent prompt) completes.
  * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
  * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
@@ -87,7 +87,7 @@
  * @event_end
  * @example
  * ```gml
- * play_services_friends_load_with_consent(false, PlayServicesMaxFriendsPageSize,
+ * play_services_friends_load_with_consent(false, PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE,
  *     function(_status, _players, _has_more, _needs_consent)
  *     {
  *         if (_status.success)

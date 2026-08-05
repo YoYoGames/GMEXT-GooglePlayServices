@@ -391,7 +391,7 @@ score on this leaderboard, this loads the top page instead (same as
 <tr>
 <td>max_results</td>
 <td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Real</a></td>
-<td>The maximum number of scores to return, clamped to<br><code>[[macros](general.md#macros).PlayServicesMinPageSize, [macros](general.md#macros).PlayServicesMaxLeaderboardResults]</code>.</td>
+<td>The maximum number of scores to return, clamped to the range<br>[<a href="general.html#macros">macros</a>.PLAY_SERVICES_MIN_PAGE_SIZE, <a href="general.html#macros">macros</a>.PLAY_SERVICES_MAX_LEADERBOARD_RESULTS].</td>
 </tr>
 <tr>
 <td>force_reload</td>
@@ -485,7 +485,7 @@ otherwise.</p>
 <tr>
 <td>max_results</td>
 <td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Real</a></td>
-<td>The maximum number of scores to return, clamped to<br><code>[[macros](general.md#macros).PlayServicesMinPageSize, [macros](general.md#macros).PlayServicesMaxLeaderboardResults]</code>.</td>
+<td>The maximum number of scores to return, clamped to the range<br>[<a href="general.html#macros">macros</a>.PLAY_SERVICES_MIN_PAGE_SIZE, <a href="general.html#macros">macros</a>.PLAY_SERVICES_MAX_LEADERBOARD_RESULTS].</td>
 </tr>
 <tr>
 <td>force_reload</td>
@@ -542,7 +542,7 @@ otherwise.</p>
 <p><br></p>
 <p><strong>Example:</strong></p>
 <div class="highlight"><pre><span></span><code>play_services_leaderboard_load_top_scores(leaderboard_id, PlayServicesLeaderboardTimeSpan.AllTime,
-    PlayServicesLeaderboardCollection.Public, PlayServicesMaxLeaderboardResults, false,
+    PlayServicesLeaderboardCollection.Public, PLAY_SERVICES_MAX_LEADERBOARD_RESULTS, false,
     function(_status, _leaderboard = undefined, _scores = [])
     {
         if (!_status.success) return;

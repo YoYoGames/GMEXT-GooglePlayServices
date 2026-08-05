@@ -461,9 +461,9 @@
 
 /**
  * @const_partial macros
- * @member PlayServicesMaxFriendsPageSize (value: '25')
- * @member PlayServicesMaxLeaderboardResults (value: '25')
- * @member PlayServicesMinPageSize (value: '1')
+ * @member PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE (value: '25')
+ * @member PLAY_SERVICES_MAX_LEADERBOARD_RESULTS (value: '25')
+ * @member PLAY_SERVICES_MIN_PAGE_SIZE (value: '1')
  * @const_end
  */
 

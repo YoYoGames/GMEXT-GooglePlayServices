@@ -126,13 +126,13 @@
  * @const macros
  * @desc Shared limits enforced by the Google Play Games Services API. Values outside these ranges are
  * silently clamped (with a logcat warning), not rejected.
- * @member PlayServicesMaxFriendsPageSize The maximum number of friends returned per page by
+ * @member PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE The maximum number of friends returned per page by
  * ${function.play_services_friends_load}/${function.play_services_friends_load_more}/
  * ${function.play_services_friends_load_with_consent}.
- * @member PlayServicesMaxLeaderboardResults The maximum number of scores returned per page by
+ * @member PLAY_SERVICES_MAX_LEADERBOARD_RESULTS The maximum number of scores returned per page by
  * ${function.play_services_leaderboard_load_player_centered_scores}/
  * ${function.play_services_leaderboard_load_top_scores}.
- * @member PlayServicesMinPageSize The minimum page size accepted by any of the paged-loading
+ * @member PLAY_SERVICES_MIN_PAGE_SIZE The minimum page size accepted by any of the paged-loading
  * functions above.
  * @const_end
  */

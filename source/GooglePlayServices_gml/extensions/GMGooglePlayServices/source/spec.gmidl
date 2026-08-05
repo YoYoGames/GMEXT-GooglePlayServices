@@ -3,9 +3,9 @@ module GMGooglePlayServices;
 
 // Google Play Services API constants
 // These represent limitations and constraints from the Google Play Games API
-const PlayServicesMaxFriendsPageSize : int32 = 25;      // Maximum friends per page (API limit)
-const PlayServicesMaxLeaderboardResults : int32 = 25;   // Maximum leaderboard results per page (API limit)
-const PlayServicesMinPageSize : int32 = 1;              // Minimum page size
+const PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE : int32 = 25;      // Maximum friends per page (API limit)
+const PLAY_SERVICES_MAX_LEADERBOARD_RESULTS : int32 = 25;    // Maximum leaderboard results per page (API limit)
+const PLAY_SERVICES_MIN_PAGE_SIZE : int32 = 1;                // Minimum page size
 
 // Every play_services_* callback follows the same shape: callback.call(status, data...).
 // status is always the shared PlayServicesResult (success/error only); data is the real

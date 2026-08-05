@@ -85,10 +85,10 @@ play_services_achievements_show(); // system UI, no callback
 // Leaderboards
 play_services_leaderboard_submit_score_with_tag(leaderboard_id, score, "archer", submit_callback);
 play_services_leaderboard_load_top_scores(leaderboard_id, PlayServicesLeaderboardTimeSpan.AllTime,
-    PlayServicesLeaderboardCollection.Public, PlayServicesMaxLeaderboardResults, false, scores_callback);
+    PlayServicesLeaderboardCollection.Public, PLAY_SERVICES_MAX_LEADERBOARD_RESULTS, false, scores_callback);
 
 // Friends
-play_services_friends_load_with_consent(false, PlayServicesMaxFriendsPageSize, friends_callback);
+play_services_friends_load_with_consent(false, PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE, friends_callback);
 
 // Saved Games
 play_services_saved_games_open("slot_1", true, PlayServicesSavedGamesConflictPolicy.MostRecentlyModified,

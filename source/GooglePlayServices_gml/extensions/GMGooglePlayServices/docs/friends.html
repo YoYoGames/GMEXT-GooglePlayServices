@@ -139,7 +139,7 @@ instead if you want to prompt the player for consent when needed.</p>
 <tr>
 <td>max_results</td>
 <td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Real</a></td>
-<td>The maximum number of friends to return in this page, clamped to<br><code>[[macros](general.md#macros).PlayServicesMinPageSize, [macros](general.md#macros).PlayServicesMaxFriendsPageSize]</code>.</td>
+<td>The maximum number of friends to return in this page, clamped to<br>the range [<a href="general.html#macros">macros</a>.PLAY_SERVICES_MIN_PAGE_SIZE, <a href="general.html#macros">macros</a>.PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE].</td>
 </tr>
 <tr>
 <td>callback</td>
@@ -196,7 +196,7 @@ function - it never prompts, it only reports what's already visible.</p>
 </table>
 <p><br></p>
 <p><strong>Example:</strong></p>
-<div class="highlight"><pre><span></span><code>play_services_friends_load(false, PlayServicesMaxFriendsPageSize,
+<div class="highlight"><pre><span></span><code>play_services_friends_load(false, PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE,
     function(_status, _players, _has_more, _needs_consent)
     {
         if (_status.success)
@@ -233,7 +233,7 @@ this session.</p>
 <tr>
 <td>page_size</td>
 <td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Real</a></td>
-<td>The maximum number of friends to return in this page, clamped to<br><code>[[macros](general.md#macros).PlayServicesMinPageSize, [macros](general.md#macros).PlayServicesMaxFriendsPageSize]</code>.</td>
+<td>The maximum number of friends to return in this page, clamped to<br>the range [<a href="general.html#macros">macros</a>.PLAY_SERVICES_MIN_PAGE_SIZE, <a href="general.html#macros">macros</a>.PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE].</td>
 </tr>
 <tr>
 <td>callback</td>
@@ -320,7 +320,7 @@ via a system consent dialog before completing.</p>
 <tr>
 <td>max_results</td>
 <td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Real</a></td>
-<td>The maximum number of friends to return in this page, clamped to<br><code>[[macros](general.md#macros).PlayServicesMinPageSize, [macros](general.md#macros).PlayServicesMaxFriendsPageSize]</code>.</td>
+<td>The maximum number of friends to return in this page, clamped to<br>the range [<a href="general.html#macros">macros</a>.PLAY_SERVICES_MIN_PAGE_SIZE, <a href="general.html#macros">macros</a>.PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE].</td>
 </tr>
 <tr>
 <td>callback</td>
@@ -376,7 +376,7 @@ otherwise.</p>
 </table>
 <p><br></p>
 <p><strong>Example:</strong></p>
-<div class="highlight"><pre><span></span><code>play_services_friends_load_with_consent(false, PlayServicesMaxFriendsPageSize,
+<div class="highlight"><pre><span></span><code>play_services_friends_load_with_consent(false, PLAY_SERVICES_MAX_FRIENDS_PAGE_SIZE,
     function(_status, _players, _has_more, _needs_consent)
     {
         if (_status.success)

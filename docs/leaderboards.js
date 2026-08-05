@@ -138,8 +138,8 @@
  * @param {Enum.PlayServicesLeaderboardTimeSpan} span Which time span to load scores for.
  * @param {Enum.PlayServicesLeaderboardCollection} leaderboard_collection Which collection to load
  * scores for.
- * @param {Real} max_results The maximum number of scores to return, clamped to
- * `[${constant.macros}.PlayServicesMinPageSize, ${constant.macros}.PlayServicesMaxLeaderboardResults]`.
+ * @param {Real} max_results The maximum number of scores to return, clamped to the range
+ * [${constant.macros}.PLAY_SERVICES_MIN_PAGE_SIZE, ${constant.macros}.PLAY_SERVICES_MAX_LEADERBOARD_RESULTS].
  * @param {Bool} force_reload If `true`, bypasses the local cache and fetches fresh data from the
  * server.
  * @param {Function} callback The function to call once the load completes.
@@ -164,8 +164,8 @@
  * @param {Enum.PlayServicesLeaderboardTimeSpan} span Which time span to load scores for.
  * @param {Enum.PlayServicesLeaderboardCollection} leaderboard_collection Which collection to load
  * scores for.
- * @param {Real} max_results The maximum number of scores to return, clamped to
- * `[${constant.macros}.PlayServicesMinPageSize, ${constant.macros}.PlayServicesMaxLeaderboardResults]`.
+ * @param {Real} max_results The maximum number of scores to return, clamped to the range
+ * [${constant.macros}.PLAY_SERVICES_MIN_PAGE_SIZE, ${constant.macros}.PLAY_SERVICES_MAX_LEADERBOARD_RESULTS].
  * @param {Bool} force_reload If `true`, bypasses the local cache and fetches fresh data from the
  * server.
  * @param {Function} callback The function to call once the load completes.
@@ -183,7 +183,7 @@
  * @example
  * ```gml
  * play_services_leaderboard_load_top_scores(leaderboard_id, PlayServicesLeaderboardTimeSpan.AllTime,
- *     PlayServicesLeaderboardCollection.Public, PlayServicesMaxLeaderboardResults, false,
+ *     PlayServicesLeaderboardCollection.Public, PLAY_SERVICES_MAX_LEADERBOARD_RESULTS, false,
  *     function(_status, _leaderboard = undefined, _scores = [])
  *     {
  *         if (!_status.success) return;
