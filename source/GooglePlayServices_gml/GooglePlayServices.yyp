@@ -32,8 +32,7 @@
   ],
   "ForcedPrefabProjectReferences":[],
   "IncludedFiles":[
-    {"$GMIncludedFile":"","%Name":"GMEXT-GooglePlayServices Unix Docs.html","CopyToMask":-1,"filePath":"datafiles","name":"GMEXT-GooglePlayServices Unix Docs.html","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
-    {"$GMIncludedFile":"","%Name":"GMEXT-GooglePlayServices Win Docs.lnk","CopyToMask":-1,"filePath":"datafiles","name":"GMEXT-GooglePlayServices Win Docs.lnk","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
+    {"$GMIncludedFile":"","%Name":"GMEXT-GooglePlayServices.html","CopyToMask":0,"filePath":"datafiles","name":"GMEXT-GooglePlayServices.html","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
   ],
   "isEcma":false,
   "LibraryEmitters":[],
