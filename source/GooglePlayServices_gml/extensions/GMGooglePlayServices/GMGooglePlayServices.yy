@@ -16,7 +16,7 @@
   "copyToTargets":8,
   "description":"",
   "exportToGame":true,
-  "extensionVersion":"3.0.0",
+  "extensionVersion":"3.0.1",
   "files":[
     {"$GMExtensionFile":"v1","%Name":"","constants":[],"copyToTargets":-1,"filename":"GMGooglePlayServices.ext","final":"","functions":[
         {"$GMExtensionFunction":"","%Name":"play_services_is_available","argCount":0,"args":[],"documentation":"@returns {Real}","externalName":"__EXT_NATIVE__play_services_is_available","help":"","hidden":false,"kind":4,"name":"play_services_is_available","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
