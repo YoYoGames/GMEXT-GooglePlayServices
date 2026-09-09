@@ -1,18 +1,20 @@
 
 /**
  * @function play_services_uri_to_path
- * @desc Downloads and converts a Play Games image URI (as returned in `icon_image_uri`,
- * `hi_res_image_uri`, `cover_image_uri`, etc. throughout this extension) into a local file path,
- * suitable for loading with ${function.sprite_add}. The image is fetched from the network if not
- * already cached and written to a temporary PNG file.
+ * @desc This function downloads a Play Games image URI, of the kind that is returned in
+ * `icon_image_uri`, `hi_res_image_uri`, `cover_image_uri` and so on throughout this extension, and
+ * converts it into a local file path that is suitable for loading with ${function.sprite_add}. The
+ * image is fetched over the network if it is not already cached, and it is written to a temporary
+ * PNG file.
  * @param {String} uri The image URI to resolve, as returned by another function in this extension.
- * @param {Function} callback The function to call once the download/conversion completes.
- * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
+ * @param {Function} callback The function to call once the download and the conversion complete.
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted, or
  * ${constant.PlayServicesError}.ActivityNull otherwise.
  * @event callback
- * @desc Fires once, when the download completes, fails, or times out (after 30 seconds).
- * @member {Struct.PlayServicesResult} status The conversion's outcome.
- * @member {String} [path] The local file path to the downloaded image. Only present on success.
+ * @desc Called once, when the download completes, fails, or times out after 30 seconds.
+ * @member {Struct.PlayServicesResult} status The outcome of the conversion.
+ * @member {String} [path] The local file path of the downloaded image. This is only present on
+ * success.
  * @event_end
  * @example
  * ```gml
@@ -22,13 +24,16 @@
  *         icon_sprite = sprite_add(_path, 1, false, false, 0, 0);
  * });
  * ```
+ * The code above downloads the profile image of a player and loads the resulting file as a sprite
+ * that the game can then draw.
  * @function_end
  */
 
 /**
  * @module utilities
  * @title Utilities
- * @desc Helper functions for working with data returned by other modules.
+ * @desc This module holds the helper functions for working with the data that the other modules
+ * return.
  *
  * @section_func
  * @ref play_services_uri_to_path

@@ -2,17 +2,17 @@
 
 # Getting Started
 
-This guide walks through the recommended call order for the GooglePlayServices extension, from
-checking availability through your first authenticated calls. See ${page.google_setup} first if you
-haven't yet set up Google Play Games Services for your app, and ${page.extension_setup} for filling in
-the extension's Application ID.
+This guide walks you through the recommended order in which to call the functions of the
+GooglePlayServices extension, from checking availability through to your first authenticated calls.
+You should read ${page.google_setup} first if you have not yet set up Google Play Games Services for
+your app, and ${page.extension_setup} for filling in the Application ID of the extension.
 
 ## Prerequisites
 
-* A Google Play Games Services setup for your app, with leaderboards/achievements already created
-  (${page.google_setup}).
-* The extension's Application ID filled in (${page.extension_setup}).
-* **Android only** - this extension has no iOS or desktop implementation.
+* A Google Play Games Services setup for your app, with the leaderboards and the achievements
+  already created (${page.google_setup}).
+* The Application ID of the extension filled in (${page.extension_setup}).
+* An Android build, as this extension has no iOS or desktop implementation.
 
 ## 1. Check availability
 
@@ -24,11 +24,14 @@ if (!play_services_is_available())
 }
 ```
 
+The code above checks that Google Play Services is present on the device before the game attempts
+anything else.
+
 ## 2. Sign in
 
-A sign-in attempt is made automatically when the game starts. Call
-${function.play_services_sign_in} yourself only if you need to re-prompt (e.g. the automatic attempt
-failed, or the player signed out):
+A sign-in attempt is made automatically when the game starts, so you should only call
+${function.play_services_sign_in} yourself if you need to prompt the player again, for example
+because the automatic attempt failed or because the player signed out:
 
 ```gml
 play_services_is_authenticated(function(_status, _is_authenticated)
@@ -44,12 +47,15 @@ play_services_is_authenticated(function(_status, _is_authenticated)
 });
 ```
 
+The code above queries the current authentication state and only prompts the player when they are
+not already signed in.
+
 ## 3. Handling callbacks
 
-Every async function in this extension checks its synchronous ${constant.PlayServicesError} return
-value first, then delivers its real outcome through a callback whose **first argument is always a**
-${struct.PlayServicesResult}. Check `status.success` before touching anything else the callback
-receives - on failure, only `status.error` is meaningful:
+Every asynchronous function in this extension gives you a synchronous ${constant.PlayServicesError}
+return value first, and then delivers its real outcome through a callback whose **first argument is
+always a** ${struct.PlayServicesResult}. You should check `status.success` before touching anything
+else that the callback was given, as only `status.error` is meaningful on a failure:
 
 ```gml
 var _error = play_services_player_current(function(_status, _player = undefined)
@@ -65,13 +71,17 @@ var _error = play_services_player_current(function(_status, _player = undefined)
 
 if (_error != PlayServicesError.Ok)
 {
-    // callback above will never fire - the call was rejected outright (not signed in, no activity, ...)
+    // the callback above will never be called, as the call was rejected outright (not signed
+    // in, no activity, and so on)
 }
 ```
 
+The code above handles both halves of that shape, which means the failure that arrives through the
+callback and the failure that is reported by the return value alone.
+
 ## 4. Main usage
 
-Once signed in, every module follows the same shape - call a function, get a
+Once the player is signed in, every module follows the same shape. You call a function and you get a
 ${struct.PlayServicesResult} back through its callback:
 
 ```gml
@@ -95,24 +105,26 @@ play_services_saved_games_open("slot_1", true, PlayServicesSavedGamesConflictPol
     open_callback);
 ```
 
-See ${module.player}, ${module.friends}, ${module.achievements}, ${module.leaderboards}, and
-${module.savedgames} for the full function/struct reference of each.
+See ${module.player}, ${module.friends}, ${module.achievements}, ${module.leaderboards} and
+${module.savedgames} for the full function and struct reference of each one.
 
 ## 5. Cleanup
 
-A save slot opened with ${function.play_services_saved_games_open} stays held until you either commit
-it with ${function.play_services_saved_games_commit_and_close} or delete it with
-${function.play_services_saved_games_delete} - don't leave slots open indefinitely across scene/room
-changes. No other module in this extension holds a resource that needs explicit cleanup.
+A save slot that was opened with ${function.play_services_saved_games_open} stays held until you
+either commit it with ${function.play_services_saved_games_commit_and_close} or delete it with
+${function.play_services_saved_games_delete}, so you should not leave slots open indefinitely across
+scene or room changes. No other module in this extension holds a resource that needs to be cleaned
+up explicitly.
 
 ## Testing notes
 
-* The demo project bundled with this extension is a reference demo - it needs your own `.keystore` and
-  Google Services setup to run, per ${page.extension_setup}.
-* Achievements/leaderboards/saved-games calls that hit the network can fail with
-  ${constant.PlayServicesError}.NotAuthenticated if sign-in hasn't completed yet - always check
-  ${function.play_services_is_authenticated} (or wait for ${function.play_services_sign_in}'s callback)
-  before exercising the rest of the API in a test scene.
-* ${function.play_services_saved_games_open}/${function.play_services_saved_games_delete}/
-  ${function.play_services_saved_games_commit_and_close} only work against a slot opened earlier in the
-  same session - restarting the game clears which slots are considered "open".
+* The demo project that is bundled with this extension is a reference demo, so it needs your own
+  `.keystore` and your own Google Services setup in order to run. See ${page.extension_setup}.
+* An achievements, leaderboards or saved games call that reaches the network can fail with
+  ${constant.PlayServicesError}.NotAuthenticated if sign-in has not completed yet, so you should
+  always check ${function.play_services_is_authenticated}, or wait for the callback of
+  ${function.play_services_sign_in}, before exercising the rest of the API in a test scene.
+* ${function.play_services_saved_games_open},
+  ${function.play_services_saved_games_delete} and
+  ${function.play_services_saved_games_commit_and_close} only work against a slot that was opened
+  earlier in the same session, as restarting the game clears which slots are considered to be open.

@@ -1,53 +1,58 @@
-
 /**
  * @struct PlayServicesPlayerInfo
- * @desc A player's public Play Games Services profile. String fields are absent, not empty strings,
- * when Google has no value for them - check presence before use.
- * @member {String} [player_id] The player's unique Play Games Services ID.
- * @member {String} [display_name] The player's display name.
- * @member {String} [title] The player's in-game title (e.g. an experience-level title), if any.
- * @member {String} [icon_image_uri] A URI for the player's icon-size profile image. Convert to a
- * local path with ${function.play_services_uri_to_path} before loading it as a sprite.
- * @member {String} [hi_res_image_uri] A URI for the player's hi-res profile image. Convert to a local
- * path with ${function.play_services_uri_to_path} before loading it as a sprite.
+ * @desc The public Play Games Services profile of a player. Note that a string member is absent
+ * rather than an empty string when Google holds no value for it, so you should check that it is
+ * present before using it.
+ * @member {String} [player_id] The unique Play Games Services ID of the player.
+ * @member {String} [display_name] The display name of the player.
+ * @member {String} [title] The in-game title of the player, for example an experience level title,
+ * if they have one.
+ * @member {String} [icon_image_uri] A URI for the icon sized profile image of the player. You should
+ * convert it to a local path with ${function.play_services_uri_to_path} before loading it as a
+ * sprite.
+ * @member {String} [hi_res_image_uri] A URI for the high resolution profile image of the player. You
+ * should convert it to a local path with ${function.play_services_uri_to_path} before loading it as
+ * a sprite.
  * @struct_end
  */
 
 /**
  * @struct PlayServicesPlayerStatsInfo
- * @desc Aggregate play statistics for a player, as estimated by Google Play Games Services. Any
- * field can come back as `-1` (Google's `UNSET_VALUE`) when there isn't enough data to calculate it -
- * check for `-1` before trusting a value.
- * [[Note: `churn_probability`, `high_spender_probability`, `spend_probability`, and
- * `total_spend_next_28_days` mirror Google's own deprecated `PlayerStats` getters, which now always
- * return `-1` regardless of the player's real data - do not rely on these four for real predictions.]]
+ * @desc The aggregate play statistics for a player, as estimated by Google Play Games Services. Any
+ * of these members can come back as `-1`, which is Google's `UNSET_VALUE`, when there is not enough
+ * data to calculate it, so you should check for `-1` before trusting a value.
+ * [[Note: The `churn_probability`, `high_spender_probability`, `spend_probability` and
+ * `total_spend_next_28_days` members mirror Google's own deprecated `PlayerStats` getters, which now
+ * always return `-1` no matter what the real data for the player is. You should not rely on these
+ * four for any real prediction.]]
  * @member {Real} average_session_length The average session length, in minutes.
  * @member {Real} days_since_last_played The approximate number of days since the player last played.
- * @member {Real} number_of_purchases The approximate number of in-app purchases made by the player.
- * @member {Real} number_of_sessions The approximate number of sessions the player has had.
- * @member {Real} session_percentile The player's session-count percentile versus this game's player
- * base, `0`-`1` (higher means more sessions played).
- * @member {Real} spend_percentile The player's spend percentile versus this game's player base,
- * `0`-`1` (higher means more spent).
- * @member {Real} churn_probability Always `-1` - see the note above.
- * @member {Real} high_spender_probability Always `-1` - see the note above.
- * @member {Real} spend_probability Always `-1` - see the note above.
- * @member {Real} total_spend_next_28_days Always `-1` - see the note above.
+ * @member {Real} number_of_purchases The approximate number of in-app purchases that the player has
+ * made.
+ * @member {Real} number_of_sessions The approximate number of sessions that the player has had.
+ * @member {Real} session_percentile The session count percentile of the player against the player
+ * base of this game, from `0` to `1`, where a higher value means more sessions played.
+ * @member {Real} spend_percentile The spend percentile of the player against the player base of this
+ * game, from `0` to `1`, where a higher value means more spent.
+ * @member {Real} churn_probability This is always `-1`. See the note above.
+ * @member {Real} high_spender_probability This is always `-1`. See the note above.
+ * @member {Real} spend_probability This is always `-1`. See the note above.
+ * @member {Real} total_spend_next_28_days This is always `-1`. See the note above.
  * @struct_end
  */
 
 /**
  * @function play_services_player_current
- * @desc Loads the currently signed-in player's own profile.
+ * @desc This function loads the profile of the player that is currently signed in.
  * @param {Function} callback The function to call once the load completes.
- * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
- * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted, or
+ * ${constant.PlayServicesError}.NotAuthenticated / ${constant.PlayServicesError}.ActivityNull
  * otherwise.
  * @event callback
- * @desc Fires once, when the load completes or fails.
- * @member {Struct.PlayServicesResult} status The load's outcome.
- * @member {Struct.PlayServicesPlayerInfo} [player] The current player's profile. Only present on
- * success.
+ * @desc Called once, when the load completes or fails.
+ * @member {Struct.PlayServicesResult} status The outcome of the load.
+ * @member {Struct.PlayServicesPlayerInfo} [player] The profile of the current player. This is only
+ * present on success.
  * @event_end
  * @example
  * ```gml
@@ -57,58 +62,62 @@
  *         show_debug_message($"Signed in as {_player.display_name}");
  * });
  * ```
+ * The code above loads the profile of the signed-in player and writes their display name to the
+ * output log.
  * @function_end
  */
 
 /**
  * @function play_services_player_current_id
- * @desc Loads just the currently signed-in player's unique ID, without the rest of the profile.
- * Cheaper than ${function.play_services_player_current} when only the ID is needed.
+ * @desc This function loads only the unique ID of the player that is currently signed in, without
+ * the rest of their profile. It is cheaper than ${function.play_services_player_current}, so you
+ * should prefer it when the ID is all that you need.
  * @param {Function} callback The function to call once the load completes.
- * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
- * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted, or
+ * ${constant.PlayServicesError}.NotAuthenticated / ${constant.PlayServicesError}.ActivityNull
  * otherwise.
  * @event callback
- * @desc Fires once, when the load completes or fails.
- * @member {Struct.PlayServicesResult} status The load's outcome.
- * @member {String} [player_id] The current player's unique ID. Only present on success.
+ * @desc Called once, when the load completes or fails.
+ * @member {Struct.PlayServicesResult} status The outcome of the load.
+ * @member {String} [player_id] The unique ID of the current player. This is only present on success.
  * @event_end
  * @function_end
  */
 
 /**
  * @function play_services_player_stats_load
- * @desc Loads aggregate play statistics for the currently signed-in player.
- * @param {Bool} force_reload If `true`, bypasses the local cache and fetches fresh data from the
- * server. Prefer `false` for most calls to benefit from caching.
+ * @desc This function loads the aggregate play statistics for the player that is currently signed
+ * in.
+ * @param {Bool} force_reload Whether to bypass the local cache and fetch fresh data from the server.
+ * You should pass `false` for most calls, so that the call can benefit from caching.
  * @param {Function} callback The function to call once the load completes.
- * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
- * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted, or
+ * ${constant.PlayServicesError}.NotAuthenticated / ${constant.PlayServicesError}.ActivityNull
  * otherwise.
  * @event callback
- * @desc Fires once, when the load completes or fails.
- * @member {Struct.PlayServicesResult} status The load's outcome.
- * @member {Struct.PlayServicesPlayerStatsInfo} [stats] The player's stats. Only present on success.
+ * @desc Called once, when the load completes or fails.
+ * @member {Struct.PlayServicesResult} status The outcome of the load.
+ * @member {Struct.PlayServicesPlayerStatsInfo} [stats] The statistics for the player. This is only
+ * present on success.
  * @event_end
  * @function_end
  */
 
 /**
  * @function play_services_player_load
- * @desc Loads another player's public profile by ID (e.g. a friend or a leaderboard/achievement
- * score holder's ID).
+ * @desc This function loads the public profile of another player from their ID, for example that of
+ * a friend, or that of the holder of a leaderboard score or an achievement.
  * @param {String} player_id The unique ID of the player to load.
- * @param {Bool} force_reload If `true`, bypasses the local cache and fetches fresh data from the
- * server.
+ * @param {Bool} force_reload Whether to bypass the local cache and fetch fresh data from the server.
  * @param {Function} callback The function to call once the load completes.
- * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
- * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted, or
+ * ${constant.PlayServicesError}.NotAuthenticated / ${constant.PlayServicesError}.ActivityNull
  * otherwise.
  * @event callback
- * @desc Fires once, when the load completes or fails.
- * @member {Struct.PlayServicesResult} status The load's outcome.
- * @member {Struct.PlayServicesPlayerInfo} [player] The requested player's profile. Only present on
- * success.
+ * @desc Called once, when the load completes or fails.
+ * @member {Struct.PlayServicesResult} status The outcome of the load.
+ * @member {Struct.PlayServicesPlayerInfo} [player] The profile of the requested player. This is only
+ * present on success.
  * @event_end
  * @function_end
  */
@@ -116,8 +125,9 @@
 /**
  * @module player
  * @title Player
- * @desc Loading the current player's own profile and stats, and looking up other players by ID. See
- * ${module.friends} for the friends list and the player-search/profile-compare system UIs.
+ * @desc This module covers loading the profile and the statistics of the current player, and looking
+ * up other players by their ID. See ${module.friends} for the friends list and for the system UIs
+ * that search for a player and compare profiles.
  *
  * @section_func
  * @ref play_services_player_current
