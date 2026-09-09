@@ -2,13 +2,18 @@
 
 # Google Play Setup
 
-Before you can start using Google Play Services in your game and test it, you first need to set up a few things in Google Play. This page gives an overview of what needs to be set up and refers to the Google Play documentation for more information.
+Before you can start using Google Play Services in your game and test it, there are a few things
+that you first have to set up in Google Play. This page gives you an overview of what needs to be
+set up, and points you at the Google Play documentation for the details of each step.
 
 ## Setting up an App
 
-The first steps involve creating and setting up an app on Google Play, setting it up for testing and creating a release:
+The first steps are to create an app on Google Play, to set it up for testing, and to create a
+release:
 
-1. [Create and set up an app](https://support.google.com/googleplay/android-developer/answer/113469?hl=en) on your [Google Play Developer Console](https://developer.android.com/distribute/console/index.html) for the game.
+1. [Create and set up an app](https://support.google.com/googleplay/android-developer/answer/113469?hl=en)
+   for the game on your
+   [Google Play Developer Console](https://developer.android.com/distribute/console/index.html).
 
 2. [Set up your app on the app dashboard](https://support.google.com/googleplay/android-developer/answer/9859454)
 
@@ -17,22 +22,37 @@ The first steps involve creating and setting up an app on Google Play, setting i
 4. [Create an internal release](https://support.google.com/googleplay/android-developer/answer/9859348)
 
 
-[[Note: For your own dev testing we recommend you set up an internal test, as the review times are very quick (typically your app is ready for download via the Play Store app within an hour or two) and the process of getting builds to your testers is more straightforward than the other tracks.]]
+[[Note: For your own development testing we recommend that you set up an internal test, as the
+review times are very quick, with your app typically being ready for download through the Play Store
+app within an hour or two, and getting builds to your testers is more straightforward than it is on
+the other tracks.]]
 
-[[Note: If you are sharing app bundles or APKs with testers directly through internal app sharing, testers need to have this enabled. See **How authorized testers turn on internal app sharing** on the page [Share app bundles and APKs internally](https://support.google.com/googleplay/android-developer/answer/9844679).]]
+[[Note: If you are sharing app bundles or APKs with testers directly through internal app sharing
+then your testers need to have that enabled. See **How authorized testers turn on internal app
+sharing** on the page
+[Share app bundles and APKs internally](https://support.google.com/googleplay/android-developer/answer/9844679).]]
 
-[[Note: If, during upload, you get an error message saying the release is not compliant with the Google Play 64-bit requirement you should check the `Build for ARM64` game option under [Android Game Options](https://manual.gamemaker.io/monthly/en/Settings/Game_Options/Android.htm) (`Game Options` > `Android` > `Architecture` > `Build for ARM64`). This needs to be checked.]]
+[[Note: If you get an error message during upload saying that the release is not compliant with the
+Google Play 64-bit requirement then you should check the `Build for ARM64` game option under
+[Android Game Options](https://manual.gamemaker.io/monthly/en/Settings/Game_Options/Android.htm)
+(`Game Options` > `Android` > `Architecture` > `Build for ARM64`). This option has to be checked.]]
 
 ## Setting up Google Play Games Services
 
-The next steps to set up Google Play Services involve setting up Google Play Games Services for the app, creating credentials and finally setting up leaderboards, achievements and saved games:
+The next steps are to set up Google Play Games Services for the app, to create the credentials that
+it needs, and finally to set up your leaderboards, achievements and saved games:
 
 1. [Set up Google Play Games Services](https://developer.android.com/games/pgs/console/setup)
 2. [Generate an OAuth 2.0 client ID](https://developer.android.com/games/pgs/console/setup#generate_an_oauth_20_client_id)
-3. [Create Access Credentials](https://developers.google.com/workspace/guides/create-credentials) (for the key hash see the **Keystore** section in the [Android Preferences](https://manual.gamemaker.io/monthly/en/Setting_Up_And_Version_Information/Platform_Preferences/Android.htm))<br />
+3. [Create Access Credentials](https://developers.google.com/workspace/guides/create-credentials).
+   For the key hash, see the **Keystore** section of the
+   [Android Preferences](https://manual.gamemaker.io/monthly/en/Setting_Up_And_Version_Information/Platform_Preferences/Android.htm).<br />
     - Create a Developer Keystore credential
     - Create a Play Store credential
 4. [Set up Google Play games services features](https://support.google.com/googleplay/android-developer/answer/2990418)
     - [Leaderboards](https://support.google.com/googleplay/android-developer/answer/2990418#zippy=%2Cleaderboards)
     - [Achievements](https://support.google.com/googleplay/android-developer/answer/2990418#zippy=%2Cachievements)
     - [Saved Games](https://support.google.com/googleplay/android-developer/answer/2990418#zippy=%2Csaved-games)
+
+Once all of that is in place, see ${page.extension_setup} for setting up the extension itself inside
+GameMaker.

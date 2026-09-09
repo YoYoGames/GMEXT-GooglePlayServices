@@ -1,86 +1,94 @@
-
 /**
  * @struct PlayServicesSavedGameCommitOptions
- * @desc The metadata and content to write when committing a saved-game slot via
+ * @desc The content and the metadata to write when a saved game slot is committed with
  * ${function.play_services_saved_games_commit_and_close}.
- * @member {String} name The unique identifier of the save slot. Must match a slot already opened this
- * session with ${function.play_services_saved_games_open}.
- * @member {String} data The save data to write, as a string (a JSON-encoded string is a common
- * choice for structured data).
+ * @member {String} name The unique identifier of the save slot. It must match a slot that has
+ * already been opened in this session with ${function.play_services_saved_games_open}.
+ * @member {String} data The save data to write, as a string. A JSON encoded string is a common
+ * choice for structured data.
  * @member {String} desc The description to display for this save slot in the system Saved Games UI.
- * Leave empty to keep the slot's existing description unchanged.
+ * Leave it empty to keep the existing description of the slot unchanged.
  * @member {Real} played_time_millis The total played time to record for this save, in milliseconds.
- * Pass a negative value to leave the slot's existing value unchanged.
- * @member {Real} progress_value The progress value to record for this save (an arbitrary,
- * developer-defined number used to compare saves, e.g. for conflict resolution heuristics). Pass a
- * negative value to leave the slot's existing value unchanged.
- * @member {String} cover_image_path A local file path to an image to use as the slot's cover image
- * (e.g. a screenshot saved via `surface_save`). Leave empty to keep the slot's existing cover image.
+ * Pass a negative value to leave the existing value of the slot unchanged.
+ * @member {Real} progress_value The progress value to record for this save, which is an arbitrary
+ * number of your own that is used to compare saves, for example in a conflict resolution heuristic.
+ * Pass a negative value to leave the existing value of the slot unchanged.
+ * @member {String} cover_image_path A local file path to an image to use as the cover image of the
+ * slot, for example a screenshot saved with `surface_save`. Leave it empty to keep the existing
+ * cover image of the slot.
  * @struct_end
  */
 
 /**
  * @struct PlayServicesSnapshotMetadata
- * @desc A saved-game slot's metadata, without its actual save data.
- * @member {String} [unique_name] The slot's unique identifier.
- * @member {String} [description] The slot's description.
- * @member {String} [device_name] The name of the device that last wrote this slot, if known.
- * @member {Real} last_modified_timestamp When this slot was last modified, in milliseconds since
+ * @desc The metadata of a saved game slot, without its actual save data.
+ * @member {String} [unique_name] The unique identifier of the slot.
+ * @member {String} [description] The description of the slot.
+ * @member {String} [device_name] The name of the device that last wrote to the slot, if it is known.
+ * @member {Real} last_modified_timestamp When the slot was last modified, in milliseconds since the
  * epoch.
- * @member {Real} played_time The total played time recorded for this slot, in milliseconds.
- * @member {Real} progress_value The progress value recorded for this slot.
- * @member {Bool} has_change_pending Whether this slot has local changes not yet uploaded to the
- * server.
- * @member {String} [cover_image_uri] A URI for the slot's cover image. Convert to a local path with
- * ${function.play_services_uri_to_path} before loading it as a sprite. Only present if a cover image
- * was set.
+ * @member {Real} played_time The total played time that is recorded for the slot, in milliseconds.
+ * @member {Real} progress_value The progress value that is recorded for the slot.
+ * @member {Bool} has_change_pending Whether the slot has local changes that have not been uploaded
+ * to the server yet.
+ * @member {String} [cover_image_uri] A URI for the cover image of the slot. You should convert it to
+ * a local path with ${function.play_services_uri_to_path} before loading it as a sprite. This is
+ * only present if a cover image was set.
  * @struct_end
  */
 
 /**
  * @struct PlayServicesSnapshotOpenInfo
- * @desc The result of opening a saved-game slot. Exactly one of two field groups is populated,
- * selected by `is_conflict`: `snapshot_metadata`/`data` when the slot opened cleanly; `conflict_id`/
- * `snapshot_metadata_local`/`data_local`/`snapshot_metadata_remote`/`data_remote` when it opened into
- * a conflict that needs ${function.play_services_saved_games_resolve_conflict}. Only
- * ${constant.PlayServicesSavedGamesConflictPolicy}.Manual can ever produce a conflict result - every
- * other policy value makes Google Play auto-resolve on the server, so this struct's conflict fields
- * only ever populate for callers using `Manual`.
+ * @desc The result of opening a saved game slot. Exactly one of two groups of members is populated,
+ * and `is_conflict` says which. When the slot opened cleanly, `snapshot_metadata` and `data` are
+ * populated. When it opened into a conflict that needs
+ * ${function.play_services_saved_games_resolve_conflict}, `conflict_id`,
+ * `snapshot_metadata_local`, `data_local`, `snapshot_metadata_remote` and `data_remote` are
+ * populated instead.
+ * [[Note: Only ${constant.PlayServicesSavedGamesConflictPolicy}.Manual can ever produce a conflict
+ * result. Every other policy value makes Google Play resolve the conflict automatically on the
+ * server, so the conflict members of this struct are only ever populated for a game that opened the
+ * slot with `Manual`.]]
  * @member {Bool} is_conflict Whether this open resulted in an unresolved conflict.
- * @member {Struct.PlayServicesSnapshotMetadata} [snapshot_metadata] The opened slot's metadata. Only
- * present when `!is_conflict`.
- * @member {String} [data] The opened slot's save data. Only present when `!is_conflict`.
+ * @member {Struct.PlayServicesSnapshotMetadata} [snapshot_metadata] The metadata of the opened slot.
+ * This is only present when `is_conflict` is `false`.
+ * @member {String} [data] The save data of the opened slot. This is only present when `is_conflict`
+ * is `false`.
  * @member {String} [conflict_id] The ID to pass to
- * ${function.play_services_saved_games_resolve_conflict}. Only present when `is_conflict`.
- * @member {Struct.PlayServicesSnapshotMetadata} [snapshot_metadata_local] The local (device) side of
- * the conflict. Only present when `is_conflict`.
- * @member {String} [data_local] The local side's save data. Only present when `is_conflict`.
- * @member {Struct.PlayServicesSnapshotMetadata} [snapshot_metadata_remote] The remote (server) side of
- * the conflict. Only present when `is_conflict`.
- * @member {String} [data_remote] The remote side's save data. Only present when `is_conflict`.
+ * ${function.play_services_saved_games_resolve_conflict}. This is only present when `is_conflict` is
+ * `true`.
+ * @member {Struct.PlayServicesSnapshotMetadata} [snapshot_metadata_local] The local side of the
+ * conflict, which is the one on the device. This is only present when `is_conflict` is `true`.
+ * @member {String} [data_local] The save data of the local side. This is only present when
+ * `is_conflict` is `true`.
+ * @member {Struct.PlayServicesSnapshotMetadata} [snapshot_metadata_remote] The remote side of the
+ * conflict, which is the one on the server. This is only present when `is_conflict` is `true`.
+ * @member {String} [data_remote] The save data of the remote side. This is only present when
+ * `is_conflict` is `true`.
  * @struct_end
  */
 
 /**
  * @function play_services_saved_games_show_saved_games_ui
- * @desc Shows the system Saved Games UI overlay, letting the player pick an existing slot, create a
- * new one, or (optionally) delete a slot.
+ * @desc This function shows the system Saved Games UI overlay, which lets the player pick an
+ * existing slot, create a new one, or, if you allow it, delete a slot.
  * @param {String} title The title text to display on the overlay.
  * @param {Bool} button_add Whether to show a button for creating a new save slot.
  * @param {Bool} button_delete Whether to show a button for deleting a save slot.
  * @param {Real} max_results The maximum number of existing save slots to list.
  * @param {Function} callback The function to call once the UI is dismissed.
- * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the UI was launched,
- * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the UI was launched, or
+ * ${constant.PlayServicesError}.NotAuthenticated / ${constant.PlayServicesError}.ActivityNull
  * otherwise.
  * @event callback
- * @desc Fires once, when the overlay is dismissed - whichever way the player closed it.
- * @member {Struct.PlayServicesResult} status The overlay's outcome. `success` is `false` only if
- * launching the picker itself failed (`result` is then ${constant.PlayServicesSavedGamesUIResult}.Error).
+ * @desc Called once, when the overlay is dismissed, whichever way the player closed it.
+ * @member {Struct.PlayServicesResult} status The outcome of the overlay. The `success` member is
+ * `false` only if launching the picker itself failed, in which case `result` is
+ * ${constant.PlayServicesSavedGamesUIResult}.Error.
  * @member {Enum.PlayServicesSavedGamesUIResult} result Which way the overlay was closed.
- * @member {Struct.PlayServicesSnapshotMetadata} [metadata] The selected slot's metadata. Only present
- * when `result` is ${constant.PlayServicesSavedGamesUIResult}.Selected - open it with
- * ${function.play_services_saved_games_open} using `metadata.unique_name`.
+ * @member {Struct.PlayServicesSnapshotMetadata} [metadata] The metadata of the selected slot. This
+ * is only present when `result` is ${constant.PlayServicesSavedGamesUIResult}.Selected, and you open
+ * that slot with ${function.play_services_saved_games_open} using `metadata.unique_name`.
  * @event_end
  * @example
  * ```gml
@@ -92,25 +100,27 @@
  *                 PlayServicesSavedGamesConflictPolicy.MostRecentlyModified, open_callback);
  *     });
  * ```
+ * The code above shows the saved games picker with both the add and the delete buttons enabled, and
+ * opens whichever slot the player selected.
  * @function_end
  */
 
 /**
  * @function play_services_saved_games_commit_and_close
- * @desc Writes data to a save slot and closes it, releasing the handle opened by
- * ${function.play_services_saved_games_open}.
- * @param {Struct.PlayServicesSavedGameCommitOptions} options The slot name, data, and metadata to
- * write. `options.name` must refer to a slot opened this session.
+ * @desc This function writes data to a save slot and then closes it, releasing the handle that
+ * ${function.play_services_saved_games_open} opened.
+ * @param {Struct.PlayServicesSavedGameCommitOptions} options The slot name, the data and the
+ * metadata to write. The `options.name` member must refer to a slot that was opened in this session.
  * @param {Function} callback The function to call once the commit completes.
  * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
- * ${constant.PlayServicesError}.NotAuthenticated/${constant.PlayServicesError}.ActivityNull, or
- * ${constant.PlayServicesError}.InvalidArgument if `options.name` doesn't refer to a slot opened this
- * session.
+ * ${constant.PlayServicesError}.NotAuthenticated / ${constant.PlayServicesError}.ActivityNull, or
+ * ${constant.PlayServicesError}.InvalidArgument if `options.name` does not refer to a slot that was
+ * opened in this session.
  * @event callback
- * @desc Fires once, when the commit completes or fails.
- * @member {Struct.PlayServicesResult} status The commit's outcome.
- * @member {Struct.PlayServicesSnapshotMetadata} [metadata] The committed slot's server-confirmed
- * metadata. Only present on success.
+ * @desc Called once, when the commit completes or fails.
+ * @member {Struct.PlayServicesResult} status The outcome of the commit.
+ * @member {Struct.PlayServicesSnapshotMetadata} [metadata] The server confirmed metadata of the
+ * committed slot. This is only present on success.
  * @event_end
  * @example
  * ```gml
@@ -128,53 +138,56 @@
  *         show_debug_message("Saved");
  * });
  * ```
+ * The code above writes the save data and a new description to an already open slot, leaving the
+ * played time, the progress value and the cover image of that slot as they were.
  * @function_end
  */
 
 /**
  * @function play_services_saved_games_load
- * @desc Loads the metadata for every save slot belonging to the signed-in player.
- * @param {Bool} force_reload If `true`, bypasses the local cache and fetches fresh data from the
- * server.
+ * @desc This function loads the metadata for every save slot that belongs to the signed-in player.
+ * @param {Bool} force_reload Whether to bypass the local cache and fetch fresh data from the server.
  * @param {Function} callback The function to call once the load completes.
- * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
- * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted, or
+ * ${constant.PlayServicesError}.NotAuthenticated / ${constant.PlayServicesError}.ActivityNull
  * otherwise.
  * @event callback
- * @desc Fires once, when the load completes or fails.
- * @member {Struct.PlayServicesResult} status The load's outcome. `success` is `true` with an empty
- * `snapshots` array both for a genuinely empty account and for some documented offline edge cases in
- * Google's own API - if you need to tell "no saves" apart from "couldn't check", also verify
- * connectivity independently.
- * @member {Array[Struct.PlayServicesSnapshotMetadata]} snapshots Every save slot's metadata. Empty on
- * failure or on a genuinely empty account.
+ * @desc Called once, when the load completes or fails.
+ * @member {Struct.PlayServicesResult} status The outcome of the load. Note that `success` is `true`
+ * with an empty `snapshots` array both for an account that genuinely has no saves and for some
+ * offline edge cases that Google documents in its own API. If you need to tell those two apart then
+ * you should also check connectivity independently.
+ * @member {Array[Struct.PlayServicesSnapshotMetadata]} snapshots The metadata of every save slot.
+ * This is empty on failure, and also for an account that genuinely has no saves.
  * @event_end
  * @function_end
  */
 
 /**
  * @function play_services_saved_games_open
- * @desc Opens a save slot by name, creating it first if requested. On success, the slot is held open
- * until committed with ${function.play_services_saved_games_commit_and_close} or dropped with
- * ${function.play_services_saved_games_delete}. Re-opening an already-open name safely replaces the
- * held handle.
+ * @desc This function opens a save slot by name, creating it first if you ask it to. On success the
+ * slot is held open until it is committed with
+ * ${function.play_services_saved_games_commit_and_close} or dropped with
+ * ${function.play_services_saved_games_delete}. Opening a name that is already open is safe, and it
+ * simply replaces the handle that is being held.
  * @param {String} name The unique identifier of the save slot.
- * @param {Bool} create_if_not_found If `true`, creates the slot when it doesn't already exist instead
- * of failing.
+ * @param {Bool} create_if_not_found Whether to create the slot when it does not already exist,
+ * instead of failing.
  * @param {Enum.PlayServicesSavedGamesConflictPolicy} conflict_policy How to resolve a conflict if
- * this slot has divergent local/server data. Only ${constant.PlayServicesSavedGamesConflictPolicy}.Manual
- * can ever produce an unresolved conflict in the callback - every other value auto-resolves on the
- * server, so pass `Manual` only when you're prepared to call
+ * this slot has local and server data that have diverged. Only
+ * ${constant.PlayServicesSavedGamesConflictPolicy}.Manual can ever produce an unresolved conflict in
+ * the callback, as every other value is resolved automatically on the server, so you should only
+ * pass `Manual` when you are prepared to call
  * ${function.play_services_saved_games_resolve_conflict} yourself.
  * @param {Function} callback The function to call once the open completes.
- * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
- * ${constant.PlayServicesError}.NotAuthenticated or ${constant.PlayServicesError}.ActivityNull
+ * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted, or
+ * ${constant.PlayServicesError}.NotAuthenticated / ${constant.PlayServicesError}.ActivityNull
  * otherwise.
  * @event callback
- * @desc Fires once, when the open completes or fails.
- * @member {Struct.PlayServicesResult} status The open's outcome.
- * @member {Struct.PlayServicesSnapshotOpenInfo} [info] The opened slot, or the conflict to resolve.
- * Only present on success.
+ * @desc Called once, when the open completes or fails.
+ * @member {Struct.PlayServicesResult} status The outcome of the open.
+ * @member {Struct.PlayServicesSnapshotOpenInfo} [info] The opened slot, or the conflict that is to
+ * be resolved. This is only present on success.
  * @event_end
  * @example
  * ```gml
@@ -194,60 +207,66 @@
  *         }
  *     });
  * ```
+ * The code above opens a save slot, creating it if it does not exist yet, and parses the save data
+ * that comes back once the slot has opened cleanly.
  * @function_end
  */
 
 /**
  * @function play_services_saved_games_delete
- * @desc Deletes a save slot. `name` must refer to a slot opened this session with
- * ${function.play_services_saved_games_open}.
+ * @desc This function deletes a save slot. The `name` argument must refer to a slot that was opened
+ * in this session with ${function.play_services_saved_games_open}.
  * @param {String} name The unique identifier of the save slot.
- * @param {Function} callback The function to call once the delete completes.
+ * @param {Function} callback The function to call once the deletion completes.
  * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
- * ${constant.PlayServicesError}.NotAuthenticated/${constant.PlayServicesError}.ActivityNull, or
- * ${constant.PlayServicesError}.InvalidArgument if `name` doesn't refer to a slot opened this session.
+ * ${constant.PlayServicesError}.NotAuthenticated / ${constant.PlayServicesError}.ActivityNull, or
+ * ${constant.PlayServicesError}.InvalidArgument if `name` does not refer to a slot that was opened
+ * in this session.
  * @event callback
- * @desc Fires once, when the delete completes or fails.
- * @member {Struct.PlayServicesResult} status The delete's outcome.
+ * @desc Called once, when the deletion completes or fails.
+ * @member {Struct.PlayServicesResult} status The outcome of the deletion.
  * @event_end
  * @function_end
  */
 
 /**
  * @function play_services_saved_games_resolve_conflict
- * @desc Resolves a conflict previously reported by ${function.play_services_saved_games_open} (with
- * ${constant.PlayServicesSavedGamesConflictPolicy}.Manual) by picking one side as the winner.
- * [[Note: Resolving a conflict can itself produce a fresh conflict, per Google's own API - always
- * check `info.is_conflict` on the result and be prepared to call this function again with the new
- * `conflict_id` rather than assuming one call always settles it.]]
- * @param {String} conflict_id The conflict ID from the triggering
- * ${struct.PlayServicesSnapshotOpenInfo}.
- * @param {Bool} use_local `true` to keep the local (device) side, `false` to keep the remote (server)
- * side.
+ * @desc This function resolves a conflict that ${function.play_services_saved_games_open} reported
+ * earlier, having been called with ${constant.PlayServicesSavedGamesConflictPolicy}.Manual, by
+ * picking one of the two sides as the winner.
+ * [[Note: Resolving a conflict can itself produce a fresh conflict, as it can in Google's own API.
+ * You should always check `info.is_conflict` on the result and be prepared to call this function
+ * again with the new `conflict_id`, rather than assuming that a single call always settles it.]]
+ * @param {String} conflict_id The conflict ID from the ${struct.PlayServicesSnapshotOpenInfo} that
+ * triggered this.
+ * @param {Bool} use_local Whether to keep the local side, which is the one on the device. Pass
+ * `false` to keep the remote side, which is the one on the server.
  * @param {Function} callback The function to call once the resolution completes.
  * @returns {Enum.PlayServicesError} ${constant.PlayServicesError}.Ok if the request was accepted,
- * ${constant.PlayServicesError}.NotAuthenticated/${constant.PlayServicesError}.ActivityNull, or
- * ${constant.PlayServicesError}.InvalidArgument if there is no pending conflict matching `use_local`.
+ * ${constant.PlayServicesError}.NotAuthenticated / ${constant.PlayServicesError}.ActivityNull, or
+ * ${constant.PlayServicesError}.InvalidArgument if there is no pending conflict that matches
+ * `use_local`.
  * @event callback
- * @desc Fires once, when the resolution completes or fails.
- * @member {Struct.PlayServicesResult} status The resolution's outcome.
- * @member {Struct.PlayServicesSnapshotOpenInfo} [info] The resolved slot, or a fresh conflict to
- * resolve again (see the note above). Only present on success.
+ * @desc Called once, when the resolution completes or fails.
+ * @member {Struct.PlayServicesResult} status The outcome of the resolution.
+ * @member {Struct.PlayServicesSnapshotOpenInfo} [info] The resolved slot, or a fresh conflict that
+ * is to be resolved in turn, for which see the note above. This is only present on success.
  * @event_end
  * @function_end
  */
 
 /**
  * @const PlayServicesSavedGamesConflictPolicy
- * @desc How ${function.play_services_saved_games_open} resolves a slot with divergent local/server
- * data. Every value except `Manual` auto-resolves on the server without ever surfacing a conflict.
- * @member Manual The game resolves the conflict itself via
- * ${function.play_services_saved_games_resolve_conflict} - the only value that can produce an
+ * @desc How ${function.play_services_saved_games_open} resolves a slot whose local and server data
+ * have diverged. Every value except `Manual` is resolved automatically on the server, without a
+ * conflict ever being surfaced to the game.
+ * @member Manual The game resolves the conflict itself with
+ * ${function.play_services_saved_games_resolve_conflict}. This is the only value that can produce an
  * unresolved conflict result.
- * @member LongestPlaytime Keeps whichever side has the greater `played_time_millis`.
- * @member LastKnownGood Keeps the last version the server confirmed as consistent.
- * @member MostRecentlyModified Keeps whichever side has the more recent modification timestamp.
- * @member HighestProgress Keeps whichever side has the greater `progress_value`.
+ * @member LongestPlaytime Whichever side has the greater `played_time_millis` is kept.
+ * @member LastKnownGood The last version that the server confirmed as consistent is kept.
+ * @member MostRecentlyModified Whichever side has the more recent modification timestamp is kept.
+ * @member HighestProgress Whichever side has the greater `progress_value` is kept.
  * @const_end
  */
 
@@ -255,8 +274,9 @@
  * @const PlayServicesSavedGamesUIResult
  * @desc How the ${function.play_services_saved_games_show_saved_games_ui} overlay was closed.
  * @member Cancelled The player closed the overlay without selecting or creating a slot.
- * @member Selected The player picked an existing slot - see the callback's `metadata` member.
- * @member CreatedNew The player created a new slot via the overlay's add button.
+ * @member Selected The player picked an existing slot, which is given by the `metadata` member of
+ * the callback.
+ * @member CreatedNew The player created a new slot with the add button of the overlay.
  * @member Error The overlay itself failed to launch.
  * @const_end
  */
@@ -264,8 +284,9 @@
 /**
  * @module savedgames
  * @title Saved Games
- * @desc Saving and loading player progress to Google's servers, synchronized across every device the
- * player signs into, including conflict resolution and the system Saved Games UI.
+ * @desc This module covers saving and loading the progress of the player on Google's servers,
+ * synchronised across every device that the player signs in on. It also covers conflict resolution
+ * and the system Saved Games UI.
  *
  * @section_func
  * @ref play_services_saved_games_show_saved_games_ui
