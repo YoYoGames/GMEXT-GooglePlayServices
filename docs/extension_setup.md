@@ -1,5 +1,11 @@
 @title Extension Setup
 
+# Import
+
+Download the **.yymps** package from the [Releases](https://github.com/YoYoGames/GMEXT-GooglePlayServices/releases/) section of this repository. Drag it into your GameMaker window or use the **Tools** -> **Import Local Package** option.
+
+In the Import window, make sure you import at least the **GooglePlayServices** folder and the **ExtensionCore** folder.
+
 # Setup
 
 The Google Play Services extension is meant to be used alongside your Google Developer account
