@@ -1306,7 +1306,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
                 {
                     pending.call(
                         new PlayServicesResult(false, error(exception)),
-                        PlayServicesSavedGamesUIResult.Error,
+                        PlayServicesSavedGamesUIResult.Error.value(),
                         Optional.empty()
                     );
                 }
@@ -1348,7 +1348,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (data == null || resultCode != Activity.RESULT_OK)
         {
-            callback.call(new PlayServicesResult(true, ""), PlayServicesSavedGamesUIResult.Cancelled, Optional.empty());
+            callback.call(new PlayServicesResult(true, ""), PlayServicesSavedGamesUIResult.Cancelled.value(), Optional.empty());
             return;
         }
 
@@ -1360,7 +1360,7 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
             callback.call(
                 new PlayServicesResult(true, ""),
-                PlayServicesSavedGamesUIResult.Selected,
+                PlayServicesSavedGamesUIResult.Selected.value(),
                 snapshotMetadataToRecord(metadata)
             );
             return;
@@ -1368,11 +1368,11 @@ public class GMGooglePlayServices extends GMGooglePlayServicesInternal
 
         if (data.hasExtra(SnapshotsClient.EXTRA_SNAPSHOT_NEW))
         {
-            callback.call(new PlayServicesResult(true, ""), PlayServicesSavedGamesUIResult.CreatedNew, Optional.empty());
+            callback.call(new PlayServicesResult(true, ""), PlayServicesSavedGamesUIResult.CreatedNew.value(), Optional.empty());
             return;
         }
 
-        callback.call(new PlayServicesResult(true, ""), PlayServicesSavedGamesUIResult.Cancelled, Optional.empty());
+        callback.call(new PlayServicesResult(true, ""), PlayServicesSavedGamesUIResult.Cancelled.value(), Optional.empty());
     }
 
     public PlayServicesError play_services_saved_games_commit_and_close(
